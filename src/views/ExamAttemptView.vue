@@ -1,4 +1,4 @@
-<template>
+np<template>
   <section class="space-y-4 text-slate-800">
     <div class="sticky top-3 z-20 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur sm:px-6">
       <div class="flex flex-wrap items-center justify-between gap-3">

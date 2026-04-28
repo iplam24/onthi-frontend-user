@@ -17,147 +17,22 @@
 
     <template v-else>
       <div v-if="!selectedSubject" class="space-y-8">
-        <header class="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 class="m-0 text-4xl font-extrabold tracking-tight text-slate-900">Chọn môn học</h1>
-            <p class="mb-0 mt-2 text-xl font-medium text-slate-500">Hệ thống luyện thi THPT Quốc gia thông minh</p>
-          </div>
-
-          <router-link
-            to="/"
-            class="inline-flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold tracking-[0.08em] text-slate-500 transition hover:bg-slate-50"
-          >
-            <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i>
-            TRANG CHỦ
-          </router-link>
-        </header>
-
-        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          <article
-            v-for="subject in subjectSummaries"
-            :key="subject.name"
-            class="group rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.04)] transition hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(15,23,42,0.1)]"
-          >
-            <div class="flex items-start justify-between gap-3">
-              <p class="m-0 text-sm font-black uppercase tracking-[0.12em] text-slate-400">{{ subject.levelName }}</p>
-              <span :class="['mt-1 h-2.5 w-2.5 rounded-full', subject.dotClass]"></span>
-            </div>
-
-            <div v-if="subject.imageUrl" class="mt-3">
-              <img :src="subject.imageUrl" :alt="subject.name" class="h-24 w-full object-contain" />
-            </div>
-
-            <h2 class="mb-0 mt-3 text-[2rem] font-extrabold leading-none text-slate-900">{{ subject.name }}</h2>
-
-            <div class="mt-5 space-y-2 text-sm font-semibold text-slate-400">
-              <p class="m-0 inline-flex items-center gap-2">
-                <i class="fa-regular fa-clock text-xs" aria-hidden="true"></i>
-                {{ subject.durationLabel }}
-              </p>
-              <p class="m-0 inline-flex items-center gap-2">
-                <i class="fa-solid fa-layer-group text-xs" aria-hidden="true"></i>
-                {{ subject.count }} đề thi
-              </p>
-            </div>
-
-            <button
-              type="button"
-              @click="openSubject(subject.name)"
-              class="mt-8 inline-flex w-full items-center justify-between border-t border-slate-100 pt-4 text-sm font-black tracking-[0.05em] text-emerald-600 transition group-hover:text-emerald-700"
-            >
-              <span>VÀO THI NGAY</span>
-              <i class="fa-solid fa-angle-right text-base" aria-hidden="true"></i>
-            </button>
-          </article>
-
-          <article class="grid place-content-center rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-5 text-center text-slate-300">
-            <p class="m-0 text-sm font-black uppercase tracking-[0.12em]">Cập nhật thêm...</p>
-          </article>
-        </div>
+        <ExamsSubjectToolbar v-model="selectedLevel" :level-options="levelOptions" />
+        <SubjectSummaryGrid :subjects="filteredSubjectSummaries" @select-subject="openSubject" />
       </div>
 
-      <div v-else class="space-y-6">
-        <button
-          type="button"
-          @click="selectedSubject = ''"
-          class="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.08em] text-slate-400 transition hover:text-slate-600"
-        >
-          <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i>
-          Quay lại môn học
-        </button>
-
-        <header class="flex items-center gap-4">
-          <div class="grid h-14 w-14 place-content-center rounded-2xl bg-white text-2xl font-black text-sky-500 shadow-[0_8px_20px_rgba(15,23,42,0.09)]">
-            {{ selectedSubjectInitial }}
-          </div>
-
-          <div>
-            <h1 class="m-0 text-5xl font-extrabold leading-none text-slate-900">{{ selectedSubject }}</h1>
-            <p class="mb-0 mt-2 text-sm font-bold uppercase tracking-[0.1em] text-slate-400">Danh sách đề thi hiện có</p>
-          </div>
-        </header>
-
-        <div v-if="!selectedSubjectExams.length" class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
-          Môn này hiện chưa có đề thi.
-        </div>
-
-        <div v-else class="space-y-4">
-          <article
-            v-for="exam in selectedSubjectExams"
-            :key="exam.id"
-            class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-[0_6px_20px_rgba(15,23,42,0.05)] sm:px-5"
-          >
-            <div class="min-w-[260px] flex-1">
-              <h3 class="mb-0 mt-3 text-xl font-extrabold text-slate-800">{{ exam.title }}</h3>
-
-              <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs font-bold uppercase tracking-[0.06em] text-slate-400">
-                <p class="m-0 inline-flex items-center gap-1.5">
-                  <i class="fa-regular fa-clock" aria-hidden="true"></i>
-                  {{ exam.duration }} phút
-                </p>
-                <p class="m-0 inline-flex items-center gap-1.5">
-                  <i class="fa-solid fa-list-check" aria-hidden="true"></i>
-                  {{ exam.maxAttempts ?? 1 }} lượt
-                </p>
-                <p class="m-0 inline-flex items-center gap-1.5">
-                  <i class="fa-solid fa-circle-dot" aria-hidden="true"></i>
-                  {{ exam.isActive ? 'Đang mở' : 'Đã đóng' }}
-                </p>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-3">
-              <button
-                @click="startExam(exam)"
-                :disabled="!canStartExam(exam)"
-                class="rounded-xl bg-blue-500 px-7 py-3 text-sm font-black uppercase tracking-[0.08em] text-white shadow-[0_8px_18px_rgba(59,130,246,0.35)] transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-slate-300"
-              >
-                {{ canStartExam(exam) ? 'Vào thi' : getStartBlockedReason(exam) }}
-              </button>
-              <button
-                type="button"
-                @click="startExam(exam)"
-                :disabled="!canStartExam(exam)"
-                class="grid h-10 w-10 place-content-center rounded-full bg-slate-100 text-slate-400 transition hover:bg-slate-200 disabled:cursor-not-allowed"
-                aria-label="Vào thi"
-              >
-                <i class="fa-solid fa-angle-right"></i>
-              </button>
-            </div>
-          </article>
-        </div>
-
-        <div class="flex justify-end">
-          <button
-            @click="refreshData"
-            :disabled="loading"
-            class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <i class="fa-solid fa-rotate-right text-xs" aria-hidden="true"></i>
-            Làm mới danh sách
-          </button>
-        </div>
-      </div>
+      <SelectedSubjectPanel
+        v-else
+        :selected-subject="selectedSubject"
+        :selected-subject-initial="selectedSubjectInitial"
+        :exams="selectedSubjectExams"
+        :loading="loading"
+        :can-start-exam="canStartExam"
+        :get-start-blocked-reason="getStartBlockedReason"
+        @back="selectedSubject = ''"
+        @refresh="refreshData"
+        @start-exam="startExam"
+      />
     </template>
   </section>
 </template>
@@ -165,10 +40,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import ExamsSubjectToolbar from '@/components/exams/ExamsSubjectToolbar.vue';
+import SelectedSubjectPanel from '@/components/exams/SelectedSubjectPanel.vue';
+import SubjectSummaryGrid from '@/components/exams/SubjectSummaryGrid.vue';
 import { useAuthStore } from '@/stores/auth';
 import { getAllExams } from '@/services/examService';
 import { getMyAttempts } from '@/services/attemptService';
 import { getSubjects, type SubjectItem } from '@/services/learningService';
+import type { ExamDisplayItem, SubjectSummaryItem } from '@/types/examDisplay';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.00.0.1:8080/api';
 const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
@@ -178,15 +57,10 @@ const resolveAssetUrl = (assetUrl?: string) => {
   return /^https?:\/\//i.test(assetUrl) ? assetUrl : `${BACKEND_ORIGIN}${assetUrl.startsWith('/') ? '' : '/'}${assetUrl}`;
 };
 
-type ExamItem = {
-  id: number;
-  title: string;
+type ExamItem = ExamDisplayItem & {
   subjectName?: string;
-  duration: number;
   totalQuestions?: number;
-  maxAttempts?: number;
   type: string;
-  isActive: boolean;
 };
 
 type AttemptItem = {
@@ -210,11 +84,12 @@ const error = ref<string | null>(null);
 const exams = ref<ExamItem[]>([]);
 const subjects = ref<SubjectItem[]>([]); // New ref for subjects
 const selectedSubject = ref<string>('');
+const selectedLevel = ref<string>('Tất cả');
 const dotPalette = ['bg-blue-500', 'bg-emerald-500', 'bg-rose-500', 'bg-amber-500', 'bg-cyan-500'];
 
 const myAttempts = ref<AttemptItem[]>([]);
 
-const subjectSummaries = computed(() => {
+const subjectSummaries = computed<SubjectSummaryItem[]>(() => {
   const map = new Map<string, { count: number; totalDuration: number }>();
   for (const exam of exams.value) {
     const name = exam.subjectName?.trim() || 'Khác';
@@ -231,17 +106,38 @@ const subjectSummaries = computed(() => {
       const stats = map.get(name) ?? { count: 0, totalDuration: 0 };
       const averageDuration = stats.count ? Math.round(stats.totalDuration / stats.count) : 0;
       const index = subjects.value.findIndex(s => s.name.trim() === name); // Get index for dotClass
+      const dotClass: string = dotPalette[index % dotPalette.length] || 'bg-blue-500';
       return {
         name,
         imageUrl: resolveAssetUrl(subject.imageUrl), // Add image URL
         levelName: subject.levelName, // Add levelName
         count: stats.count,
         durationLabel: `${averageDuration || 0} phút`,
-        dotClass: dotPalette[index % dotPalette.length],
+        dotClass,
       };
     })
     // .filter(subject => subject.count > 0) // Removed: Show all subjects, even those without exams
     .sort((a, b) => a.name.localeCompare(b.name));
+});
+
+const levelOptions = computed(() => {
+  const uniqueLevels = new Set<string>();
+  for (const subject of subjectSummaries.value) {
+    const levelName = subject.levelName?.trim();
+    if (levelName) {
+      uniqueLevels.add(levelName);
+    }
+  }
+
+  return ['Tất cả', ...Array.from(uniqueLevels).sort((a, b) => a.localeCompare(b))];
+});
+
+const filteredSubjectSummaries = computed(() => {
+  if (selectedLevel.value === 'Tất cả') {
+    return subjectSummaries.value;
+  }
+
+  return subjectSummaries.value.filter((subject) => subject.levelName?.trim() === selectedLevel.value);
 });
 
 const selectedSubjectInitial = computed(() => {
@@ -252,7 +148,7 @@ const selectedSubjectInitial = computed(() => {
   return selectedSubject.value.trim().charAt(0).toUpperCase() || 'S';
 });
 
-const selectedSubjectExams = computed(() => {
+const selectedSubjectExams = computed<ExamDisplayItem[]>(() => {
   if (!selectedSubject.value) {
     return [];
   }
@@ -295,7 +191,7 @@ const loadExams = async () => {
       // If no subject is selected or the selected subject is no longer available,
       // default to the first subject in the list of available subjects.
       if (!currentSelectedSubject || (currentSelectedSubject && !availableSubjects.has(currentSelectedSubject))) {
-        selectedSubject.value = exams.value[0].subjectName?.trim() || 'Khác';
+        selectedSubject.value = exams.value[0]?.subjectName?.trim() || 'Khác';
       }
     } else {
       selectedSubject.value = '';
@@ -330,13 +226,9 @@ const getAttemptCountByExam = (examId: number) => {
   return myAttempts.value.filter((attempt) => attempt.examId === examId).length;
 };
 
-const canStartExam = (exam: ExamItem) => {
+const canStartExam = (exam: ExamDisplayItem) => {
   if (!exam.isActive) {
     return false;
-  }
-
-  if (!auth.isAuthenticated) {
-    return true;
   }
 
   if (!auth.isAuthenticated) {
@@ -350,7 +242,7 @@ const canStartExam = (exam: ExamItem) => {
   return getAttemptCountByExam(exam.id) < exam.maxAttempts;
 };
 
-const getStartBlockedReason = (exam: ExamItem) => {
+const getStartBlockedReason = (exam: ExamDisplayItem) => {
   if (!exam.isActive) {
     return 'Đề đang đóng';
   }
@@ -366,7 +258,7 @@ const getStartBlockedReason = (exam: ExamItem) => {
   return 'Không thể bắt đầu';
 };
 
-const startExam = (exam: ExamItem) => {
+const startExam = (exam: ExamDisplayItem) => {
   if (!canStartExam(exam)) {
     return;
   }
@@ -391,6 +283,18 @@ watch(
     loadMyAttempts();
   },
 );
+
+watch(levelOptions, (options) => {
+  if (!options.includes(selectedLevel.value)) {
+    selectedLevel.value = 'Tất cả';
+  }
+});
+
+watch(filteredSubjectSummaries, (items) => {
+  if (selectedSubject.value && !items.some((subject) => subject.name === selectedSubject.value)) {
+    selectedSubject.value = '';
+  }
+});
 
 onMounted(() => {
   void refreshData();
