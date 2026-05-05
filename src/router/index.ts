@@ -27,6 +27,12 @@ const router = createRouter({
       props: true,
     },
     {
+      path: '/attempts/:id/review',
+      name: 'exam-review',
+      component: () => import('../views/ExamReviewView.vue'),
+      props: true,
+    },
+    {
       path: '/attempts',
       name: 'attempts-history',
       component: AttemptsHistoryView,

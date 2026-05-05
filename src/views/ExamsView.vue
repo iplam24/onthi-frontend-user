@@ -1,38 +1,91 @@
 <template>
-  <section class="mx-auto w-full max-w-6xl space-y-6 px-2 sm:px-4">
-    <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
-      {{ error }}
-    </p>
-
-    <div v-if="loading" class="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600">
-      Đang tải dữ liệu môn học và đề thi...
+  <section class="mx-auto w-full max-w-6xl space-y-8 px-3 sm:px-6" style="animation: slide-up 600ms cubic-bezier(0.16,1,0.3,1) both">
+    <div v-if="!auth.isAuthenticated" class="relative overflow-hidden rounded-[2rem] bg-white border border-slate-100 p-8 sm:p-12 shadow-2xl shadow-blue-500/5">
+      <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-blue-50 blur-3xl opacity-50 animate-pulse"></div>
+      <div class="relative flex flex-wrap gap-6 items-center justify-between">
+        <div>
+          <h1 class="m-0 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Hệ thống Đề thi</h1>
+          <p class="mb-0 mt-4 text-sm font-black uppercase tracking-[0.2em] text-blue-400">
+            Khám phá kho tàng kiến thức phong phú
+          </p>
+        </div>
+        <div class="h-16 w-16 flex items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-inner">
+          <i class="fa-solid fa-graduation-cap text-2xl"></i>
+        </div>
+      </div>
     </div>
 
-    <div
-      v-else-if="!subjectSummaries.length"
-      class="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600"
-    >
-      Hiện chưa có đề thi nào khả dụng.
+    <p v-if="error && auth.isAuthenticated" class="rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-medium text-rose-700">
+      <i class="fa-solid fa-circle-exclamation mr-2"></i>{{ error }}
+    </p>
+
+    <!-- Auth prompt -->
+    <div v-if="!auth.isAuthenticated" class="animate-slide-up-reveal card-elevated px-6 py-24 text-center bg-white rounded-[2.5rem] border-slate-100 shadow-2xl shadow-blue-500/5">
+      <div class="relative inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-50 mb-6">
+        <div class="absolute inset-0 rounded-2xl bg-blue-400/20 blur-xl animate-pulse"></div>
+        <i class="fa-solid fa-user-lock text-blue-500 text-3xl relative z-10"></i>
+      </div>
+      <h2 class="m-0 text-2xl font-black text-slate-900">Đăng nhập để học tập</h2>
+      <p class="mb-0 mt-3 text-sm font-medium text-slate-400 max-w-md mx-auto leading-relaxed">
+        Bạn cần đăng nhập để bắt đầu hành trình chinh phục tri thức của mình.
+      </p>
     </div>
 
     <template v-else>
-      <div v-if="!selectedSubject" class="space-y-8">
-        <ExamsSubjectToolbar v-model="selectedLevel" :level-options="levelOptions" />
-        <SubjectSummaryGrid :subjects="filteredSubjectSummaries" @select-subject="openSubject" />
+      <div v-if="loading" class="animate-pulse space-y-12">
+        <!-- Subject Toolbar Skeleton -->
+        <div class="h-14 w-full bg-slate-100 rounded-2xl"></div>
+        
+        <!-- Subject Grid Skeleton -->
+        <div v-if="!selectedSubject" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div v-for="i in 8" :key="i" class="card-elevated p-6 space-y-4">
+            <div class="h-40 w-full bg-slate-50 rounded-2xl"></div>
+            <div class="h-6 w-3/4 bg-slate-50 rounded-lg"></div>
+          </div>
+        </div>
+        
+        <!-- Exam List Skeleton -->
+        <div v-else class="space-y-4">
+          <div class="h-20 w-full bg-slate-100 rounded-[1.5rem] mb-8"></div>
+          <div v-for="i in 5" :key="i" class="h-24 w-full bg-slate-50 rounded-2xl"></div>
+        </div>
       </div>
 
-      <SelectedSubjectPanel
-        v-else
-        :selected-subject="selectedSubject"
-        :selected-subject-initial="selectedSubjectInitial"
-        :exams="selectedSubjectExams"
-        :loading="loading"
-        :can-start-exam="canStartExam"
-        :get-start-blocked-reason="getStartBlockedReason"
-        @back="selectedSubject = ''"
-        @refresh="refreshData"
-        @start-exam="startExam"
-      />
+      <div
+        v-else-if="!subjectSummaries.length"
+        class="card-elevated px-5 py-14 text-center"
+      >
+        <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 mb-4">
+          <i class="fa-solid fa-folder-open text-slate-400 text-2xl"></i>
+        </div>
+        <p class="text-base font-medium text-slate-500 m-0">Hiện chưa có đề thi nào khả dụng.</p>
+      </div>
+
+      <template v-else>
+        <div v-if="!selectedSubject" class="space-y-12">
+          <div class="animate-slide-up-reveal stagger-1">
+            <ExamsSubjectToolbar v-model="selectedLevel" :level-options="levelOptions" />
+          </div>
+          <div class="animate-slide-up-reveal stagger-2">
+            <SubjectSummaryGrid :subjects="filteredSubjectSummaries" @select-subject="openSubject" />
+          </div>
+        </div>
+
+        <SelectedSubjectPanel
+          v-else
+          :selected-subject="selectedSubject"
+          :selected-subject-initial="selectedSubjectInitial"
+          :exams="selectedSubjectExams"
+          :loading="loading"
+          :can-start-exam="canStartExam"
+          :get-start-blocked-reason="getStartBlockedReason"
+          :get-user-attempts="getAttemptCountByExam"
+          :is-logged-in="auth.isAuthenticated"
+          @back="selectedSubject = ''"
+          @refresh="refreshData"
+          @start-exam="startExam"
+        />
+      </template>
     </template>
   </section>
 </template>
@@ -226,8 +279,14 @@ const getAttemptCountByExam = (examId: number) => {
   return myAttempts.value.filter((attempt) => attempt.examId === examId).length;
 };
 
+const isExamExpired = (exam: any) => {
+  const expiryDate = exam.endTime || exam.endDate || exam.deadline;
+  if (!expiryDate) return false;
+  return new Date(expiryDate) < new Date();
+};
+
 const canStartExam = (exam: ExamDisplayItem) => {
-  if (!exam.isActive) {
+  if (!exam.isActive || isExamExpired(exam)) {
     return false;
   }
 
@@ -243,8 +302,8 @@ const canStartExam = (exam: ExamDisplayItem) => {
 };
 
 const getStartBlockedReason = (exam: ExamDisplayItem) => {
-  if (!exam.isActive) {
-    return 'Đề đang đóng';
+  if (!exam.isActive || isExamExpired(exam)) {
+    return 'Đề thi đã kết thúc!';
   }
 
   if (!auth.isAuthenticated) {
@@ -252,14 +311,14 @@ const getStartBlockedReason = (exam: ExamDisplayItem) => {
   }
 
   if (auth.isAuthenticated && exam.maxAttempts && getAttemptCountByExam(exam.id) >= exam.maxAttempts) {
-    return 'Đã hết lượt làm';
+    return 'Đề thi đã kết thúc!';
   }
 
   return 'Không thể bắt đầu';
 };
 
 const startExam = (exam: ExamDisplayItem) => {
-  if (!canStartExam(exam)) {
+  if (!canStartExam(exam) || !exam.isActive) {
     return;
   }
 

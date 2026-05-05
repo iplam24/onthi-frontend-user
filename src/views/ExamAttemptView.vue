@@ -1,188 +1,241 @@
-np<template>
-  <section class="space-y-4 text-slate-800">
-    <div class="sticky top-3 z-20 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur sm:px-6">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <router-link
-            to="/exams"
-            class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100"
-            aria-label="Quay lại"
-          >
-            <i class="fa-solid fa-angle-left text-sm" aria-hidden="true"></i>
-          </router-link>
+<template>
+  <!-- Cheating overlay -->
+  <teleport to="body">
+    <transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div v-if="isCheating" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-md p-4">
+        <div class="animate-scale-in max-w-md w-full rounded-2xl bg-white p-8 text-center shadow-2xl">
+          <div class="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center">
+            <span class="absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-25" style="animation: pulse-ring 1.5s ease-out infinite"></span>
+            <span class="relative inline-flex h-16 w-16 items-center justify-center rounded-full bg-rose-100">
+              <i class="fa-solid fa-triangle-exclamation text-3xl text-rose-600"></i>
+            </span>
+          </div>
+          <h2 class="m-0 text-2xl font-extrabold text-slate-900">Phát hiện gian lận</h2>
+          <p class="mb-0 mt-3 text-sm leading-relaxed text-slate-500">
+            Bạn đã chuyển tab quá nhiều lần trong quá trình làm bài. Bài thi của bạn đã được tự động nộp.
+          </p>
+          <div class="mt-8 flex flex-col gap-3">
+            <button
+              @click="goToExamsNow"
+              class="w-full rounded-2xl bg-blue-600 px-4 py-4 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-blue-500/25 transition hover:bg-blue-700 active:scale-[0.98]"
+            >
+              Xem kết quả bài thi
+            </button>
+            <router-link to="/exams" class="text-xs font-black uppercase tracking-widest text-slate-400 transition hover:text-blue-600">
+              Về danh sách đề thi
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </transition>
+  </teleport>
 
-          <div>
-            <p class="m-0 text-lg font-extrabold text-slate-900 sm:text-2xl">{{ examTitle || 'Làm bài thi' }}</p>
+<div class="text-slate-900 pb-12 pt-[180px] sm:pt-[150px] max-w-7xl mx-auto px-2 sm:px-4">
+    <!-- Fixed Header -->
+    <div class="fixed top-0 left-0 right-0 z-[60] bg-white/70 backdrop-blur-2xl border-b border-white/50 shadow-2xl shadow-blue-500/5">
+      <div class="max-w-7xl mx-auto w-full flex flex-col">
+        <!-- Header row -->
+        <div class="flex flex-wrap items-center justify-between gap-4 px-6 py-4 sm:px-10">
+          <div class="flex items-center gap-6">
+            <router-link
+              to="/exams"
+              class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-400 shadow-sm transition hover:bg-blue-50 hover:text-blue-600"
+              aria-label="Quay lại"
+            >
+              <i class="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i>
+            </router-link>
+
+            <div>
+              <p class="m-0 text-xl font-black tracking-tight text-slate-900 sm:text-3xl">{{ examTitle || 'Làm bài thi' }}</p>
+            </div>
+
+            <div class="hidden sm:flex items-center gap-3 rounded-2xl bg-blue-50 px-5 py-2.5 shadow-inner">
+              <i class="fa-regular fa-clock text-blue-500 text-lg animate-pulse"></i>
+              <span class="text-xl font-black text-blue-700 tabular-nums">{{ timeLabel }}</span>
+            </div>
           </div>
 
-          <span class="inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-700">
-            <i class="fa-regular fa-clock"></i>
-            {{ timeLabel }}
-          </span>
+          <div class="flex items-center gap-6">
+            <div class="hidden lg:flex items-center gap-4 text-xs font-black uppercase tracking-widest">
+              <p class="m-0 text-slate-400"><span class="text-blue-600 text-base">{{ answeredCount }}</span> Đã làm</p>
+              <p class="m-0 text-slate-400"><span class="text-slate-300 text-base">{{ remainingCount }}</span> Còn lại</p>
+            </div>
+            <button
+              type="button"
+              @click="handleSubmit"
+              :disabled="submitting || !attempt"
+              class="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-blue-600 px-8 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-blue-500/20 transition-all hover:bg-blue-700 active:scale-95 disabled:opacity-50"
+            >
+              <span class="relative z-10">{{ submitting ? 'Đang nộp...' : 'Nộp bài' }}</span>
+              <i class="fa-solid fa-paper-plane text-xs relative z-10 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+            </button>
+          </div>
         </div>
 
-        <div class="flex items-center gap-4 text-sm font-semibold text-slate-600">
-          <p class="m-0"><span class="text-emerald-600">{{ answeredCount }}</span> Đã làm</p>
-          <p class="m-0"><span class="text-slate-400">{{ remainingCount }}</span> Còn lại</p>
-          <button
-            type="button"
-            @click="handleSubmit"
-            :disabled="submitting || !attempt"
-            class="inline-flex items-center rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(16,185,129,0.35)] transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {{ submitting ? 'ĐANG NỘP...' : 'NỘP BÀI' }}
-          </button>
+        <!-- Question Navigation row -->
+        <div class="border-t border-slate-100 bg-slate-50/50 px-6 py-4 sm:px-10 overflow-x-auto">
+          <div class="flex items-center gap-3">
+            <p class="m-0 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mr-4 whitespace-nowrap">Danh sách câu:</p>
+            <div class="flex gap-2">
+              <button
+                v-for="(question, index) in questions"
+                :key="`nav-${question.id}`"
+                type="button"
+                @click="scrollToQuestion(question.id)"
+                :class="[
+                  'h-10 w-10 shrink-0 rounded-xl border text-xs font-black transition-all duration-200 hover:scale-110 active:scale-90',
+                  currentQuestionId === question.id
+                    ? 'border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-500/40'
+                    : answers[question.id]
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-600'
+                      : 'border-slate-200 bg-white text-slate-400 hover:border-blue-200 hover:text-blue-500',
+                ]"
+              >
+                {{ index + 1 }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 sm:px-6">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="m-0 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">CÂU HỎI: PHẦN 1</p>
-        <p class="m-0 text-xs font-semibold text-slate-500">{{ answeredCount }} xong - {{ remainingCount }} còn</p>
-      </div>
-
-      <div class="mt-3 flex flex-wrap items-center gap-2">
-        <button
-          v-for="(question, index) in questions"
-          :key="`nav-${question.id}`"
-          type="button"
-          @click="scrollToQuestion(question.id)"
-          :class="[
-            'h-8 w-8 rounded-full border text-xs font-bold transition',
-            currentQuestionId === question.id
-              ? 'border-sky-500 bg-sky-500 text-white'
-              : answers[question.id]
-                ? 'border-emerald-400 bg-emerald-50 text-emerald-700'
-                : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100',
-          ]"
-        >
-          {{ index + 1 }}
-        </button>
-      </div>
-    </div>
+    <section style="animation: slide-up 600ms cubic-bezier(0.16,1,0.3,1) both">
 
     <div
       v-if="!auth.isAuthenticated"
-      class="liquid-glass liquid-border rounded-2xl border border-amber-300/40 bg-amber-500/10 p-5 text-amber-100"
+      class="card-elevated px-6 py-14 text-center"
     >
-      Bạn cần đăng nhập để bắt đầu làm bài.
+      <div class="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-amber-50 mb-6">
+        <i class="fa-solid fa-user-lock text-amber-500 text-3xl"></i>
+      </div>
+      <h2 class="m-0 text-2xl font-extrabold text-slate-900">Đăng nhập để làm bài</h2>
+      <p class="mb-0 mt-3 text-base text-slate-500 max-w-md mx-auto leading-relaxed">
+        Bạn cần đăng nhập vào tài khoản để bắt đầu làm bài thi này.
+      </p>
     </div>
 
     <div
       v-else-if="loading"
-      class="liquid-glass liquid-border rounded-2xl p-6 text-center text-blue-100"
+      class="animate-pulse space-y-8 mt-8"
     >
-      Đang khởi tạo bài thi...
+      <div v-for="i in 2" :key="i" class="card-elevated p-8 space-y-6">
+        <div class="h-10 w-40 bg-slate-100 rounded-xl"></div>
+        <div class="h-8 w-3/4 bg-slate-100 rounded-lg"></div>
+        <div class="space-y-4 mt-8">
+          <div v-for="j in 4" :key="j" class="h-16 bg-slate-50 rounded-2xl"></div>
+        </div>
+      </div>
     </div>
 
     <div
-      v-else-if="error"
-      class="liquid-glass liquid-border rounded-2xl border border-rose-300/40 bg-rose-500/10 p-5 text-rose-100"
+      v-else-if="error && !isCheating"
+      class="card-elevated border-rose-200 bg-rose-50 p-5 text-rose-700 font-medium rounded-xl"
     >
-      {{ error }}
+      <div class="flex items-start gap-3">
+        <i class="fa-solid fa-circle-exclamation text-rose-500 mt-0.5"></i>
+        <span>{{ error }}</span>
+      </div>
     </div>
 
     <div
       v-if="result"
-      class="liquid-glass liquid-border rounded-2xl border border-emerald-300/35 bg-emerald-500/10 p-5 text-emerald-100"
+      class="card-subtle border-emerald-200 bg-emerald-50 p-5 text-emerald-800"
     >
-      <h3 class="m-0 text-xl font-extrabold">Chúc mừng, bạn đã nộp bài thành công!</h3>
-      <p class="mb-0 mt-2 text-sm text-emerald-100/90">
-        Hệ thống sẽ chuyển bạn về trang danh sách đề sau {{ redirectSeconds ?? 0 }} giây.
+      <h3 class="m-0 text-xl font-bold">Chúc mừng, bạn đã nộp bài thành công!</h3>
+      <p class="mb-0 mt-2 text-sm text-emerald-700">
+        Hệ thống sẽ chuyển bạn sang trang xem lại bài thi sau {{ redirectSeconds ?? 0 }} giây.
       </p>
       <div class="mt-4 flex flex-wrap gap-3">
         <button
           type="button"
           @click="goToExamsNow"
-          class="inline-flex items-center gap-2 rounded-xl border border-emerald-200/60 bg-emerald-400/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-400/30"
+          class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
         >
-          <i class="fa-solid fa-list-check text-xs" aria-hidden="true"></i>
-          Về danh sách đề ngay
+          <i class="fa-solid fa-square-check text-xs" aria-hidden="true"></i>
+          Xem kết quả ngay
         </button>
       </div>
     </div>
 
-    <form v-else-if="attempt" class="space-y-4" @submit.prevent="handleSubmit">
+    <form v-else-if="attempt" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch mt-8" @submit.prevent="handleSubmit">
       <article
         v-for="(question, index) in questions"
         :id="`q-${question.id}`"
         :key="question.id"
-        class="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_6px_20px_rgba(15,23,42,0.05)]"
+        class="animate-slide-up-reveal group flex flex-col h-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-2 transition-all duration-500 hover:border-blue-100 hover:shadow-2xl hover:shadow-blue-500/5"
+        :style="{ animationDelay: `${index * 50}ms` }"
       >
-        <div class="mb-2 flex items-center justify-between gap-3">
-          <p class="m-0 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.08em] text-emerald-600">
-            <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-700">{{ index + 1 }}</span>
+        <div class="flex items-center justify-between gap-3 border-b border-slate-50 px-6 py-5 bg-slate-50/50 rounded-t-[1.75rem]">
+          <p class="m-0 inline-flex items-center gap-3 rounded-xl bg-white px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 shadow-sm border border-slate-100 transition-colors group-hover:text-blue-500">
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-100 text-blue-600 font-black">
+              {{ (index + 1).toString().padStart(2, '0') }}
+            </span>
             Câu hỏi
           </p>
         </div>
 
-        <h2 class="mb-0 mt-2 text-base font-bold leading-relaxed text-slate-800 sm:text-lg">
-          {{ question.content }}
-        </h2>
+        <div class="px-6 py-6 sm:px-8 sm:py-8 flex flex-col grow">
+          <h2 class="m-0 text-lg font-black leading-relaxed text-slate-900 transition-colors group-hover:text-blue-700">
+            {{ question.content }}
+          </h2>
 
-        <div v-if="question.imageUrl" class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-2">
-          <img
-            :src="question.imageUrl"
-            :alt="question.content"
-            class="max-h-[360px] w-full rounded-xl object-contain"
-            loading="lazy"
-          />
-        </div>
-
-        <div v-if="question.options.length" class="mt-4 grid gap-2 sm:grid-cols-2">
-          <label
-            v-for="option in question.options"
-            :key="`${question.id}-${option.value}`"
-            @click="currentQuestionId = question.id"
-            :class="[
-              'flex cursor-pointer items-center gap-3 rounded-xl border px-3 py-2 text-sm transition',
-              isSelected(question.id, option.value)
-                ? 'border-sky-500 bg-sky-50 text-sky-800 shadow-[0_0_0_1px_rgba(14,165,233,0.25)]'
-                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50',
-            ]"
-          >
-            <input
-              v-model="answers[question.id]"
-              :value="option.value"
-              type="radio"
-              :name="`question-${question.id}`"
-              class="h-4 w-4 accent-sky-500"
+          <div v-if="question.imageUrl" class="mt-6 overflow-hidden rounded-[1.5rem] border border-slate-100 bg-slate-50/50 p-3">
+            <img
+              :src="question.imageUrl"
+              :alt="question.content"
+              class="max-h-[360px] w-full rounded-xl object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+              loading="lazy"
             />
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 text-xs font-bold uppercase">
-              {{ String.fromCharCode(65 + question.options.findIndex((x) => x.value === option.value)) }}
-            </span>
-            <span class="font-medium">{{ option.label }}</span>
-          </label>
-        </div>
+          </div>
 
-        <div v-else class="mt-4">
-          <input
-            v-model="answers[question.id]"
-            @focus="currentQuestionId = question.id"
-            type="text"
-            :placeholder="`Nhập đáp án cho câu ${index + 1}`"
-            class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-sky-400"
-          />
+          <div v-if="question.options.length" class="mt-8 space-y-4 grow">
+            <label
+              v-for="option in question.options"
+              :key="`${question.id}-${option.value}`"
+              @click="currentQuestionId = question.id"
+              class="flex cursor-pointer items-center gap-4 rounded-2xl border-2 px-5 py-4 transition-all duration-300"
+              :class="isSelected(question.id, option.value) 
+                ? 'border-blue-500 bg-blue-50/50 shadow-lg shadow-blue-500/5' 
+                : 'border-slate-50 bg-slate-50/30 hover:border-blue-100 hover:bg-white hover:shadow-md'"
+            >
+              <input
+                v-model="answers[question.id]"
+                :value="option.value"
+                type="radio"
+                :name="`question-${question.id}`"
+                class="hidden"
+              />
+              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-black shadow-sm transition-all duration-300"
+                :class="isSelected(question.id, option.value) ? 'bg-blue-600 text-white scale-110' : 'bg-white text-slate-400 border border-slate-100'"
+              >
+                {{ String.fromCharCode(65 + question.options.findIndex((x) => x.value === option.value)) }}
+              </span>
+              <span class="text-base font-bold leading-relaxed grow transition-colors" :class="isSelected(question.id, option.value) ? 'text-blue-900' : 'text-slate-600'">
+                {{ option.label }}
+              </span>
+            </label>
+          </div>
+
+          <div v-else class="mt-8 grow">
+            <textarea
+              v-model="answers[question.id]"
+              @focus="currentQuestionId = question.id"
+              :placeholder="`Nhập đáp án của bạn tại đây...`"
+              class="w-full h-40 rounded-[1.5rem] border-2 border-slate-50 bg-slate-50/30 px-6 py-5 text-base font-bold text-slate-800 outline-none transition-all duration-300 focus:border-blue-500 focus:bg-white focus:shadow-xl focus:shadow-blue-500/5 resize-none"
+            ></textarea>
+          </div>
         </div>
       </article>
     </form>
-
-    <div
-      v-if="result"
-      class="liquid-glass liquid-border rounded-2xl border border-emerald-300/35 bg-emerald-500/10 p-5 text-emerald-100"
-    >
-      <h3 class="m-0 text-lg font-bold">Kết quả bài thi</h3>
-      <div class="mt-3 grid gap-2 text-sm sm:grid-cols-3">
-        <p class="m-0">Mã bài làm: <strong>{{ result.id }}</strong></p>
-        <p class="m-0">Điểm: <strong>{{ result.score ?? '-' }}</strong></p>
-        <p class="m-0">Đúng/Sai: <strong>{{ result.correctCount ?? 0 }}/{{ result.wrongCount ?? 0 }}</strong></p>
-        <p class="m-0">Tổng câu: <strong>{{ result.totalQuestions ?? questions.length }}</strong></p>
-        <p class="m-0">Trạng thái: <strong>{{ result.status ?? 'SUBMITTED' }}</strong></p>
-        <p class="m-0">Thời gian làm: <strong>{{ formatTime(result.durationTaken ?? 0) }}</strong></p>
-      </div>
-    </div>
   </section>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -435,7 +488,11 @@ const clearRedirectTimer = () => {
 
 const goToExamsNow = () => {
   clearRedirectTimer();
-  router.push('/exams');
+  if (result.value?.id) {
+    router.push(`/attempts/${result.value.id}/review`);
+  } else {
+    router.push('/exams');
+  }
 };
 
 const startRedirectCountdown = (seconds = 4) => {

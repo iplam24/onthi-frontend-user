@@ -1,59 +1,68 @@
 <template>
-  <section class="space-y-6">
-    <div class="liquid-glass liquid-border px-6 py-6 sm:px-8 sm:py-7">
-      <h1 class="m-0 text-2xl font-extrabold text-white sm:text-3xl">Chọn môn học</h1>
-      <p class="mb-0 mt-2 text-sm text-blue-100/80 sm:text-base">
-        Khám phá các môn học và xem danh sách đề thi tương ứng.
-      </p>
+  <section class="space-y-6" style="animation: slide-up 600ms cubic-bezier(0.16,1,0.3,1) both">
+    <div class="premium-overlay relative overflow-hidden rounded-2xl bg-gradient-brand px-6 py-6 text-white sm:px-8 sm:py-7 shadow-lg shadow-blue-500/20">
+      <div class="relative z-10">
+        <h1 class="m-0 text-2xl font-bold sm:text-3xl text-white">Chọn môn học</h1>
+        <p class="mb-0 mt-2 text-sm text-white/85 sm:text-base">
+          Khám phá các môn học và xem danh sách đề thi tương ứng.
+        </p>
+      </div>
     </div>
 
-    <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
-      {{ error }}
+    <p v-if="error" class="rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-medium text-rose-700">
+      <i class="fa-solid fa-circle-exclamation mr-2"></i>{{ error }}
     </p>
 
-    <div v-if="loading" class="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600">
-      Đang tải danh sách môn học...
+    <div v-if="loading" class="card-elevated px-5 py-14 text-center">
+      <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-indigo-50 mb-4">
+        <i class="fa-solid fa-spinner animate-spin text-indigo-500 text-2xl"></i>
+      </div>
+      <p class="text-base font-medium text-slate-500 m-0">Đang tải danh sách môn học...</p>
     </div>
 
-    <div v-else-if="!subjectSummaries.length" class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
-      Hiện chưa có môn học nào.
+    <div v-else-if="!subjectSummaries.length" class="card-elevated px-5 py-14 text-center">
+      <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 mb-4">
+        <i class="fa-solid fa-book-open text-slate-400 text-2xl"></i>
+      </div>
+      <p class="text-base font-medium text-slate-500 m-0">Hiện chưa có môn học nào.</p>
     </div>
 
     <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <article
         v-for="subject in subjectSummaries"
         :key="subject.name"
-        class="group rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.04)] transition hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(15,23,42,0.1)]"
+        class="card-subtle-hover group overflow-hidden"
       >
-        <router-link :to="`/exams/subject/${subject.name}`" class="block">
+        <router-link :to="`/exams/subject/${subject.name}`" class="block p-5 h-full flex flex-col">
           <div class="flex items-start justify-between gap-3">
-            <p class="m-0 text-sm font-black uppercase tracking-[0.12em] text-slate-400">{{ subject.levelName }}</p>
+            <p class="m-0 text-xs font-bold uppercase tracking-wider text-slate-400">{{ subject.levelName }}</p>
             <span :class="['mt-1 h-2.5 w-2.5 rounded-full', subject.dotClass]"></span>
           </div>
 
-          <div v-if="subject.imageUrl" class="mt-3">
-            <img :src="subject.imageUrl" :alt="subject.name" class="h-24 w-full object-contain" />
+          <div v-if="subject.imageUrl" class="mt-4 mb-2 flex justify-center">
+            <img :src="subject.imageUrl" :alt="subject.name" class="h-20 w-auto object-contain" />
           </div>
 
-          <h2 class="mb-0 mt-3 text-[2rem] font-extrabold leading-none text-slate-900">{{ subject.name }}</h2>
+          <h2 class="mb-0 mt-2 text-2xl font-bold text-slate-900">{{ subject.name }}</h2>
 
-          <div class="mt-5 space-y-2 text-sm font-semibold text-slate-400">
+          <div class="mt-4 space-y-2 text-sm font-medium text-slate-500 flex-1">
             <p class="m-0 inline-flex items-center gap-2">
               <i class="fa-solid fa-list-check text-xs" aria-hidden="true"></i>
               {{ subject.count }} đề thi
             </p>
+            <br />
             <p class="m-0 inline-flex items-center gap-2">
               <i class="fa-regular fa-clock text-xs" aria-hidden="true"></i>
               Thời gian trung bình: {{ subject.durationLabel }}
             </p>
           </div>
 
-          <div class="mt-6 flex items-center justify-between gap-3">
-            <p class="m-0 text-sm font-bold uppercase tracking-[0.08em] text-sky-500">
+          <div class="mt-6 flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+            <p class="m-0 text-sm font-bold text-indigo-600">
               Xem chi tiết
             </p>
-            <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition group-hover:bg-sky-500 group-hover:text-white">
-              <i class="fa-solid fa-angle-right"></i>
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition group-hover:bg-indigo-600 group-hover:text-white">
+              <i class="fa-solid fa-angle-right text-xs"></i>
             </span>
           </div>
         </router-link>
@@ -93,7 +102,7 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const exams = ref<ExamItem[]>([]);
 const subjects = ref<SubjectItem[]>([]);
-const dotPalette = ['bg-blue-500', 'bg-emerald-500', 'bg-rose-500', 'bg-amber-500', 'bg-cyan-500'];
+const dotPalette = ['bg-blue-500', 'bg-emerald-500', 'bg-sky-500', 'bg-amber-500', 'bg-rose-500'];
 
 const subjectSummaries = computed(() => {
   const map = new Map<string, { count: number; totalDuration: number }>();
