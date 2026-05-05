@@ -1,23 +1,23 @@
 <template>
   <section class="space-y-8 px-3 sm:px-6 max-w-5xl mx-auto pb-12 pt-[140px] sm:pt-[130px]" style="animation: slide-up 700ms cubic-bezier(0.16,1,0.3,1) both">
     <!-- Header -->
-    <div class="fixed top-0 left-0 right-0 z-[60] bg-white/70 backdrop-blur-2xl border-b border-white/50 shadow-2xl shadow-blue-500/5">
+    <div class="fixed top-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-2xl border-b border-white/50 shadow-lg shadow-indigo-500/5">
       <div class="max-w-5xl mx-auto px-6 py-5 sm:px-10 flex flex-wrap gap-4 items-center justify-between">
         <div class="flex items-center gap-5">
-          <div class="relative h-14 w-14 flex items-center justify-center rounded-2xl bg-blue-50">
-            <div class="absolute inset-0 rounded-2xl bg-blue-400/20 blur-lg animate-pulse"></div>
-            <i class="fa-solid fa-file-signature text-blue-600 text-2xl relative z-10"></i>
+          <div class="relative h-14 w-14 flex items-center justify-center rounded-2xl bg-indigo-50">
+            <div class="absolute inset-0 rounded-2xl bg-indigo-400/20 blur-lg animate-pulse"></div>
+            <i class="fa-solid fa-file-signature text-indigo-600 text-2xl relative z-10"></i>
           </div>
           <div>
             <h1 class="m-0 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Xem lại kết quả</h1>
-            <p class="mb-0 mt-1 text-xs font-black uppercase tracking-[0.2em] text-blue-400">
+            <p class="mb-0 mt-1 text-xs font-black uppercase tracking-[0.2em] text-indigo-500">
               Chi tiết bài làm & giải thích
             </p>
           </div>
         </div>
         <router-link
           to="/attempts"
-          class="group inline-flex items-center gap-3 rounded-2xl bg-slate-900 px-6 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-all hover:bg-blue-600 active:scale-95 shadow-xl shadow-slate-900/10"
+          class="group inline-flex items-center gap-3 rounded-2xl bg-slate-900 px-6 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95 shadow-xl shadow-slate-900/10"
         >
           <i class="fa-solid fa-arrow-left-long text-xs transition-transform group-hover:-translate-x-1"></i>
           Về lịch sử
@@ -57,11 +57,11 @@
     <template v-else-if="attempt">
       <!-- Score Card -->
       <!-- Score Card -->
-      <div class="animate-slide-up-reveal stagger-1 overflow-hidden rounded-[2.5rem] bg-white border border-slate-100 shadow-2xl shadow-blue-500/5">
+      <div class="animate-slide-up-reveal stagger-1 overflow-hidden rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-indigo-500/5">
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-50">
           <div class="p-8 sm:p-10 text-center">
             <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Điểm số</p>
-            <p class="text-6xl font-black text-blue-600 m-0 tracking-tighter">{{ attempt.score ?? '-' }}</p>
+            <p class="text-6xl font-black text-indigo-600 m-0 tracking-tighter">{{ attempt.score ?? '-' }}</p>
           </div>
           <div class="p-8 sm:p-10 text-center">
             <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trả lời đúng</p>
@@ -78,8 +78,8 @@
           </div>
           <div class="p-8 sm:p-10 flex flex-col items-center justify-center">
             <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trạng thái</p>
-            <span class="inline-flex items-center gap-2 rounded-xl bg-blue-50 px-5 py-2 text-xs font-black uppercase tracking-widest text-blue-600">
-              <span class="h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
+            <span class="inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-5 py-2 text-xs font-black uppercase tracking-widest text-indigo-600">
+              <span class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
               {{ attempt.status === 'SUBMITTED' ? 'Đã nộp' : (attempt.status || 'Hoàn thành') }}
             </span>
           </div>
@@ -97,7 +97,7 @@
           <article
             v-for="(q, index) in questions"
             :key="q.questionId || index"
-            class="animate-slide-up-reveal group flex flex-col h-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-2 transition-all duration-500 hover:border-blue-100 hover:shadow-2xl hover:shadow-blue-500/5"
+            class="animate-slide-up-reveal group flex flex-col h-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-2 transition-all duration-500 hover:border-indigo-100 hover:shadow-2xl hover:shadow-indigo-500/5"
             :style="{ animationDelay: `${200 + Number(index) * 50}ms` }"
           >
             <!-- Question header -->
@@ -122,7 +122,7 @@
 
             <!-- Question content -->
             <div class="px-6 py-6 sm:px-8 sm:py-8 flex flex-col grow">
-              <p class="text-lg font-black leading-relaxed text-slate-900 transition-colors group-hover:text-blue-700 min-h-[4.5rem] line-clamp-3">
+              <p class="text-lg font-black leading-relaxed text-slate-900 transition-colors group-hover:text-indigo-700 min-h-[4.5rem] line-clamp-3">
                 {{ q.content || q.contentSnapshot || q.questionContent || 'Nội dung câu hỏi' }}
               </p>
 

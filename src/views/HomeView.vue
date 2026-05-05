@@ -1,201 +1,181 @@
 <template>
-  <section class="mx-auto w-full max-w-6xl space-y-12 px-2 sm:px-4">
+  <section class="mx-auto w-full max-w-6xl space-y-16 px-2 sm:px-4">
 
-    <!-- ═══ REFINED ELECTRIC COUNTDOWN (TOP) ═══ -->
+    <!-- ═══ COUNTDOWN BANNER ═══ -->
     <div 
       v-if="auth.isAuthenticated && countdowns.length > 0"
-      class="animate-slide-up-reveal relative overflow-hidden rounded-[2.5rem] bg-[#0f172a] p-0.5 shadow-2xl shadow-blue-500/20"
+      class="animate-slide-up-reveal relative overflow-hidden rounded-[2rem] p-[2px] bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 shadow-2xl shadow-indigo-500/15"
     >
-      <div class="relative overflow-hidden rounded-[2.35rem] bg-gradient-to-br from-indigo-700 via-blue-600 to-rose-600 p-8 sm:p-10 lg:p-12">
-        <!-- Subtle Energy Mesh -->
-        <div class="pointer-events-none absolute -right-10 -top-10 h-80 w-80 rounded-full bg-cyan-400/20 blur-[80px] animate-pulse"></div>
-        <div class="pointer-events-none absolute -left-10 -bottom-10 h-80 w-80 rounded-full bg-rose-500/30 blur-[80px] animate-pulse" style="animation-delay: -2s"></div>
+      <div class="relative overflow-hidden rounded-[calc(2rem-2px)] bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-8 sm:p-10 lg:p-12">
+        <div class="pointer-events-none absolute -right-10 -top-10 h-72 w-72 rounded-full bg-indigo-500/15 blur-[80px] animate-pulse"></div>
+        <div class="pointer-events-none absolute -left-10 -bottom-10 h-72 w-72 rounded-full bg-purple-500/15 blur-[80px] animate-pulse" style="animation-delay: -2s"></div>
+        <div class="pointer-events-none absolute top-1/3 right-12 h-14 w-14 rounded-xl bg-white/5 rotate-12 animate-float-slow"></div>
 
         <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10">
-          <div class="flex-1 text-center lg:text-left space-y-6">
-            <div class="inline-flex items-center gap-3 rounded-full bg-black/40 border border-white/20 px-5 py-2">
-              <span class="relative flex h-2.5 w-2.5">
+          <div class="flex-1 text-center lg:text-left space-y-5">
+            <div class="inline-flex items-center gap-3 rounded-full bg-white/10 border border-white/10 px-5 py-2">
+              <span class="relative flex h-2 w-2">
                 <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
-                <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-rose-500"></span>
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
               </span>
-              <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/90">Đường tới thành công</span>
+              <span class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-white/80">Đường tới thành công</span>
             </div>
-            
-            <div class="space-y-3">
-              <h2 class="m-0 text-3xl font-black text-white sm:text-5xl lg:text-6xl tracking-tighter leading-[1.1]">
-                {{ countdowns[0]?.title }}
-              </h2>
-              <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4">
-                <span class="inline-flex items-center gap-2.5 rounded-xl bg-white/20 px-4 py-2 border border-white/20 text-[10px] font-black uppercase tracking-widest text-white">
-                  <i class="fa-solid fa-graduation-cap text-blue-300"></i>
-                  {{ countdowns[0]?.levelName }}
-                </span>
-                <span class="text-[10px] font-black text-white/70 uppercase tracking-[0.15em] flex items-center gap-2">
-                  <i class="fa-regular fa-calendar-check text-rose-300"></i>
-                  {{ countdowns[0] ? new Date(countdowns[0].examDate).toLocaleDateString('vi-VN', { day: '2-digit', month: 'long', year: 'numeric' }) : '' }}
-                </span>
-              </div>
+            <h2 class="m-0 text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl tracking-tight leading-[1.15]">
+              {{ countdowns[0]?.title }}
+            </h2>
+            <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+              <span class="inline-flex items-center gap-2 rounded-lg bg-white/10 px-3.5 py-1.5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/90">
+                <i class="fa-solid fa-graduation-cap text-indigo-300"></i>
+                {{ countdowns[0]?.levelName }}
+              </span>
+              <span class="text-[10px] font-bold text-white/50 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-regular fa-calendar text-indigo-300/60"></i>
+                {{ countdowns[0] ? new Date(countdowns[0].examDate).toLocaleDateString('vi-VN', { day: '2-digit', month: 'long', year: 'numeric' }) : '' }}
+              </span>
             </div>
           </div>
 
-          <!-- Refined Compact Timer -->
-          <div class="flex flex-col sm:flex-row items-center gap-8">
+          <!-- Days counter -->
+          <div class="flex items-center gap-8">
             <div class="group relative">
-              <div class="absolute -inset-6 rounded-full bg-rose-500/20 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              
-              <div class="relative flex flex-col items-center justify-center h-32 w-32 sm:h-40 sm:w-40 rounded-[2.5rem] bg-white p-1 shadow-2xl transform transition-transform duration-500 hover:scale-105">
-                <div class="flex h-full w-full flex-col items-center justify-center rounded-[2.25rem] bg-black border border-black">
-                  <span class="text-6xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 tracking-tighter leading-none tabular-nums">
-                    {{ countdowns[0] ? calculateDaysRemaining(countdowns[0].examDate) : 0 }}
-                  </span>
-                  <span class="text-[8px] font-black uppercase tracking-[0.3em] text-blue-400 mt-2">Ngày còn lại</span>
-                  
-                  <div v-if="countdowns[0] && calculateDaysRemaining(countdowns[0].examDate) <= 30" class="absolute -top-4 -right-4 h-12 w-12 flex items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-xl animate-bounce">
-                    <i class="fa-solid fa-fire text-lg"></i>
-                  </div>
-                </div>
+              <div class="absolute -inset-4 rounded-3xl bg-indigo-500/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+              <div class="relative h-28 w-28 sm:h-36 sm:w-36 rounded-[1.75rem] bg-white/[0.07] border border-white/10 backdrop-blur-sm flex flex-col items-center justify-center transition-transform duration-500 hover:scale-105">
+                <span class="text-5xl sm:text-6xl font-extrabold text-white tracking-tighter leading-none tabular-nums">
+                  {{ countdowns[0] ? calculateDaysRemaining(countdowns[0].examDate) : 0 }}
+                </span>
+                <span class="text-[8px] font-extrabold uppercase tracking-[0.25em] text-indigo-300 mt-1.5">Ngày còn lại</span>
               </div>
             </div>
-
-            <div class="flex flex-col gap-4">
-              <router-link
-                to="/learning"
-                class="group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-2xl bg-white px-8 py-4 text-[11px] font-black uppercase tracking-widest text-black shadow-xl transition-all hover:bg-rose-500 hover:text-white active:scale-95"
-              >
-                <span class="relative z-10">Ôn tập ngay</span>
-                <i class="fa-solid fa-bolt-lightning text-[10px] relative z-10 transition-transform group-hover:translate-x-1"></i>
-              </router-link>
-              
-              <div v-if="countdowns.length > 1" class="hidden sm:flex flex-col gap-2">
-                 <div 
-                  v-for="item in countdowns.slice(1, 3)" 
-                  :key="item.id"
-                  class="flex items-center gap-4 rounded-xl bg-black/40 border border-white/20 p-2 pr-6 hover:bg-white/10 transition-all cursor-pointer group/item"
-                >
-                  <div class="h-8 w-8 flex items-center justify-center rounded-lg bg-white text-blue-600 font-black text-[10px]">
-                    {{ calculateDaysRemaining(item.examDate) }}
-                  </div>
-                  <div class="space-y-0">
-                    <p class="m-0 text-[10px] font-black text-white truncate max-w-[100px]">{{ item.title }}</p>
-                    <p class="m-0 text-[7px] font-bold text-white/40 uppercase tracking-widest">Sắp đến</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <router-link
+              to="/learning"
+              class="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-white px-7 py-4 text-[11px] font-extrabold uppercase tracking-widest text-slate-900 shadow-xl transition-all hover:shadow-2xl hover:scale-[1.02] active:scale-95"
+            >
+              <span class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-indigo-100 to-transparent transition-transform duration-700 group-hover:translate-x-full skew-x-12"></span>
+              <span class="relative z-10">Ôn tập ngay</span>
+              <i class="fa-solid fa-bolt-lightning text-xs relative z-10 text-indigo-500"></i>
+            </router-link>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ═══ HERO ═══ -->
-    <div
-      class="hero-section premium-overlay relative overflow-hidden rounded-[2.5rem] p-10 sm:p-16 lg:p-24 shadow-2xl shadow-blue-500/20 bg-gradient-brand"
-    >
-      <!-- Artistic Background Elements -->
-      <div class="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full bg-white/10 blur-[100px] animate-pulse"></div>
-      <div class="pointer-events-none absolute -bottom-32 left-1/4 h-[500px] w-[500px] rounded-full bg-blue-400/20 blur-[120px]"></div>
-      
-      <!-- Floating Shapes -->
-      <div class="absolute top-1/4 right-10 h-16 w-16 bg-white/10 rounded-2xl rotate-12 animate-float"></div>
-      <div class="absolute bottom-1/4 left-10 h-12 w-12 bg-white/5 rounded-full animate-float" style="animation-delay: -2s"></div>
+    <!-- ═══ HERO SECTION ═══ -->
+    <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-brand shadow-2xl shadow-indigo-500/12">
+      <!-- Decorative elements -->
+      <div class="pointer-events-none absolute -right-20 -top-20 h-[500px] w-[500px] rounded-full bg-white/8 blur-[120px]"></div>
+      <div class="pointer-events-none absolute -bottom-32 left-1/4 h-[400px] w-[400px] rounded-full bg-cyan-400/10 blur-[100px]"></div>
+      <div class="pointer-events-none absolute top-1/4 right-[10%] h-20 w-20 rounded-2xl bg-white/8 rotate-12 animate-float-slow"></div>
+      <div class="pointer-events-none absolute bottom-1/4 left-[8%] h-12 w-12 rounded-full bg-white/5 animate-float" style="animation-delay:-2s"></div>
 
-      <div class="relative z-10 max-w-4xl space-y-8 text-center sm:text-left">
-        <span class="animate-slide-up-reveal inline-flex items-center gap-2.5 rounded-full border border-white/30 bg-white/20 px-5 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-white">
-          <span class="relative flex h-2 w-2">
-            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-200 opacity-75"></span>
-            <span class="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
+      <div class="relative z-10 flex flex-col lg:flex-row items-center gap-12 p-10 sm:p-16 lg:p-20">
+        <!-- Text -->
+        <div class="flex-1 text-center lg:text-left space-y-8 max-w-2xl">
+          <span class="animate-slide-up-reveal inline-flex items-center gap-2.5 rounded-full border border-white/25 bg-white/15 px-5 py-2 text-[10px] font-extrabold uppercase tracking-[0.25em] text-white backdrop-blur-sm">
+            <span class="relative flex h-2 w-2">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-300 opacity-75"></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
+            </span>
+            Next-Gen Education
           </span>
-          Next-Gen Education
-        </span>
 
-        <h1 class="animate-slide-up-reveal stagger-1 m-0 text-5xl font-black leading-[1.05] tracking-tight text-white sm:text-7xl lg:text-8xl">
-          Học thông minh,
-          <br class="hidden sm:block" />
-          <span class="bg-gradient-to-r from-blue-100 to-white bg-clip-text text-transparent">vươn tới tầm cao</span>
-        </h1>
+          <h1 class="animate-slide-up-reveal stagger-1 m-0 text-5xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
+            Học thông minh,
+            <br class="hidden sm:block" />
+            <span class="bg-gradient-to-r from-cyan-200 via-white to-indigo-200 bg-clip-text text-transparent">vươn tới tầm cao</span>
+          </h1>
 
-        <p class="animate-slide-up-reveal stagger-2 m-0 max-w-2xl text-lg leading-relaxed text-white/95 sm:text-xl font-medium">
-          Trải nghiệm nền tảng luyện thi cá nhân hóa với công nghệ vượt trội, giúp bạn bứt phá giới hạn và đạt kết quả tối ưu.
-        </p>
+          <p class="animate-slide-up-reveal stagger-2 m-0 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg font-medium">
+            Trải nghiệm nền tảng luyện thi cá nhân hóa với công nghệ vượt trội, giúp bạn bứt phá giới hạn.
+          </p>
 
-        <div class="animate-slide-up-reveal stagger-3 flex flex-wrap justify-center sm:justify-start gap-5 pt-4">
-          <router-link
-            to="/exams"
-            class="group inline-flex items-center gap-3 rounded-2xl bg-white px-10 py-5 text-sm font-black uppercase tracking-widest text-blue-600 shadow-xl shadow-blue-900/10 transition-all hover:scale-105 hover:-translate-y-1 active:scale-95"
-          >
-            Bắt đầu ngay
-            <i class="fa-solid fa-bolt-lightning text-xs transition-transform group-hover:rotate-12"></i>
-          </router-link>
-          <router-link
-            to="/learning"
-            class="inline-flex items-center gap-3 rounded-2xl border border-white/40 bg-white/20 px-10 py-5 text-sm font-black uppercase tracking-widest text-white transition-all hover:bg-white/30 active:scale-95"
-          >
-            Tìm hiểu thêm
-          </router-link>
+          <div class="animate-slide-up-reveal stagger-3 flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
+            <router-link
+              to="/exams"
+              class="group inline-flex items-center gap-3 rounded-2xl bg-white px-8 py-4 text-sm font-extrabold uppercase tracking-widest text-indigo-600 shadow-xl shadow-indigo-900/10 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-2xl active:scale-95"
+            >
+              Bắt đầu ngay
+              <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+            </router-link>
+            <router-link
+              to="/learning"
+              class="inline-flex items-center gap-3 rounded-2xl border border-white/30 bg-white/10 backdrop-blur-sm px-8 py-4 text-sm font-extrabold uppercase tracking-widest text-white transition-all duration-300 hover:bg-white/20 hover:border-white/50 active:scale-95"
+            >
+              Tìm hiểu thêm
+            </router-link>
+          </div>
+        </div>
+
+        <!-- Hero Image -->
+        <div class="animate-slide-up-reveal stagger-3 flex-shrink-0 hidden lg:block">
+          <img
+            src="@/asset/illustrations/hero-studying.png"
+            alt="Students studying"
+            class="h-[340px] w-auto drop-shadow-2xl animate-float-slow"
+          />
         </div>
       </div>
     </div>
-
-
 
     <!-- ═══ STATS ═══ -->
-    <div
-      class="animate-slide-up-reveal stagger-2 overflow-hidden rounded-[2.5rem] bg-white p-10 sm:p-16 border border-gray-100 shadow-xl shadow-gray-200/40"
-    >
-      <div class="flex flex-wrap items-end justify-between gap-8 mb-16">
+    <div class="animate-slide-up-reveal stagger-2 overflow-hidden rounded-[2.5rem] bg-white p-10 sm:p-14 border border-slate-100/80 shadow-xl shadow-slate-200/20">
+      <div class="flex flex-wrap items-end justify-between gap-8 mb-14">
         <div class="max-w-2xl">
-          <p class="text-blue-600 font-black uppercase tracking-widest text-[10px] mb-3">Live Statistics</p>
-          <h2 class="m-0 text-3xl font-black text-black sm:text-5xl tracking-tight">
-            Nơi hàng ngàn tài năng<br/><span class="text-blue-600">tỏa sáng mỗi ngày</span>
+          <p class="text-indigo-600 font-extrabold uppercase tracking-widest text-[10px] mb-3 flex items-center gap-2.5">
+            <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
+            Live Statistics
+          </p>
+          <h2 class="m-0 text-3xl font-extrabold text-slate-900 sm:text-4xl tracking-tight">
+            Nơi hàng ngàn tài năng <span class="text-indigo-600">tỏa sáng</span>
           </h2>
         </div>
         <button
           type="button"
-          class="inline-flex h-12 items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50/50 px-6 text-xs font-black uppercase tracking-widest text-blue-600 transition-all hover:bg-blue-600 hover:text-white"
+          class="btn-secondary text-xs font-extrabold uppercase tracking-widest"
           :disabled="statsLoading"
           @click="loadDashboardStats"
         >
-          <i :class="['fa-solid fa-rotate-right', statsLoading ? 'animate-spin' : '']"></i>
+          <i :class="['fa-solid fa-rotate-right transition-transform', statsLoading ? 'animate-spin' : 'group-hover:rotate-180']"></i>
           Cập nhật
         </button>
       </div>
 
-      <!-- Hero stats grid -->
-      <div class="grid gap-8 md:grid-cols-3">
+      <div class="grid gap-6 sm:grid-cols-3">
         <article
           v-for="(item, idx) in heroStats"
           :key="item.key"
-          class="group relative p-8 rounded-3xl border border-transparent hover:border-blue-100 transition-all duration-500"
+          class="group relative overflow-hidden rounded-2xl p-8 border border-transparent transition-all duration-500 hover:border-indigo-100 hover:bg-indigo-50/30"
         >
-          <div class="absolute inset-0 bg-blue-50/0 rounded-3xl transition-colors group-hover:bg-blue-50/30"></div>
+          <div class="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-indigo-100/0 transition-all duration-700 group-hover:bg-indigo-100/50 group-hover:scale-[2]"></div>
           <div class="relative z-10">
-            <p class="m-0 text-[10px] font-black uppercase tracking-widest text-gray-400">{{ item.label }}</p>
-            <p class="mb-0 mt-4 text-6xl font-black text-black tracking-tighter group-hover:text-blue-600 transition-colors">
-              {{ formatNumber(item.value) }}<span class="text-blue-400">+</span>
+            <p class="m-0 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{{ item.label }}</p>
+            <p class="mb-0 mt-3 text-5xl font-extrabold text-slate-900 tracking-tighter group-hover:text-indigo-600 transition-colors duration-500 tabular-nums">
+              {{ formatNumber(item.value) }}<span class="text-indigo-300 text-3xl ml-0.5">+</span>
             </p>
-            <p class="mb-0 mt-3 text-sm font-medium text-black/60">{{ item.caption }}</p>
+            <p class="mb-0 mt-2 text-sm font-medium text-slate-500">{{ item.caption }}</p>
           </div>
         </article>
       </div>
     </div>
 
     <!-- ═══ FEATURES ═══ -->
-    <div class="grid gap-8 md:grid-cols-3">
+    <div class="grid gap-6 md:grid-cols-3">
       <article
         v-for="(feature, idx) in features"
         :key="feature.title"
-        class="animate-slide-up-reveal group relative overflow-hidden rounded-[2.5rem] bg-white p-10 border border-gray-100 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2"
-        :style="{ animationDelay: `${0.4 + Number(idx) * 0.1}s` }"
+        class="animate-slide-up-reveal group relative overflow-hidden rounded-[2rem] bg-white p-9 border border-slate-100/80 transition-all duration-500 hover:shadow-2xl hover:shadow-indigo-500/6 hover:-translate-y-2 hover:border-indigo-100"
+        :style="{ animationDelay: `${0.3 + Number(idx) * 0.1}s` }"
       >
-        <div :class="['mb-8 inline-flex h-16 w-16 items-center justify-center rounded-2xl transition-transform duration-500 group-hover:rotate-[10deg] group-hover:scale-110 shadow-lg', feature.bgClass]">
-          <i :class="[feature.icon, 'text-2xl', feature.textClass]"></i>
+        <div class="absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-0 transition-all duration-700 group-hover:opacity-100 group-hover:scale-[2.5]" :class="feature.glowBg"></div>
+
+        <div :class="['relative z-10 mb-7 inline-flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-500 group-hover:rotate-6 group-hover:scale-110 shadow-lg', feature.bgClass]">
+          <i :class="[feature.icon, 'text-xl', feature.textClass]"></i>
         </div>
-        <h3 class="m-0 text-xl font-black tracking-tight text-black">{{ feature.title }}</h3>
-        <p class="mb-0 mt-4 text-sm font-medium leading-relaxed text-black/80">{{ feature.description }}</p>
-        
-        <div class="mt-8 pt-8 border-t border-gray-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <span class="text-xs font-black uppercase tracking-widest text-blue-600 inline-flex items-center gap-2">
-            Khám phá ngay <i class="fa-solid fa-arrow-right"></i>
+        <h3 class="m-0 text-lg font-extrabold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">{{ feature.title }}</h3>
+        <p class="mb-0 mt-3 text-sm font-medium leading-relaxed text-slate-500">{{ feature.description }}</p>
+
+        <div class="mt-7 pt-6 border-t border-slate-50 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+          <span class="text-xs font-extrabold uppercase tracking-widest text-indigo-600 inline-flex items-center gap-2">
+            Khám phá <i class="fa-solid fa-arrow-right text-[10px] transition-transform group-hover:translate-x-1"></i>
           </span>
         </div>
       </article>
@@ -210,8 +190,6 @@ import { getDashboardStatistics, type DashboardStatistics } from '@/services/sta
 import { getCountdowns, type CountdownItem } from '@/services/countdownService';
 import { useAuthStore } from '@/stores/auth';
 
-const trustBadges = ['Miễn phí hoàn toàn', 'Không cần cài đặt', 'Cập nhật liên tục'];
-
 const features = [
   {
     icon: 'fa-solid fa-route',
@@ -219,8 +197,7 @@ const features = [
     description: 'Học theo chuyên đề, theo dõi phần đã hoàn thành và tập trung cải thiện điểm yếu một cách hiệu quả.',
     bgClass: 'bg-indigo-100',
     textClass: 'text-indigo-600',
-    gradientClass: 'bg-gradient-to-br from-indigo-50/80 to-transparent',
-    shadowClass: 'group-hover:shadow-indigo-200',
+    glowBg: 'bg-indigo-50',
   },
   {
     icon: 'fa-solid fa-file-signature',
@@ -228,29 +205,21 @@ const features = [
     description: 'Kho đề phân loại theo cấp độ, chấm điểm tự động và phản hồi chi tiết từng câu hỏi.',
     bgClass: 'bg-emerald-100',
     textClass: 'text-emerald-600',
-    gradientClass: 'bg-gradient-to-br from-emerald-50/80 to-transparent',
-    shadowClass: 'group-hover:shadow-emerald-200',
+    glowBg: 'bg-emerald-50',
   },
   {
     icon: 'fa-solid fa-chart-line',
     title: 'Theo dõi tiến độ',
-    description: 'Biểu đồ thống kê trực quan giúp bạn nắm rõ sự tiến bộ và định hướng ôn tập thông minh hơn.',
+    description: 'Biểu đồ thống kê trực quan giúp bạn nắm rõ sự tiến bộ và ôn tập thông minh hơn.',
     bgClass: 'bg-amber-100',
     textClass: 'text-amber-600',
-    gradientClass: 'bg-gradient-to-br from-amber-50/80 to-transparent',
-    shadowClass: 'group-hover:shadow-amber-200',
+    glowBg: 'bg-amber-50',
   },
 ];
 
 const createDefaultStats = (): DashboardStatistics => ({
-  totalUsers: 0,
-  newUsersToday: 0,
-  totalQuestions: 0,
-  totalExams: 0,
-  totalAttempts: 0,
-  totalSubjects: 0,
-  totalLevels: 0,
-  totalTopics: 0,
+  totalUsers: 0, newUsersToday: 0, totalQuestions: 0, totalExams: 0,
+  totalAttempts: 0, totalSubjects: 0, totalLevels: 0, totalTopics: 0,
 });
 
 const statsLoading = ref(false);
@@ -258,51 +227,23 @@ const statsError = ref<string | null>(null);
 const dashboardStats = ref<DashboardStatistics>(createDefaultStats());
 const animatedStats = ref<DashboardStatistics>(createDefaultStats());
 const animationFrameIds = new Set<number>();
-
 const auth = useAuthStore();
 const countdowns = ref<CountdownItem[]>([]);
-const countdownLoading = ref(false);
 
 const calculateDaysRemaining = (dateString: string) => {
   const diff = new Date(dateString).getTime() - new Date().setHours(0, 0, 0, 0);
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
 };
 
 const heroStats = computed(() => [
-  {
-    key: 'totalUsers',
-    label: 'Học sinh',
-    value: animatedStats.value.totalUsers,
-    caption: 'đang ôn luyện cùng hệ thống',
-  },
-  {
-    key: 'totalAttempts',
-    label: 'Lượt làm bài',
-    value: animatedStats.value.totalAttempts,
-    caption: 'đã hoàn thành thành công',
-  },
-  {
-    key: 'totalQuestions',
-    label: 'Câu hỏi',
-    value: animatedStats.value.totalQuestions,
-    caption: 'sẵn sàng cho bạn luyện tập',
-  },
-]);
-
-const secondaryStats = computed(() => [
-  { key: 'totalExams', label: 'Đề thi', value: animatedStats.value.totalExams, icon: 'fa-solid fa-file-pen' },
-  { key: 'totalSubjects', label: 'Môn học', value: animatedStats.value.totalSubjects, icon: 'fa-solid fa-book-open' },
-  { key: 'totalLevels', label: 'Cấp học', value: animatedStats.value.totalLevels, icon: 'fa-solid fa-layer-group' },
-  { key: 'totalTopics', label: 'Chuyên đề', value: animatedStats.value.totalTopics, icon: 'fa-solid fa-lightbulb' },
-  { key: 'newUsersToday', label: 'Mới hôm nay', value: animatedStats.value.newUsersToday, icon: 'fa-solid fa-user-plus' },
+  { key: 'totalUsers', label: 'Học sinh', value: animatedStats.value.totalUsers, caption: 'đang ôn luyện cùng hệ thống' },
+  { key: 'totalAttempts', label: 'Lượt làm bài', value: animatedStats.value.totalAttempts, caption: 'đã hoàn thành thành công' },
+  { key: 'totalQuestions', label: 'Câu hỏi', value: animatedStats.value.totalQuestions, caption: 'sẵn sàng cho bạn luyện tập' },
 ]);
 
 const formatNumber = (value: number) => new Intl.NumberFormat('vi-VN').format(Number(value) || 0);
 
-const stopCounterAnimations = () => {
-  for (const id of animationFrameIds) cancelAnimationFrame(id);
-  animationFrameIds.clear();
-};
+const stopCounterAnimations = () => { for (const id of animationFrameIds) cancelAnimationFrame(id); animationFrameIds.clear(); };
 
 const animateNumber = (key: keyof DashboardStatistics, fromValue: number, toValue: number, delayMs: number) => {
   const startAt = performance.now() + delayMs;
@@ -327,15 +268,10 @@ const animateDashboardStats = (nextStats: DashboardStatistics) => {
 
 const loadCountdowns = async () => {
   if (!auth.isAuthenticated) return;
-  countdownLoading.value = true;
   try {
     const response = await getCountdowns();
     countdowns.value = response.data?.data || [];
-  } catch (error) {
-    console.error('Failed to load countdowns:', error);
-  } finally {
-    countdownLoading.value = false;
-  }
+  } catch (error) { console.error('Failed to load countdowns:', error); }
 };
 
 const loadDashboardStats = async () => {
@@ -345,26 +281,16 @@ const loadDashboardStats = async () => {
     const response = await getDashboardStatistics();
     const payload = response.data?.data ?? {};
     dashboardStats.value = {
-      totalUsers: Number(payload.totalUsers) || 0,
-      newUsersToday: Number(payload.newUsersToday) || 0,
-      totalQuestions: Number(payload.totalQuestions) || 0,
-      totalExams: Number(payload.totalExams) || 0,
-      totalAttempts: Number(payload.totalAttempts) || 0,
-      totalSubjects: Number(payload.totalSubjects) || 0,
-      totalLevels: Number(payload.totalLevels) || 0,
-      totalTopics: Number(payload.totalTopics) || 0,
+      totalUsers: Number(payload.totalUsers) || 0, newUsersToday: Number(payload.newUsersToday) || 0,
+      totalQuestions: Number(payload.totalQuestions) || 0, totalExams: Number(payload.totalExams) || 0,
+      totalAttempts: Number(payload.totalAttempts) || 0, totalSubjects: Number(payload.totalSubjects) || 0,
+      totalLevels: Number(payload.totalLevels) || 0, totalTopics: Number(payload.totalTopics) || 0,
     };
     animateDashboardStats(dashboardStats.value);
-  } catch (error) {
-    statsError.value = 'Không thể tải thống kê hệ thống. Vui lòng thử lại.';
-  } finally {
-    statsLoading.value = false;
-  }
+  } catch (error) { statsError.value = 'Không thể tải thống kê.'; }
+  finally { statsLoading.value = false; }
 };
 
-onMounted(() => {
-  void loadDashboardStats();
-  void loadCountdowns();
-});
+onMounted(() => { void loadDashboardStats(); void loadCountdowns(); });
 onBeforeUnmount(() => stopCounterAnimations());
 </script>

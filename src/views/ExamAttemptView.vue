@@ -24,11 +24,11 @@
           <div class="mt-8 flex flex-col gap-3">
             <button
               @click="goToExamsNow"
-              class="w-full rounded-2xl bg-blue-600 px-4 py-4 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-blue-500/25 transition hover:bg-blue-700 active:scale-[0.98]"
+              class="w-full rounded-2xl bg-indigo-600 px-4 py-4 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-indigo-500/25 transition hover:bg-indigo-700 active:scale-[0.98]"
             >
               Xem kết quả bài thi
             </button>
-            <router-link to="/exams" class="text-xs font-black uppercase tracking-widest text-slate-400 transition hover:text-blue-600">
+            <router-link to="/exams" class="text-xs font-black uppercase tracking-widest text-slate-400 transition hover:text-indigo-600">
               Về danh sách đề thi
             </router-link>
           </div>
@@ -39,14 +39,14 @@
 
 <div class="text-slate-900 pb-12 pt-[180px] sm:pt-[150px] max-w-7xl mx-auto px-2 sm:px-4">
     <!-- Fixed Header -->
-    <div class="fixed top-0 left-0 right-0 z-[60] bg-white/70 backdrop-blur-2xl border-b border-white/50 shadow-2xl shadow-blue-500/5">
+    <div class="fixed top-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-2xl border-b border-white/50 shadow-lg shadow-indigo-500/5">
       <div class="max-w-7xl mx-auto w-full flex flex-col">
         <!-- Header row -->
         <div class="flex flex-wrap items-center justify-between gap-4 px-6 py-4 sm:px-10">
           <div class="flex items-center gap-6">
             <router-link
               to="/exams"
-              class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-400 shadow-sm transition hover:bg-blue-50 hover:text-blue-600"
+              class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-400 shadow-sm transition-all duration-300 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200"
               aria-label="Quay lại"
             >
               <i class="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i>
@@ -56,22 +56,22 @@
               <p class="m-0 text-xl font-black tracking-tight text-slate-900 sm:text-3xl">{{ examTitle || 'Làm bài thi' }}</p>
             </div>
 
-            <div class="hidden sm:flex items-center gap-3 rounded-2xl bg-blue-50 px-5 py-2.5 shadow-inner">
-              <i class="fa-regular fa-clock text-blue-500 text-lg animate-pulse"></i>
-              <span class="text-xl font-black text-blue-700 tabular-nums">{{ timeLabel }}</span>
+            <div class="hidden sm:flex items-center gap-3 rounded-2xl bg-indigo-50 px-5 py-2.5 shadow-inner">
+              <i class="fa-regular fa-clock text-indigo-500 text-lg animate-pulse"></i>
+              <span class="text-xl font-black text-indigo-700 tabular-nums">{{ timeLabel }}</span>
             </div>
           </div>
 
           <div class="flex items-center gap-6">
             <div class="hidden lg:flex items-center gap-4 text-xs font-black uppercase tracking-widest">
-              <p class="m-0 text-slate-400"><span class="text-blue-600 text-base">{{ answeredCount }}</span> Đã làm</p>
+              <p class="m-0 text-slate-500"><span class="text-indigo-600 text-base">{{ answeredCount }}</span> Đã làm</p>
               <p class="m-0 text-slate-400"><span class="text-slate-300 text-base">{{ remainingCount }}</span> Còn lại</p>
             </div>
             <button
               type="button"
               @click="handleSubmit"
               :disabled="submitting || !attempt"
-              class="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-blue-600 px-8 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-blue-500/20 transition-all hover:bg-blue-700 active:scale-95 disabled:opacity-50"
+              class="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-indigo-600 px-8 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-indigo-500/20 transition-all hover:bg-indigo-700 active:scale-95 disabled:opacity-50"
             >
               <span class="relative z-10">{{ submitting ? 'Đang nộp...' : 'Nộp bài' }}</span>
               <i class="fa-solid fa-paper-plane text-xs relative z-10 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
@@ -92,10 +92,10 @@
                 :class="[
                   'h-10 w-10 shrink-0 rounded-xl border text-xs font-black transition-all duration-200 hover:scale-110 active:scale-90',
                   currentQuestionId === question.id
-                    ? 'border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-500/40'
+                    ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-500/40'
                     : answers[question.id]
                       ? 'border-emerald-200 bg-emerald-50 text-emerald-600'
-                      : 'border-slate-200 bg-white text-slate-400 hover:border-blue-200 hover:text-blue-500',
+                      : 'border-slate-200 bg-white text-slate-400 hover:border-indigo-200 hover:text-indigo-500',
                 ]"
               >
                 {{ index + 1 }}
@@ -164,25 +164,25 @@
       </div>
     </div>
 
-    <form v-else-if="attempt" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch mt-8" @submit.prevent="handleSubmit">
+    <form v-else-if="attempt" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch mt-8" @submit.prevent="handleSubmit">
       <article
         v-for="(question, index) in questions"
         :id="`q-${question.id}`"
         :key="question.id"
-        class="animate-slide-up-reveal group flex flex-col h-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-2 transition-all duration-500 hover:border-blue-100 hover:shadow-2xl hover:shadow-blue-500/5"
-        :style="{ animationDelay: `${index * 50}ms` }"
+        class="animate-slide-up-reveal group flex flex-col h-full overflow-hidden rounded-[2rem] border border-slate-100/80 bg-white transition-all duration-500 hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5"
+        :style="{ animationDelay: `${index * 40}ms` }"
       >
-        <div class="flex items-center justify-between gap-3 border-b border-slate-50 px-6 py-5 bg-slate-50/50 rounded-t-[1.75rem]">
-          <p class="m-0 inline-flex items-center gap-3 rounded-xl bg-white px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 shadow-sm border border-slate-100 transition-colors group-hover:text-blue-500">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-100 text-blue-600 font-black">
+        <div class="flex items-center justify-between gap-3 border-b border-slate-50 px-6 py-4 bg-slate-50/30">
+          <p class="m-0 inline-flex items-center gap-3 rounded-lg bg-white px-3.5 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-400 shadow-sm border border-slate-100 transition-colors group-hover:text-indigo-500">
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 font-extrabold">
               {{ (index + 1).toString().padStart(2, '0') }}
             </span>
             Câu hỏi
           </p>
         </div>
 
-        <div class="px-6 py-6 sm:px-8 sm:py-8 flex flex-col grow">
-          <h2 class="m-0 text-lg font-black leading-relaxed text-slate-900 transition-colors group-hover:text-blue-700">
+        <div class="px-6 py-5 sm:px-7 sm:py-6 flex flex-col grow">
+          <h2 class="m-0 text-base font-bold leading-relaxed text-slate-800 transition-colors group-hover:text-indigo-700">
             {{ question.content }}
           </h2>
 
@@ -200,10 +200,10 @@
               v-for="option in question.options"
               :key="`${question.id}-${option.value}`"
               @click="currentQuestionId = question.id"
-              class="flex cursor-pointer items-center gap-4 rounded-2xl border-2 px-5 py-4 transition-all duration-300"
+              class="flex cursor-pointer items-center gap-4 rounded-2xl border-2 px-5 py-3.5 transition-all duration-300"
               :class="isSelected(question.id, option.value) 
-                ? 'border-blue-500 bg-blue-50/50 shadow-lg shadow-blue-500/5' 
-                : 'border-slate-50 bg-slate-50/30 hover:border-blue-100 hover:bg-white hover:shadow-md'"
+                ? 'border-indigo-400 bg-indigo-50/40 shadow-md shadow-indigo-500/5' 
+                : 'border-slate-100 bg-slate-50/20 hover:border-indigo-200 hover:bg-white hover:shadow-sm'"
             >
               <input
                 v-model="answers[question.id]"
@@ -212,12 +212,12 @@
                 :name="`question-${question.id}`"
                 class="hidden"
               />
-              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-black shadow-sm transition-all duration-300"
-                :class="isSelected(question.id, option.value) ? 'bg-blue-600 text-white scale-110' : 'bg-white text-slate-400 border border-slate-100'"
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-extrabold shadow-sm transition-all duration-300"
+                :class="isSelected(question.id, option.value) ? 'bg-indigo-600 text-white scale-105' : 'bg-white text-slate-400 border border-slate-100'"
               >
                 {{ String.fromCharCode(65 + question.options.findIndex((x) => x.value === option.value)) }}
               </span>
-              <span class="text-base font-bold leading-relaxed grow transition-colors" :class="isSelected(question.id, option.value) ? 'text-blue-900' : 'text-slate-600'">
+              <span class="text-sm font-semibold leading-relaxed grow transition-colors" :class="isSelected(question.id, option.value) ? 'text-indigo-900' : 'text-slate-600'">
                 {{ option.label }}
               </span>
             </label>
@@ -228,7 +228,7 @@
               v-model="answers[question.id]"
               @focus="currentQuestionId = question.id"
               :placeholder="`Nhập đáp án của bạn tại đây...`"
-              class="w-full h-40 rounded-[1.5rem] border-2 border-slate-50 bg-slate-50/30 px-6 py-5 text-base font-bold text-slate-800 outline-none transition-all duration-300 focus:border-blue-500 focus:bg-white focus:shadow-xl focus:shadow-blue-500/5 resize-none"
+              class="w-full h-40 rounded-2xl border-2 border-slate-100 bg-slate-50/30 px-6 py-5 text-sm font-semibold text-slate-800 outline-none transition-all duration-300 focus:border-indigo-400 focus:bg-white focus:shadow-lg focus:shadow-indigo-500/5 resize-none"
             ></textarea>
           </div>
         </div>

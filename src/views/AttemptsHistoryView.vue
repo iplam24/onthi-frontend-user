@@ -1,123 +1,167 @@
 <template>
-  <section class="space-y-6 max-w-5xl mx-auto px-2 sm:px-4" style="animation: slide-up 600ms cubic-bezier(0.16,1,0.3,1) both">
-    <div class="relative overflow-hidden rounded-[2rem] bg-white border border-slate-100 p-8 sm:p-12 shadow-2xl shadow-blue-500/5">
-      <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-blue-50 blur-3xl opacity-50 animate-pulse"></div>
-      <div class="relative flex flex-wrap gap-6 items-center justify-between">
-        <div>
-          <h1 class="m-0 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Lịch sử rèn luyện</h1>
-          <p class="mb-0 mt-4 text-sm font-black uppercase tracking-[0.2em] text-blue-400">
-            Hành trình chinh phục tri thức của bạn
+  <section class="space-y-10 max-w-5xl mx-auto px-2 sm:px-4" style="animation: slide-up 650ms cubic-bezier(0.16,1,0.3,1) both">
+
+    <!-- Header with illustration -->
+    <div class="relative overflow-hidden rounded-[2.5rem] bg-white border border-slate-100/80 p-8 sm:p-12 shadow-xl shadow-slate-200/20">
+      <div class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-indigo-50/60 blur-3xl"></div>
+      <div class="flex flex-col sm:flex-row items-center gap-8 sm:gap-12">
+        <div class="flex-1 min-w-0">
+          <div class="inline-flex items-center gap-2.5 rounded-full bg-indigo-50 border border-indigo-100 px-4 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-indigo-600 mb-5">
+            <i class="fa-solid fa-clock-rotate-left text-[10px]"></i>
+            Lịch sử rèn luyện
+          </div>
+          <h1 class="m-0 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Hành trình học tập</h1>
+          <p class="mb-0 mt-3 text-sm font-medium text-slate-500 leading-relaxed max-w-md">
+            Theo dõi tiến trình chinh phục tri thức của bạn qua từng bài thi.
           </p>
         </div>
-        <div class="h-16 w-16 flex items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-inner">
-          <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
+        <div class="shrink-0 hidden sm:block">
+          <img 
+            src="@/asset/illustrations/history-tracking.png" 
+            alt="History tracking" 
+            class="h-36 w-auto drop-shadow-lg animate-float-slow"
+          />
         </div>
       </div>
     </div>
 
+    <!-- Not authenticated -->
     <div
       v-if="!auth.isAuthenticated"
-      class="animate-slide-up-reveal card-elevated px-6 py-24 text-center bg-white rounded-[2.5rem] border-slate-100 shadow-2xl shadow-blue-500/5"
+      class="animate-slide-up-reveal card-elevated px-6 py-20 text-center"
     >
-      <div class="relative inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-50 mb-6">
-        <div class="absolute inset-0 rounded-2xl bg-blue-400/20 blur-xl animate-pulse"></div>
-        <i class="fa-solid fa-user-lock text-blue-500 text-3xl relative z-10"></i>
+      <div class="relative inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-indigo-50 mb-6">
+        <i class="fa-solid fa-user-lock text-indigo-400 text-3xl"></i>
       </div>
-      <h2 class="m-0 text-2xl font-black text-slate-900">Đăng nhập để xem lịch sử</h2>
-      <p class="mb-0 mt-3 text-sm font-medium text-slate-400 max-w-md mx-auto leading-relaxed">
+      <h2 class="m-0 text-2xl font-extrabold text-slate-900">Đăng nhập để xem lịch sử</h2>
+      <p class="mb-0 mt-3 text-sm font-medium text-slate-500 max-w-md mx-auto">
         Bạn cần đăng nhập để theo dõi quá trình rèn luyện của mình.
       </p>
     </div>
 
     <div v-else class="space-y-8">
-      <div class="flex flex-wrap items-center justify-between gap-6 px-4">
-        <p class="m-0 text-xs font-black uppercase tracking-widest text-slate-400">
-          Tổng cộng: <strong class="text-blue-600 text-base">{{ pagination.totalElements }}</strong> bài làm
+      <!-- Toolbar -->
+      <div class="flex flex-wrap items-center justify-between gap-6 px-2">
+        <p class="m-0 text-sm font-medium text-slate-500">
+          Tổng cộng <strong class="text-indigo-600 font-extrabold">{{ pagination.totalElements }}</strong> bài làm
         </p>
-        <button
-          @click="loadAttempts"
-          :disabled="loading"
-          class="inline-flex items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 py-2.5 text-xs font-black uppercase tracking-widest text-slate-500 shadow-sm transition hover:bg-blue-50 hover:text-blue-600 disabled:opacity-50"
-        >
+        <button @click="loadAttempts" :disabled="loading" class="btn-secondary text-xs font-extrabold uppercase tracking-widest">
           <i class="fa-solid fa-rotate-right text-xs" :class="{'animate-spin': loading}"></i>
           Làm mới
         </button>
       </div>
 
-      <p v-if="error" class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
-        {{ error }}
+      <!-- Error -->
+      <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-50 px-6 py-4 text-sm font-bold text-rose-700">
+        <i class="fa-solid fa-circle-exclamation mr-2"></i>{{ error }}
       </p>
 
-      <p v-else-if="loading" class="text-sm text-slate-500 text-center py-8">Đang tải lịch sử bài làm...</p>
+      <!-- Loading -->
+      <div v-else-if="loading" class="space-y-5">
+        <div v-for="i in 4" :key="i" class="h-40 w-full bg-slate-50 rounded-[2rem] animate-pulse border border-slate-100/50"></div>
+      </div>
 
-      <div v-else-if="!attempts.length" class="text-sm text-slate-500 text-center py-8">Bạn chưa có lịch sử làm bài.</div>
+      <!-- Empty -->
+      <div v-else-if="!attempts.length" class="card-elevated px-6 py-20 text-center">
+        <div class="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-50 mb-6 text-slate-200">
+          <i class="fa-solid fa-inbox text-4xl"></i>
+        </div>
+        <h3 class="m-0 text-xl font-extrabold text-slate-900">Chưa có lịch sử</h3>
+        <p class="text-sm font-medium text-slate-500 mt-2 m-0">Bạn chưa làm bài thi nào. Hãy bắt đầu ngay!</p>
+        <router-link to="/exams" class="mt-6 btn-primary inline-flex">
+          <i class="fa-solid fa-rocket text-xs"></i>
+          Thi thử ngay
+        </router-link>
+      </div>
 
-      <div v-else class="grid gap-6 md:grid-cols-2">
+      <!-- History List -->
+      <div v-else class="space-y-5">
         <article
           v-for="(attempt, idx) in attempts"
           :key="attempt.id"
-          class="animate-slide-up-reveal group relative overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm transition-all duration-300 hover:border-blue-100 hover:shadow-2xl hover:shadow-blue-500/5"
+          class="animate-slide-up-reveal group relative overflow-hidden rounded-[2rem] border bg-white transition-all duration-500 hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-1"
+          :class="getScoreBorder(attempt.score)"
           :style="{ animationDelay: `${idx * 50}ms` }"
         >
-          <div class="flex items-start justify-between gap-4 mb-6">
-            <div class="min-w-0">
-              <span class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 mb-1 block">Bài làm #{{ attempt.id }}</span>
-              <h3 class="m-0 text-lg font-black tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors truncate">
-                {{ attempt.examTitle || `Đề #${attempt.examId}` }}
-              </h3>
-            </div>
-            <span class="inline-flex items-center px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap"
-              :class="attempt.status === 'SUBMITTED' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'">
-              {{ attempt.status || 'SUBMITTED' }}
-            </span>
-          </div>
+          <!-- Score accent -->
+          <div class="absolute top-0 left-0 right-0 h-[3px]" :class="getScoreBar(attempt.score)"></div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <div class="rounded-2xl bg-slate-50/50 p-4 transition-colors group-hover:bg-blue-50/30">
-              <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Điểm số</span>
-              <span class="text-2xl font-black text-blue-600">{{ attempt.score ?? '-' }}</span>
-            </div>
-            <div class="rounded-2xl bg-slate-50/50 p-4 transition-colors group-hover:bg-emerald-50/30">
-              <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Đúng / Sai</span>
-              <div class="flex items-center gap-2">
-                <span class="text-xl font-black text-emerald-500">{{ attempt.correctCount ?? 0 }}</span>
-                <span class="text-slate-300">/</span>
-                <span class="text-xl font-black text-rose-400">{{ attempt.wrongCount ?? 0 }}</span>
+          <div class="flex flex-col sm:flex-row items-stretch">
+            <!-- Score Panel -->
+            <div class="flex items-center justify-center sm:w-36 shrink-0 p-6 sm:border-r border-b sm:border-b-0 transition-colors duration-500" :class="getScorePanelBg(attempt.score)">
+              <div class="text-center">
+                <span class="block text-4xl font-extrabold tabular-nums" :class="getScoreTextColor(attempt.score)">{{ attempt.score ?? '-' }}</span>
+                <span class="block text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mt-1">Điểm</span>
               </div>
             </div>
-          </div>
 
-          <div class="mt-6 flex items-center justify-between pt-6 border-t border-slate-50">
-            <div class="flex items-center gap-3 text-slate-400">
-              <i class="fa-regular fa-calendar text-sm"></i>
-              <span class="text-xs font-bold">{{ formatDate(attempt.startedAt) }}</span>
+            <!-- Content -->
+            <div class="flex-1 p-6 sm:p-7 flex flex-col justify-between gap-4">
+              <div>
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <h3 class="m-0 text-lg font-extrabold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
+                      {{ attempt.examTitle || `Đề thi #${attempt.examId}` }}
+                    </h3>
+                    <p class="mt-1.5 m-0 text-xs font-medium text-slate-400 flex items-center gap-2">
+                      <i class="fa-regular fa-calendar text-[10px]"></i>
+                      {{ formatDate(attempt.startedAt) }}
+                    </p>
+                  </div>
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-widest whitespace-nowrap"
+                    :class="attempt.status === 'SUBMITTED' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'">
+                    <span class="h-1.5 w-1.5 rounded-full" :class="attempt.status === 'SUBMITTED' ? 'bg-emerald-500' : 'bg-slate-300'"></span>
+                    {{ attempt.status === 'SUBMITTED' ? 'Đã nộp' : (attempt.status || 'N/A') }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-5 text-sm font-bold">
+                  <span class="text-emerald-600 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-check text-[10px]"></i>
+                    {{ attempt.correctCount ?? 0 }} đúng
+                  </span>
+                  <span class="text-rose-500 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-xmark text-[10px]"></i>
+                    {{ attempt.wrongCount ?? 0 }} sai
+                  </span>
+                </div>
+                <router-link
+                  :to="`/attempts/${attempt.id}/review`"
+                  class="group/btn inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white transition-all duration-300 hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95"
+                >
+                  Chi tiết
+                  <i class="fa-solid fa-arrow-right text-[10px] transition-transform group-hover/btn:translate-x-0.5"></i>
+                </router-link>
+              </div>
             </div>
-            <router-link
-              :to="`/attempts/${attempt.id}/review`"
-              class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white transition-all duration-300 group-hover:bg-blue-600 group-hover:scale-110 active:scale-90"
-              title="Xem chi tiết"
-            >
-              <i class="fa-solid fa-arrow-right-long"></i>
-            </router-link>
           </div>
         </article>
       </div>
 
-      <div class="mt-6 flex items-center justify-center gap-4" v-if="pagination.totalPages > 1">
+      <!-- Pagination -->
+      <div class="flex items-center justify-center gap-2" v-if="pagination.totalPages > 1">
         <button
           @click="changePage(pagination.page - 1)"
           :disabled="pagination.page <= 0 || loading"
-          class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+          class="btn-secondary px-4 py-2.5 text-xs font-extrabold"
         >
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
           Trước
         </button>
-        <span class="text-sm font-medium text-slate-600">Trang {{ pagination.page + 1 }} / {{ pagination.totalPages }}</span>
+        <span class="inline-flex h-10 items-center justify-center rounded-xl bg-indigo-600 px-5 text-sm font-extrabold text-white shadow-md shadow-indigo-500/15 tabular-nums">
+          {{ pagination.page + 1 }}
+        </span>
+        <span class="text-sm font-bold text-slate-300 px-1">/</span>
+        <span class="text-sm font-bold text-slate-500 tabular-nums">{{ pagination.totalPages }}</span>
         <button
           @click="changePage(pagination.page + 1)"
           :disabled="pagination.page >= pagination.totalPages - 1 || loading"
-          class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+          class="btn-secondary px-4 py-2.5 text-xs font-extrabold"
         >
           Sau
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
       </div>
     </div>
@@ -130,81 +174,73 @@ import { useAuthStore } from '@/stores/auth';
 import { getMyAttempts } from '@/services/attemptService';
 
 type AttemptItem = {
-  id: number;
-  examId: number;
-  examTitle?: string;
-  status?: string;
-  score?: number;
-  correctCount?: number;
-  wrongCount?: number;
-  totalQuestions?: number;
-  startedAt?: string;
-  submittedAt?: string;
+  id: number; examId: number; examTitle?: string; status?: string;
+  score?: number; correctCount?: number; wrongCount?: number;
+  totalQuestions?: number; startedAt?: string; submittedAt?: string;
 };
 
 const auth = useAuthStore();
-
 const loading = ref(false);
 const error = ref<string | null>(null);
 const attempts = ref<AttemptItem[]>([]);
-
-const pagination = reactive({
-  page: 0,
-  size: 10,
-  totalPages: 0,
-  totalElements: 0,
-});
+const pagination = reactive({ page: 0, size: 10, totalPages: 0, totalElements: 0 });
 
 const formatDate = (value?: string) => {
-  if (!value) {
-    return '-';
-  }
-
+  if (!value) return '-';
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('vi-VN');
+};
 
-  return date.toLocaleString('vi-VN');
+const getScoreTextColor = (score?: number) => {
+  if (score == null) return 'text-slate-300';
+  if (score >= 8) return 'text-emerald-600';
+  if (score >= 6.5) return 'text-indigo-600';
+  if (score >= 5) return 'text-amber-600';
+  return 'text-rose-600';
+};
+
+const getScoreBorder = (score?: number) => {
+  if (score == null) return 'border-slate-100';
+  if (score >= 8) return 'border-emerald-100 hover:border-emerald-200';
+  if (score >= 6.5) return 'border-indigo-100 hover:border-indigo-200';
+  if (score >= 5) return 'border-amber-100 hover:border-amber-200';
+  return 'border-rose-100 hover:border-rose-200';
+};
+
+const getScoreBar = (score?: number) => {
+  if (score == null) return 'bg-gradient-to-r from-slate-200 to-slate-100';
+  if (score >= 8) return 'bg-gradient-to-r from-emerald-400 to-emerald-300';
+  if (score >= 6.5) return 'bg-gradient-to-r from-indigo-400 to-indigo-300';
+  if (score >= 5) return 'bg-gradient-to-r from-amber-400 to-amber-300';
+  return 'bg-gradient-to-r from-rose-400 to-rose-300';
+};
+
+const getScorePanelBg = (score?: number) => {
+  if (score == null) return 'bg-slate-50/50';
+  if (score >= 8) return 'bg-emerald-50/50';
+  if (score >= 6.5) return 'bg-indigo-50/50';
+  if (score >= 5) return 'bg-amber-50/50';
+  return 'bg-rose-50/50';
 };
 
 const loadAttempts = async () => {
-  if (!auth.isAuthenticated) {
-    attempts.value = [];
-    return;
-  }
-
-  loading.value = true;
-  error.value = null;
-
+  if (!auth.isAuthenticated) { attempts.value = []; return; }
+  loading.value = true; error.value = null;
   try {
-    const response = await getMyAttempts({
-      page: pagination.page,
-      size: pagination.size,
-      sort: 'startedAt,DESC',
-    });
-
+    const response = await getMyAttempts({ page: pagination.page, size: pagination.size, sort: 'startedAt,DESC' });
     const payload = response.data?.data ?? {};
     attempts.value = Array.isArray(payload.items) ? payload.items : [];
     pagination.totalPages = Number(payload.totalPages ?? 0);
     pagination.totalElements = Number(payload.totalElements ?? attempts.value.length);
-  } catch (err) {
-    error.value = 'Không thể tải lịch sử bài làm. Vui lòng thử lại.';
-  } finally {
-    loading.value = false;
-  }
+  } catch (err) { error.value = 'Không thể tải lịch sử bài làm. Vui lòng thử lại.'; }
+  finally { loading.value = false; }
 };
 
 const changePage = (newPage: number) => {
-  if (newPage < 0 || (pagination.totalPages && newPage >= pagination.totalPages)) {
-    return;
-  }
-
+  if (newPage < 0 || (pagination.totalPages && newPage >= pagination.totalPages)) return;
   pagination.page = newPage;
   loadAttempts();
 };
 
-onMounted(() => {
-  loadAttempts();
-});
+onMounted(() => { loadAttempts(); });
 </script>

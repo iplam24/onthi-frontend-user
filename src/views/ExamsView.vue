@@ -1,16 +1,16 @@
 <template>
-  <section class="mx-auto w-full max-w-6xl space-y-8 px-3 sm:px-6" style="animation: slide-up 600ms cubic-bezier(0.16,1,0.3,1) both">
-    <div v-if="!auth.isAuthenticated" class="relative overflow-hidden rounded-[2rem] bg-white border border-slate-100 p-8 sm:p-12 shadow-2xl shadow-blue-500/5">
-      <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-blue-50 blur-3xl opacity-50 animate-pulse"></div>
-      <div class="relative flex flex-wrap gap-6 items-center justify-between">
-        <div>
-          <h1 class="m-0 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Hệ thống Đề thi</h1>
-          <p class="mb-0 mt-4 text-sm font-black uppercase tracking-[0.2em] text-blue-400">
-            Khám phá kho tàng kiến thức phong phú
+  <section class="mx-auto w-full max-w-6xl space-y-8 px-3 sm:px-6" style="animation: slide-up 700ms cubic-bezier(0.16,1,0.3,1) both">
+    <div v-if="!auth.isAuthenticated" class="relative overflow-hidden rounded-[2.5rem] bg-white border border-slate-100/80 p-8 sm:p-12 shadow-xl shadow-slate-200/20">
+      <div class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-indigo-50/60 blur-3xl"></div>
+      <div class="flex flex-col sm:flex-row items-center gap-8 sm:gap-12">
+        <div class="flex-1">
+          <h1 class="m-0 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Hệ thống Đề thi</h1>
+          <p class="mb-0 mt-3 text-sm font-medium text-slate-500 leading-relaxed max-w-md">
+            Khám phá kho tàng kiến thức phong phú với hàng trăm đề thi chất lượng.
           </p>
         </div>
-        <div class="h-16 w-16 flex items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-inner">
-          <i class="fa-solid fa-graduation-cap text-2xl"></i>
+        <div class="shrink-0 hidden sm:block">
+          <img src="@/asset/illustrations/exam-illustration.png" alt="Exam" class="h-32 w-auto drop-shadow-lg animate-float-slow" />
         </div>
       </div>
     </div>
@@ -20,14 +20,13 @@
     </p>
 
     <!-- Auth prompt -->
-    <div v-if="!auth.isAuthenticated" class="animate-slide-up-reveal card-elevated px-6 py-24 text-center bg-white rounded-[2.5rem] border-slate-100 shadow-2xl shadow-blue-500/5">
-      <div class="relative inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-50 mb-6">
-        <div class="absolute inset-0 rounded-2xl bg-blue-400/20 blur-xl animate-pulse"></div>
-        <i class="fa-solid fa-user-lock text-blue-500 text-3xl relative z-10"></i>
+    <div v-if="!auth.isAuthenticated" class="animate-slide-up-reveal card-elevated px-6 py-20 text-center">
+      <div class="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-indigo-50 mb-6">
+        <i class="fa-solid fa-user-lock text-indigo-400 text-3xl"></i>
       </div>
-      <h2 class="m-0 text-2xl font-black text-slate-900">Đăng nhập để học tập</h2>
-      <p class="mb-0 mt-3 text-sm font-medium text-slate-400 max-w-md mx-auto leading-relaxed">
-        Bạn cần đăng nhập để bắt đầu hành trình chinh phục tri thức của mình.
+      <h2 class="m-0 text-2xl font-extrabold text-slate-900">Đăng nhập để học tập</h2>
+      <p class="mb-0 mt-3 text-sm font-medium text-slate-500 max-w-md mx-auto leading-relaxed">
+        Bạn cần đăng nhập để bắt đầu hành trình chinh phục tri thức.
       </p>
     </div>
 

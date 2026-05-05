@@ -1,38 +1,35 @@
 <template>
   <section class="space-y-10 max-w-7xl mx-auto px-4 pb-20 pt-6" style="animation: slide-up 600ms var(--ease-out-expo) both">
-    <!-- Dynamic Blue Header -->
-    <div v-if="!selectedTopic" class="premium-overlay relative overflow-hidden rounded-[3rem] bg-gradient-brand p-10 sm:p-16 shadow-2xl shadow-blue-500/20">
-      <div class="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-white/10 blur-[100px] animate-pulse"></div>
-      <div class="absolute -left-20 -bottom-20 h-80 w-80 rounded-full bg-white/5 blur-[80px]"></div>
+    <!-- Dynamic Hero Header -->
+    <div v-if="!selectedTopic" class="premium-overlay relative overflow-hidden rounded-[2.5rem] bg-gradient-brand shadow-2xl shadow-indigo-500/12">
+      <div class="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full bg-white/10 blur-[100px] animate-pulse"></div>
+      <div class="pointer-events-none absolute -left-20 -bottom-20 h-80 w-80 rounded-full bg-white/5 blur-[80px]"></div>
+      <div class="pointer-events-none absolute top-1/4 right-[10%] h-16 w-16 rounded-2xl bg-white/8 rotate-12 animate-float-slow"></div>
+      <div class="pointer-events-none absolute bottom-1/3 left-[5%] h-10 w-10 rounded-full bg-white/5 animate-float" style="animation-delay:-2s"></div>
       
-      <div class="relative z-10 flex flex-wrap gap-12 items-center justify-between">
-        <div class="max-w-2xl space-y-6">
-          <div class="inline-flex items-center gap-3 rounded-full bg-white/20 px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-white border border-white/30">
-            <span class="flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75"></span>
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-blue-500"></span>
+      <div class="relative z-10 flex flex-col lg:flex-row items-center gap-12 p-10 sm:p-14 lg:p-16">
+        <div class="flex-1 text-center lg:text-left space-y-6 max-w-2xl">
+          <div class="inline-flex items-center gap-3 rounded-full bg-white/15 px-5 py-2 text-[10px] font-extrabold uppercase tracking-[0.25em] text-white border border-white/25 backdrop-blur-sm">
+            <span class="relative flex h-2 w-2">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-300 opacity-75"></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
             </span>
             Khai phá tiềm năng
           </div>
-          <h1 class="m-0 text-5xl font-black tracking-tight text-white sm:text-7xl leading-[1.1]">
-            Chinh phục <br/><span class="text-white">đỉnh cao tri thức</span>
+          <h1 class="m-0 text-4xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl leading-[1.08]">
+            Chinh phục <br class="hidden sm:block"/><span class="bg-gradient-to-r from-cyan-200 via-white to-indigo-200 bg-clip-text text-transparent">đỉnh cao tri thức</span>
           </h1>
-          <p class="mb-0 text-lg font-medium text-white/95 leading-relaxed max-w-lg">
+          <p class="mb-0 text-base font-medium text-white/85 leading-relaxed max-w-lg sm:text-lg">
             Hệ thống học tập cá nhân hóa giúp bạn tập trung vào những mảng kiến thức quan trọng nhất.
           </p>
         </div>
         
-        <div class="flex-1 max-w-sm">
-          <div class="rounded-[2.5rem] glass p-8">
-            <div class="flex items-center justify-between mb-6">
-              <h3 class="m-0 text-sm font-black uppercase tracking-widest text-white">Mục tiêu ngày</h3>
-              <span class="text-xs font-bold text-white">75%</span>
-            </div>
-            <div class="h-3 w-full bg-white/20 rounded-full overflow-hidden mb-4">
-              <div class="h-full w-3/4 bg-white rounded-full shadow-lg shadow-white/20"></div>
-            </div>
-            <p class="text-xs font-medium text-blue-50/70 m-0">Còn <span class="text-white font-bold">5 câu hỏi</span> nữa để hoàn thành mục tiêu!</p>
-          </div>
+        <div class="shrink-0 hidden lg:block">
+          <img 
+            src="@/asset/illustrations/learning-journey.png" 
+            alt="Learning Journey" 
+            class="h-[300px] w-auto drop-shadow-2xl animate-float-slow"
+          />
         </div>
       </div>
     </div>
@@ -43,34 +40,34 @@
       <div v-if="selectedSubject || selectedTopic" class="flex items-center gap-4 animate-fade-in">
         <button 
           @click="goBack"
-          class="inline-flex h-10 items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 text-xs font-black uppercase tracking-widest text-slate-500 shadow-sm transition hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100"
+          class="group inline-flex h-10 items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 text-xs font-black uppercase tracking-widest text-slate-500 shadow-sm transition-all duration-300 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 active:scale-95"
         >
-          <i class="fa-solid fa-arrow-left-long"></i>
+          <i class="fa-solid fa-arrow-left-long transition-transform group-hover:-translate-x-1"></i>
           Quay lại
         </button>
-        <div class="flex items-center gap-2 text-xs font-bold text-slate-400">
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-500">
           <span v-if="selectedLevel" class="text-slate-300">/</span>
           <span v-if="selectedLevel">{{ levels.find(l => l.id === selectedLevel)?.name || '' }}</span>
           <span v-if="selectedSubject" class="text-slate-300">/</span>
-          <span v-if="selectedSubject" class="text-blue-600">{{ subjects.find(s => s.id === selectedSubject)?.name || '' }}</span>
+          <span v-if="selectedSubject" class="text-indigo-600">{{ subjects.find(s => s.id === selectedSubject)?.name || '' }}</span>
           <span v-if="selectedTopic" class="text-slate-300">/</span>
           <span v-if="selectedTopic" class="text-indigo-600 truncate max-w-[150px]">{{ topics.find(t => t.id === selectedTopic)?.name || '' }}</span>
         </div>
       </div>
 
       <!-- Level Selection & Bookmark Tabs -->
-      <div v-if="!selectedSubject && !selectedTopic" class="flex flex-wrap gap-4 animate-slide-up-reveal stagger-1">
+      <div v-if="!selectedSubject && !selectedTopic" class="flex flex-wrap gap-3 animate-slide-up-reveal stagger-1">
         <button
           v-for="(level, idx) in levels"
           :key="level.id"
           @click="selectedLevel = level.id; viewMode = 'levels'"
-          class="group flex items-center gap-3 px-8 py-4 rounded-3xl text-sm font-black transition-all duration-500 shadow-sm border border-transparent"
+          class="group flex items-center gap-3 px-7 py-3.5 rounded-2xl text-sm font-black transition-all duration-500 shadow-sm border border-transparent"
           :class="(selectedLevel === level.id && viewMode === 'levels')
-            ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/30 scale-105' 
-            : 'bg-white text-slate-500 border-slate-100 hover:bg-blue-50 hover:text-blue-600'"
+            ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/25 scale-[1.03]' 
+            : 'bg-white text-slate-600 border-slate-100 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200'"
         >
-          <div class="h-6 w-6 flex items-center justify-center rounded-lg bg-white/20 group-hover:bg-blue-100 transition-colors">
-            <i :class="['fa-solid', idx === 0 ? 'fa-star' : (idx === 1 ? 'fa-rocket' : 'fa-graduation-cap')]"></i>
+          <div class="h-6 w-6 flex items-center justify-center rounded-lg transition-colors" :class="(selectedLevel === level.id && viewMode === 'levels') ? 'bg-white/20' : 'bg-slate-100 group-hover:bg-indigo-100'">
+            <i :class="['fa-solid text-xs', idx === 0 ? 'fa-star' : (idx === 1 ? 'fa-rocket' : 'fa-graduation-cap')]"></i>
           </div>
           {{ level.name }}
         </button>
@@ -78,13 +75,13 @@
         <!-- Bookmark Tab -->
         <button
           @click="viewMode = 'bookmarks'; selectedLevel = null"
-          class="group flex items-center gap-3 px-8 py-4 rounded-3xl text-sm font-black transition-all duration-500 shadow-sm border border-transparent"
+          class="group flex items-center gap-3 px-7 py-3.5 rounded-2xl text-sm font-black transition-all duration-500 shadow-sm border border-transparent"
           :class="viewMode === 'bookmarks'
-            ? 'bg-rose-500 text-white shadow-xl shadow-rose-500/30 scale-105' 
-            : 'bg-white text-slate-500 border-slate-100 hover:bg-rose-50 hover:text-rose-600'"
+            ? 'bg-rose-500 text-white shadow-xl shadow-rose-500/25 scale-[1.03]' 
+            : 'bg-white text-slate-600 border-slate-100 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200'"
         >
-          <div class="h-6 w-6 flex items-center justify-center rounded-lg bg-white/20 group-hover:bg-rose-100 transition-colors">
-            <i class="fa-solid fa-bookmark"></i>
+          <div class="h-6 w-6 flex items-center justify-center rounded-lg transition-colors" :class="viewMode === 'bookmarks' ? 'bg-white/20' : 'bg-slate-100 group-hover:bg-rose-100'">
+            <i class="fa-solid fa-bookmark text-xs"></i>
           </div>
           Đã lưu ({{ bookmarkedQuestions.length }})
         </button>
@@ -155,9 +152,9 @@
               </div>
             </div>
             <div>
-              <h3 class="m-0 text-xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">{{ subject.name }}</h3>
-              <p class="mt-2 mb-0 text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <i class="fa-solid fa-layer-group text-[10px]"></i>
+              <h3 class="m-0 text-xl font-black text-slate-900 group-hover:text-indigo-600 transition-colors">{{ subject.name }}</h3>
+              <p class="mt-2 mb-0 text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-[10px] text-indigo-400"></i>
                 {{ getTopicCount(subject.id) }} chuyên đề
               </p>
             </div>
@@ -229,29 +226,29 @@
             v-for="topic in filteredTopics" 
             :key="topic.id"
             @click="selectTopic(topic.id)"
-            class="group relative overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-6 transition-all duration-500 hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-500/10 cursor-pointer"
+            class="group relative overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-6 transition-all duration-500 hover:border-indigo-200 hover:shadow-2xl hover:shadow-indigo-500/8 cursor-pointer"
           >
             <!-- Background pattern -->
-            <div class="absolute -right-4 -bottom-4 h-24 w-24 rounded-full bg-slate-50 opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-150"></div>
+            <div class="absolute -right-4 -bottom-4 h-24 w-24 rounded-full bg-indigo-50 opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-150"></div>
             
             <div class="relative flex items-center justify-between gap-6">
               <div class="flex items-center gap-6">
-                <div class="h-16 w-16 flex items-center justify-center rounded-2xl bg-blue-50 text-blue-600 transition-all duration-500 group-hover:bg-blue-600 group-hover:text-white group-hover:rotate-6">
+                <div class="h-16 w-16 flex items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 transition-all duration-500 group-hover:bg-indigo-600 group-hover:text-white group-hover:rotate-6 group-hover:shadow-lg group-hover:shadow-indigo-500/20">
                   <i class="fa-solid fa-layer-group text-2xl"></i>
                 </div>
                 <div>
-                  <h3 class="m-0 text-xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">{{ topic.name }}</h3>
+                  <h3 class="m-0 text-xl font-black text-slate-900 group-hover:text-indigo-600 transition-colors">{{ topic.name }}</h3>
                   <div class="mt-2 flex items-center gap-4">
-                    <span class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                      <i class="fa-solid fa-circle-check text-emerald-400"></i> Luyện tập
+                    <span class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                      <i class="fa-solid fa-circle-check text-emerald-500"></i> Luyện tập
                     </span>
                     <span class="h-1 w-1 rounded-full bg-slate-200"></span>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-black/50">Chi tiết</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Chi tiết</span>
                   </div>
                 </div>
               </div>
               
-              <button class="h-12 w-12 rounded-xl bg-slate-50 text-slate-300 transition-all duration-500 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-500/30">
+              <button class="h-12 w-12 rounded-xl bg-slate-50 text-slate-300 transition-all duration-500 group-hover:bg-indigo-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-indigo-500/20">
                 <i class="fa-solid fa-arrow-right"></i>
               </button>
             </div>
@@ -265,7 +262,7 @@
         <div v-else class="space-y-6 animate-slide-up-reveal">
           <div class="flex items-center justify-between px-2">
             <h2 class="m-0 text-2xl font-black text-slate-900">Danh sách câu hỏi</h2>
-            <span class="text-xs font-black uppercase tracking-widest text-black/60">{{ questions.length }} câu hỏi</span>
+            <span class="text-xs font-black uppercase tracking-widest text-slate-500">{{ questions.length }} câu hỏi</span>
           </div>
 
           <div v-for="(q, idx) in questions" :key="q.id" class="card-elevated overflow-hidden border border-slate-100">
