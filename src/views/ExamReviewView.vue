@@ -101,30 +101,32 @@
             :style="{ animationDelay: `${200 + Number(index) * 50}ms` }"
           >
             <!-- Question header -->
-            <div class="flex items-center justify-between gap-3 border-b border-slate-50 px-6 py-5 bg-slate-50/50 rounded-t-[1.75rem]">
-              <div class="flex items-center gap-4">
+            <div class="flex items-center justify-between gap-3 border-b border-slate-50 px-6 py-3.5 bg-slate-50/50 rounded-t-[1.75rem]">
+              <div class="flex items-center gap-3">
                 <span
-                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-black shadow-inner transition-all duration-500 group-hover:scale-110"
+                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black shadow-inner transition-all duration-500 group-hover:scale-110"
                   :class="q._isCorrect ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'"
                 >
                   {{ (Number(index) + 1).toString().padStart(2, '0') }}
                 </span>
                 <span
-                  class="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] shadow-sm border border-white"
+                  class="inline-flex items-center gap-2 rounded-xl px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] shadow-sm border border-white"
                   :class="q._isCorrect ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'"
                 >
                   <i :class="q._isCorrect ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'"></i>
                   {{ q._isCorrect ? 'Đúng' : 'Sai' }}
                 </span>
               </div>
-              <span v-if="q.score" class="text-[10px] font-black uppercase tracking-widest text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-100">{{ q.score }} điểm</span>
+              <div class="flex items-center gap-2">
+                <span v-if="q.score" class="text-[10px] font-black uppercase tracking-widest text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-100">{{ q.score }} điểm</span>
+              </div>
             </div>
 
             <!-- Question content -->
             <div class="px-6 py-6 sm:px-8 sm:py-8 flex flex-col grow">
-              <p class="text-lg font-black leading-relaxed text-slate-900 transition-colors group-hover:text-indigo-700 min-h-[4.5rem] line-clamp-3">
-                {{ q.content || q.contentSnapshot || q.questionContent || 'Nội dung câu hỏi' }}
-              </p>
+              <h2 class="m-0 text-lg font-black leading-relaxed text-slate-900 transition-colors group-hover:text-indigo-700 min-h-[4.5rem]">
+                <MathContent :content="q.content || q.contentSnapshot || q.questionContent || 'Nội dung câu hỏi'" />
+              </h2>
 
               <div v-if="q.url" class="mt-6 overflow-hidden rounded-[1.5rem] border border-slate-100 bg-slate-50/50 p-3">
                 <img :src="resolveAssetUrl(q.url)" class="max-h-64 rounded-xl object-contain w-full transition-transform duration-500 group-hover:scale-[1.02]" alt="Hình ảnh câu hỏi" />
@@ -145,7 +147,7 @@
                     {{ String.fromCharCode(65 + Number(oi)) }}
                   </span>
                   <span class="relative z-10 text-base font-bold leading-relaxed grow transition-colors" :class="opt.isCorrect ? 'text-emerald-900' : (opt._isSelected ? 'text-rose-900' : 'text-slate-600')">
-                    {{ opt.content }}
+                    <MathContent :content="opt.content" />
                   </span>
                   <i v-if="opt.isCorrect" class="relative z-10 fa-solid fa-circle-check text-emerald-500 text-2xl shrink-0 animate-scale-in"></i>
                   <i v-else-if="opt._isSelected" class="relative z-10 fa-solid fa-circle-xmark text-rose-500 text-2xl shrink-0 animate-scale-in"></i>
@@ -175,7 +177,7 @@
                   {{ q.sampleAnswer ? 'DÁP ÁN MẪU' : 'GIẢI THÍCH CHI TIẾT' }}
                 </p>
                 <p class="text-sm text-slate-700 leading-relaxed m-0 font-bold whitespace-pre-line">
-                  {{ q.explanation || q.sampleAnswer }}
+                  <MathContent :content="q.explanation || q.sampleAnswer" />
                 </p>
               </div>
               <div v-else-if="!q._isCorrect && !q.explanation" class="mt-8 rounded-[1.5rem] border-2 border-slate-50 bg-slate-50/30 px-6 py-5 shrink-0">
@@ -198,14 +200,21 @@
       </div>
     </template>
   </section>
+
+<!-- Edit Modal Removed -->
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import { getAttemptById } from '@/services/attemptService';
 import { getExamById } from '@/services/examService';
 import { getQuestionById } from '@/services/questionService';
+import QuestionEditModal from '@/components/admin/QuestionEditModal.vue';
+import MathContent from '@/components/common/MathContent.vue';
+
+const auth = useAuthStore();
 
 const route = useRoute();
 const id = Number(route.params.id);
@@ -222,6 +231,8 @@ const loading = ref(true);
 const error = ref<string | null>(null);
 const attempt = ref<any>(null);
 const questions = ref<any[]>([]);
+
+// Admin Edit Logic (Removed)
 
 const totalQuestions = computed(() => {
   return attempt.value?.totalQuestions ?? questions.value.length ?? 0;

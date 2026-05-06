@@ -5,6 +5,11 @@ type AuthUser = {
   username: string;
   email: string;
   roles: string[];
+  balance?: number;
+  fireLevel?: number;
+  activeToday?: boolean;
+  currentStreak?: number;
+  avatar?: string | null;
 };
 
 type LoginData = {
@@ -13,6 +18,7 @@ type LoginData = {
   username: string;
   email: string;
   roles: string[];
+  balance?: number;
 };
 
 export const useAuthStore = defineStore('auth', {
@@ -32,6 +38,7 @@ export const useAuthStore = defineStore('auth', {
         username: data.username,
         email: data.email,
         roles: data.roles,
+        balance: data.balance ?? 0,
       };
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(this.user));
@@ -41,6 +48,12 @@ export const useAuthStore = defineStore('auth', {
       this.user = null;
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+    },
+    setUser(user: Partial<AuthUser>) {
+      if (this.user) {
+        this.user = { ...this.user, ...user };
+        localStorage.setItem('user', JSON.stringify(this.user));
+      }
     },
   },
 });

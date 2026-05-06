@@ -37,6 +37,32 @@
     </transition>
   </teleport>
 
+  <!-- Image Zoom Overlay -->
+  <teleport to="body">
+    <transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0 backdrop-blur-0"
+      enter-to-class="opacity-100 backdrop-blur-md"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100 backdrop-blur-md"
+      leave-to-class="opacity-0 backdrop-blur-0"
+    >
+      <div v-if="zoomImageUrl" class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/90 p-4 md:p-10" @click="zoomImageUrl = null">
+        <button 
+          @click="zoomImageUrl = null"
+          class="absolute top-6 right-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-white hover:bg-white/20 transition-colors"
+        >
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        <img 
+          :src="zoomImageUrl" 
+          class="max-h-full max-w-full rounded-2xl shadow-2xl object-contain animate-scale-in" 
+          @click.stop
+        />
+      </div>
+    </transition>
+  </teleport>
+
 <div class="text-slate-900 pb-12 pt-[180px] sm:pt-[150px] max-w-7xl mx-auto px-2 sm:px-4">
     <!-- Fixed Header -->
     <div class="fixed top-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-2xl border-b border-white/50 shadow-lg shadow-indigo-500/5">
@@ -152,6 +178,9 @@
       <p class="mb-0 mt-2 text-sm text-emerald-700">
         Hệ thống sẽ chuyển bạn sang trang xem lại bài thi sau {{ redirectSeconds ?? 0 }} giây.
       </p>
+      <div v-if="streakCheckedIn" class="mt-4 flex items-center gap-2 text-orange-600 bg-orange-100/50 px-3 py-2 rounded-lg text-sm font-bold w-fit">
+        <i class="fa-solid fa-fire text-orange-500"></i> Bạn đã giữ lửa ôn thi thành công hôm nay!
+      </div>
       <div class="mt-4 flex flex-wrap gap-3">
         <button
           type="button"
@@ -172,27 +201,36 @@
         class="animate-slide-up-reveal group flex flex-col h-full overflow-hidden rounded-[2rem] border border-slate-100/80 bg-white transition-all duration-500 hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5"
         :style="{ animationDelay: `${index * 40}ms` }"
       >
-        <div class="flex items-center justify-between gap-3 border-b border-slate-50 px-6 py-4 bg-slate-50/30">
-          <p class="m-0 inline-flex items-center gap-3 rounded-lg bg-white px-3.5 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-400 shadow-sm border border-slate-100 transition-colors group-hover:text-indigo-500">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 font-extrabold">
+        <div class="flex items-center justify-between gap-3 border-b border-slate-50 px-6 py-3.5 bg-slate-50/50">
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white text-[11px] font-black shadow-lg shadow-indigo-500/20">
               {{ (index + 1).toString().padStart(2, '0') }}
             </span>
-            Câu hỏi
-          </p>
+            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Câu hỏi</span>
+          </div>
         </div>
 
-        <div class="px-6 py-5 sm:px-7 sm:py-6 flex flex-col grow">
-          <h2 class="m-0 text-base font-bold leading-relaxed text-slate-800 transition-colors group-hover:text-indigo-700">
-            {{ question.content }}
+        <div class="px-6 py-7 sm:px-8 sm:py-8 flex flex-col grow">
+          <h2 class="m-0 text-lg sm:text-xl font-bold leading-relaxed text-slate-800 transition-colors group-hover:text-indigo-700">
+            <MathContent :content="question.content" />
           </h2>
 
-          <div v-if="question.imageUrl" class="mt-6 overflow-hidden rounded-[1.5rem] border border-slate-100 bg-slate-50/50 p-3">
+          <div v-if="question.imageUrl" class="group/img mt-6 relative overflow-hidden rounded-[1.5rem] border border-slate-100 bg-slate-50/50 p-3">
             <img
               :src="question.imageUrl"
               :alt="question.content"
-              class="max-h-[360px] w-full rounded-xl object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+              class="max-h-[360px] w-full rounded-xl object-contain transition-all duration-500 group-hover/img:scale-[1.02] cursor-zoom-in"
               loading="lazy"
+              @click="zoomImageUrl = question.imageUrl"
             />
+            <button 
+              type="button"
+              @click="zoomImageUrl = question.imageUrl"
+              class="absolute bottom-6 right-6 flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-slate-600 shadow-xl backdrop-blur-md opacity-0 transition-all duration-300 group-hover/img:opacity-100 hover:bg-indigo-600 hover:text-white"
+              title="Phóng to ảnh"
+            >
+              <i class="fa-solid fa-magnifying-glass-plus text-sm"></i>
+            </button>
           </div>
 
           <div v-if="question.options.length" class="mt-8 space-y-4 grow">
@@ -212,13 +250,13 @@
                 :name="`question-${question.id}`"
                 class="hidden"
               />
-              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-extrabold shadow-sm transition-all duration-300"
+              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-black shadow-sm transition-all duration-300"
                 :class="isSelected(question.id, option.value) ? 'bg-indigo-600 text-white scale-105' : 'bg-white text-slate-400 border border-slate-100'"
               >
                 {{ String.fromCharCode(65 + question.options.findIndex((x) => x.value === option.value)) }}
               </span>
               <span class="text-sm font-semibold leading-relaxed grow transition-colors" :class="isSelected(question.id, option.value) ? 'text-indigo-900' : 'text-slate-600'">
-                {{ option.label }}
+                <MathContent :content="option.label.replace(/^[A-D]\.\s*/, '')" />
               </span>
             </label>
           </div>
@@ -236,6 +274,7 @@
     </form>
   </section>
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -245,6 +284,9 @@ import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { startAttempt, submitAttempt, getAttemptById, reportViolation } from '@/services/attemptService';
 import { getExamById } from '@/services/examService';
+import { checkInStreak } from '@/services/userService';
+import QuestionEditModal from '@/components/admin/QuestionEditModal.vue';
+import MathContent from '@/components/common/MathContent.vue';
 
 type AttemptQuestion = {
   id: number;
@@ -325,8 +367,12 @@ const redirectSeconds = ref<number | null>(null);
 const redirectInterval = ref<ReturnType<typeof setInterval> | null>(null);
 const tabSwitchCount = ref(0);
 const isCheating = ref(false); // New ref to track cheating status
+const streakCheckedIn = ref(false);
 const answers = reactive<Record<number, string>>({});
+const zoomImageUrl = ref<string | null>(null);
 let initPromise: Promise<void> | null = null;
+
+// Admin Edit Logic (Removed)
 
 const examId = computed(() => Number(route.params.examId));
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8080/api';
@@ -705,6 +751,15 @@ const handleSubmit = async () => {
       violationScore: isCheating.value ? 1 : 0, // Send violation score if cheating is detected
     });
     result.value = mapSubmitResult(response.data?.data ?? response.data);
+    
+    // Check-in streak
+    try {
+      await checkInStreak();
+      streakCheckedIn.value = true;
+    } catch (err) {
+      console.warn('Failed to check-in streak:', err);
+    }
+
     stopTimer();
     clearDraft();
     startRedirectCountdown();

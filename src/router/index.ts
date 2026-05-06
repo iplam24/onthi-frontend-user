@@ -52,6 +52,16 @@ const router = createRouter({
       name: 'contact',
       component: ContactView,
     },
+    {
+      path: '/evaluation',
+      name: 'evaluation',
+      component: () => import('../views/StudentEvaluationView.vue'),
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/ProfileView.vue'),
+    },
   ],
 });
 

@@ -267,28 +267,34 @@
 
           <div v-for="(q, idx) in questions" :key="q.id" class="card-elevated overflow-hidden border border-slate-100">
             <div class="p-6 sm:p-8">
-              <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-                <div class="flex flex-wrap items-center gap-3">
-                  <span class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white">Câu {{ Number(idx) + 1 }}</span>
-                  <span class="rounded-lg border border-slate-100 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">{{ q.type }}</span>
+              <div class="flex items-center justify-between gap-4 border-b border-slate-50 px-8 py-4 bg-slate-50/50 -mx-8 -mt-8 mb-8">
+                <div class="flex items-center gap-3">
+                  <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white text-[11px] font-black shadow-lg shadow-indigo-500/20">
+                    {{ (Number(idx) + 1).toString().padStart(2, '0') }}
+                  </span>
+                  <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Câu hỏi</span>
                   <span 
-                    class="rounded-lg px-3 py-1 text-[10px] font-black uppercase tracking-widest"
-                    :class="q.difficulty === 'EASY' ? 'bg-emerald-50 text-emerald-600' : (q.difficulty === 'MEDIUM' ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600')"
+                    class="ml-2 rounded-lg px-2.5 py-1 text-[9px] font-black uppercase tracking-widest border"
+                    :class="q.difficulty === 'EASY' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : (q.difficulty === 'MEDIUM' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-rose-50 text-rose-600 border-rose-100')"
                   >
                     {{ q.difficulty === 'EASY' ? 'Dễ' : (q.difficulty === 'MEDIUM' ? 'Trung bình' : 'Khó') }}
                   </span>
                 </div>
-                <button 
-                  @click="toggleBookmark(q)"
-                  class="h-10 w-10 flex items-center justify-center rounded-xl bg-white transition-all border border-slate-100"
-                  :class="isBookmarked(q.id) ? 'text-rose-500 bg-rose-50 border-rose-100 shadow-sm' : 'text-slate-300 hover:bg-rose-50 hover:text-rose-500'"
-                >
-                  <i :class="isBookmarked(q.id) ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                  <button 
+                    @click="toggleBookmark(q)"
+                    class="h-9 w-9 flex items-center justify-center rounded-xl bg-white transition-all border border-slate-100 active:scale-90"
+                    :class="isBookmarked(q.id) ? 'text-rose-500 bg-rose-50 border-rose-100 shadow-sm' : 'text-slate-300 hover:bg-rose-50 hover:text-rose-500'"
+                  >
+                    <i :class="isBookmarked(q.id) ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'" class="text-xs"></i>
+                  </button>
+                </div>
               </div>
 
               <div class="prose max-w-none">
-                <p class="text-lg font-bold text-slate-900 leading-relaxed mb-6">{{ q.content }}</p>
+                <p class="text-lg font-bold text-slate-900 leading-relaxed mb-6">
+                  <MathContent :content="q.content" />
+                </p>
                 <img v-if="q.url" :src="resolveAssetUrl(q.url)" class="rounded-2xl max-h-80 w-auto mb-6 shadow-sm border border-slate-100" />
               </div>
 
@@ -305,7 +311,9 @@
                   >
                     {{ String.fromCharCode(65 + Number(oi)) }}
                   </span>
-                  <span class="text-sm font-bold" :class="opt.isCorrect ? 'text-emerald-700' : 'text-slate-600'">{{ opt.content }}</span>
+                  <span class="text-sm font-bold" :class="opt.isCorrect ? 'text-emerald-700' : 'text-slate-600'">
+                    <MathContent :content="opt.content.replace(/^[A-D]\.\s*/, '')" />
+                  </span>
                   <i v-if="opt.isCorrect" class="fa-solid fa-check text-emerald-500 ml-auto"></i>
                 </div>
               </div>
@@ -319,7 +327,9 @@
                   <h4 class="m-0 text-sm font-black uppercase tracking-widest text-indigo-600">Giải thích chi tiết</h4>
                 </div>
                 <div class="rounded-2xl bg-indigo-50/30 p-6 border border-indigo-100/50">
-                  <p class="text-sm font-bold text-slate-700 leading-relaxed m-0 italic">{{ q.explanation || q.sampleAnswer }}</p>
+                  <p class="text-sm font-bold text-slate-700 leading-relaxed m-0 italic">
+                    <MathContent :content="q.explanation || q.sampleAnswer" />
+                  </p>
                 </div>
               </div>
             </div>
@@ -335,9 +345,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/auth';
 import { getLevels, getSubjects, getTopics, type LevelItem, type SubjectItem, type TopicItem } from '@/services/learningService';
 import { getAllQuestions } from '@/services/questionService';
+import QuestionEditModal from '@/components/admin/QuestionEditModal.vue';
+import MathContent from '@/components/common/MathContent.vue';
+
+const auth = useAuthStore();
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8080/api';
 const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
@@ -359,6 +374,8 @@ const selectedLevel = ref<number | null>(null);
 const selectedSubject = ref<number | null>(null);
 const selectedTopic = ref<number | null>(null);
 const viewMode = ref<'levels' | 'bookmarks'>('levels');
+
+// Admin Edit Logic (Removed)
 
 // Bookmarks logic
 const bookmarkedQuestions = ref<any[]>(JSON.parse(localStorage.getItem('edu_bookmarks') || '[]'));

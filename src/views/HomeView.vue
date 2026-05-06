@@ -1,6 +1,22 @@
 <template>
   <section class="mx-auto w-full max-w-6xl space-y-16 px-2 sm:px-4">
 
+    <!-- ═══ UPDATE PROFILE WARNING ═══ -->
+    <div v-if="auth.isAuthenticated && hasNoLevelId" class="animate-slide-down relative overflow-hidden rounded-2xl bg-amber-50 border border-amber-200 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+          <i class="fa-solid fa-circle-exclamation text-xl"></i>
+        </div>
+        <div>
+          <h3 class="m-0 text-sm font-extrabold text-amber-800">Cập nhật hồ sơ học tập</h3>
+          <p class="m-0 text-xs text-amber-700 mt-1">Bạn chưa cập nhật khối/lớp hiện tại. Hãy cập nhật để nhận lộ trình ôn tập phù hợp nhất.</p>
+        </div>
+      </div>
+      <router-link to="/profile" class="flex-shrink-0 whitespace-nowrap btn-primary bg-amber-500 hover:bg-amber-600 px-5 py-2 text-xs">
+        Cập nhật ngay <i class="fa-solid fa-arrow-right ml-1"></i>
+      </router-link>
+    </div>
+
     <!-- ═══ COUNTDOWN BANNER ═══ -->
     <div 
       v-if="auth.isAuthenticated && countdowns.length > 0"
@@ -188,6 +204,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { getDashboardStatistics, type DashboardStatistics } from '@/services/statisticsService';
 import { getCountdowns, type CountdownItem } from '@/services/countdownService';
+import { getUserProfile } from '@/services/userService';
 import { useAuthStore } from '@/stores/auth';
 
 const features = [
@@ -229,6 +246,7 @@ const animatedStats = ref<DashboardStatistics>(createDefaultStats());
 const animationFrameIds = new Set<number>();
 const auth = useAuthStore();
 const countdowns = ref<CountdownItem[]>([]);
+const hasNoLevelId = ref(false);
 
 const calculateDaysRemaining = (dateString: string) => {
   const diff = new Date(dateString).getTime() - new Date().setHours(0, 0, 0, 0);
@@ -274,6 +292,17 @@ const loadCountdowns = async () => {
   } catch (error) { console.error('Failed to load countdowns:', error); }
 };
 
+const checkUserProfile = async () => {
+  if (!auth.isAuthenticated) return;
+  try {
+    const res = await getUserProfile();
+    const profile = res.data?.data;
+    if (profile && profile.levelId == null) {
+      hasNoLevelId.value = true;
+    }
+  } catch (error) { console.error('Failed to load user profile:', error); }
+};
+
 const loadDashboardStats = async () => {
   statsLoading.value = true;
   statsError.value = null;
@@ -291,6 +320,10 @@ const loadDashboardStats = async () => {
   finally { statsLoading.value = false; }
 };
 
-onMounted(() => { void loadDashboardStats(); void loadCountdowns(); });
+onMounted(() => { 
+  void loadDashboardStats(); 
+  void loadCountdowns(); 
+  void checkUserProfile(); 
+});
 onBeforeUnmount(() => stopCounterAnimations());
 </script>

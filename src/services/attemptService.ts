@@ -1,15 +1,47 @@
 import api from './api';
 
-type SubmitAnswerPayload = {
+export type SubmitAnswerPayload = {
   questionId: number;
   selectedOptionId: number | null;
   essayAnswer: string | null;
 };
 
-type SubmitAttemptPayload = {
+export type SubmitAttemptPayload = {
   answers: SubmitAnswerPayload[];
   tabSwitchCount: number;
   violationScore: number;
+};
+
+export type AttemptHistoryItem = {
+  id: number;
+  examId: number;
+  examTitle?: string;
+  status?: string;
+  score?: number;
+  correctCount?: number;
+  wrongCount?: number;
+  totalQuestions?: number;
+  startedAt?: string;
+  submittedAt?: string;
+  subjectId?: number;
+  subjectName?: string;
+  subjectLevelId?: number;
+  subjectLevelName?: string;
+  flagged?: boolean;
+};
+
+export type AttemptFilterParams = {
+  subjectId?: number;
+  levelId?: number;
+  examId?: number;
+  status?: string;
+  flagged?: boolean;
+  from?: string;
+  to?: string;
+  keyword?: string;
+  page?: number;
+  size?: number;
+  sort?: string;
 };
 
 export const startAttempt = (examId: number) => {
@@ -26,7 +58,7 @@ export const getAttemptById = (attemptId: number) => {
   return api.get(`/attempts/${attemptId}`);
 };
 
-export const getMyAttempts = (params: Record<string, unknown> = {}) => {
+export const getMyAttempts = (params: AttemptFilterParams | Record<string, unknown> = {}) => {
   return api.get('/attempts/me', { params });
 };
 

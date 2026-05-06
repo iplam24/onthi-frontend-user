@@ -701,6 +701,57 @@ This document provides a comprehensive overview of all the APIs available in the
     }
     ```
 
+### 5.3 Update Question
+
+*   **Method:** `PUT`
+*   **Path:** `/api/questions/{id}`
+*   **Description:** Cập nhật thông tin câu hỏi. Đây là API full update, ghi đè toàn bộ thông tin cũ.
+*   **Authorization:** `ROLE_ADMIN`
+*   **Request Body:**
+
+    ```json
+    {
+      "content": "Nội dung câu hỏi...",
+      "contentFormat": "LATEX",
+      "url": "http://image-url.com/img.jpg",
+      "type": "MCQ",
+      "difficulty": "MEDIUM",
+      "topicId": 1,
+      "options": [
+        {
+          "content": "Đáp án A",
+          "isCorrect": false
+        },
+        {
+          "content": "Đáp án B",
+          "isCorrect": true
+        }
+      ],
+      "sampleAnswer": "...",
+      "explanation": "Giải thích chi tiết..."
+    }
+    ```
+
+*   **Hành vi cập nhật:**
+    *   **Type MCQ:** Yêu cầu ít nhất 2 options và ít nhất 1 đáp án đúng. `sampleAnswer` sẽ bị bỏ qua. Toàn bộ options cũ sẽ bị xóa và thay thế bằng danh sách mới.
+    *   **Type ESSAY:** Yêu cầu `sampleAnswer`. Toàn bộ options cũ sẽ bị xóa.
+    *   **Explanation:** Nếu gửi chuỗi rỗng sẽ xóa giải thích cũ. Nếu có nội dung sẽ cập nhật mới.
+    *   **LaTeX:** Khuyến nghị dùng `contentFormat = LATEX` cho các nội dung có công thức toán học.
+
+*   **Success Response (200 OK):**
+
+    ```json
+    {
+      "status": 200,
+      "message": "Cập nhật câu hỏi thành công!",
+      "data": {
+        "id": 1,
+        "content": "Nội dung đã sửa...",
+        "type": "MCQ"
+      }
+    }
+    ```
+
 ---
 
 ## 6. System APIs

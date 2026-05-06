@@ -14,6 +14,12 @@
           <p class="mb-0 mt-3 text-sm font-medium text-slate-500 leading-relaxed max-w-md">
             Theo dõi tiến trình chinh phục tri thức của bạn qua từng bài thi.
           </p>
+          <div v-if="auth.isAuthenticated" class="mt-6 flex">
+            <router-link to="/evaluation" class="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:shadow-indigo-500/30">
+               <i class="fa-solid fa-chart-pie text-white/90"></i>
+               Xem báo cáo phân tích năng lực
+            </router-link>
+          </div>
         </div>
         <div class="shrink-0 hidden sm:block">
           <img 
@@ -40,6 +46,65 @@
     </div>
 
     <div v-else class="space-y-8">
+      <!-- Filter Bar -->
+      <div class="card-elevated p-6 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Keyword -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Tìm đề thi</label>
+            <div class="relative">
+              <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input v-model="filters.keyword" type="text" placeholder="Nhập tên đề..." @keyup.enter="applyFilters" class="input-primary pl-9 text-sm" />
+            </div>
+          </div>
+          <!-- Level -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Khối/Lớp</label>
+            <select v-model="filters.levelId" @change="onLevelChange" class="input-primary text-sm appearance-none cursor-pointer bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSIjOTRhM2I4Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTE5IDlsLTcgNy03LTciLz48L3N2Zz4=')] bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10">
+              <option :value="undefined">Tất cả khối</option>
+              <option v-for="l in levels" :key="l.id" :value="l.id">{{ l.name }}</option>
+            </select>
+          </div>
+          <!-- Subject -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Môn học</label>
+            <select v-model="filters.subjectId" @change="applyFilters" class="input-primary text-sm appearance-none cursor-pointer bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSIjOTRhM2I4Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTE5IDlsLTcgNy03LTciLz48L3N2Zz4=')] bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10">
+              <option :value="undefined">Tất cả môn</option>
+              <option v-for="s in filteredSubjects" :key="s.id" :value="s.id">{{ s.name }}</option>
+            </select>
+          </div>
+          <!-- Status -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Trạng thái</label>
+            <select v-model="filters.status" @change="applyFilters" class="input-primary text-sm appearance-none cursor-pointer bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSIjOTRhM2I4Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTE5IDlsLTcgNy03LTciLz48L3N2Zz4=')] bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10">
+              <option :value="undefined">Tất cả</option>
+              <option value="SUBMITTED">Đã nộp</option>
+              <option value="DOING">Đang làm</option>
+              <option value="EXPIRED">Quá hạn</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t border-slate-50">
+           <!-- From Date -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Từ ngày</label>
+            <input v-model="filters.from" type="date" @change="applyFilters" class="input-primary text-sm" />
+          </div>
+          <!-- To Date -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Đến ngày</label>
+            <input v-model="filters.to" type="date" @change="applyFilters" class="input-primary text-sm" />
+          </div>
+          <div class="lg:col-span-2 flex items-end justify-end gap-3 mt-4 lg:mt-0">
+             <button @click="resetFilters" class="btn-secondary text-xs font-extrabold px-4">Xóa lọc</button>
+             <button @click="applyFilters" :disabled="loading" class="btn-primary text-xs font-extrabold px-6">
+                <i class="fa-solid fa-filter text-[10px] mr-1" :class="{'animate-pulse': loading}"></i>
+                Lọc kết quả
+             </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Toolbar -->
       <div class="flex flex-wrap items-center justify-between gap-6 px-2">
         <p class="m-0 text-sm font-medium text-slate-500">
@@ -100,6 +165,10 @@
               <div>
                 <div class="flex items-start justify-between gap-3">
                   <div class="min-w-0">
+                    <div class="flex items-center gap-2 mb-2" v-if="attempt.subjectName || attempt.subjectLevelName">
+                       <span v-if="attempt.subjectLevelName" class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-black text-slate-600">{{ attempt.subjectLevelName }}</span>
+                       <span v-if="attempt.subjectName" class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-0.5 text-[10px] font-black text-indigo-600">{{ attempt.subjectName }}</span>
+                    </div>
                     <h3 class="m-0 text-lg font-extrabold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
                       {{ attempt.examTitle || `Đề thi #${attempt.examId}` }}
                     </h3>
@@ -109,9 +178,9 @@
                     </p>
                   </div>
                   <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-widest whitespace-nowrap"
-                    :class="attempt.status === 'SUBMITTED' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'">
-                    <span class="h-1.5 w-1.5 rounded-full" :class="attempt.status === 'SUBMITTED' ? 'bg-emerald-500' : 'bg-slate-300'"></span>
-                    {{ attempt.status === 'SUBMITTED' ? 'Đã nộp' : (attempt.status || 'N/A') }}
+                    :class="attempt.status === 'SUBMITTED' ? 'bg-emerald-50 text-emerald-600' : (attempt.status === 'DOING' ? 'bg-amber-50 text-amber-600' : 'bg-slate-50 text-slate-400')">
+                    <span class="h-1.5 w-1.5 rounded-full" :class="attempt.status === 'SUBMITTED' ? 'bg-emerald-500' : (attempt.status === 'DOING' ? 'bg-amber-500' : 'bg-slate-300')"></span>
+                    {{ attempt.status === 'SUBMITTED' ? 'Đã nộp' : (attempt.status === 'DOING' ? 'Đang làm' : (attempt.status || 'N/A')) }}
                   </span>
                 </div>
               </div>
@@ -169,21 +238,53 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
-import { getMyAttempts } from '@/services/attemptService';
-
-type AttemptItem = {
-  id: number; examId: number; examTitle?: string; status?: string;
-  score?: number; correctCount?: number; wrongCount?: number;
-  totalQuestions?: number; startedAt?: string; submittedAt?: string;
-};
+import { getMyAttempts, type AttemptHistoryItem, type AttemptFilterParams } from '@/services/attemptService';
+import { getLevels, getSubjects, type LevelItem, type SubjectItem } from '@/services/learningService';
 
 const auth = useAuthStore();
 const loading = ref(false);
 const error = ref<string | null>(null);
-const attempts = ref<AttemptItem[]>([]);
+const attempts = ref<AttemptHistoryItem[]>([]);
 const pagination = reactive({ page: 0, size: 10, totalPages: 0, totalElements: 0 });
+
+const levels = ref<LevelItem[]>([]);
+const subjects = ref<SubjectItem[]>([]);
+
+const filters = reactive<AttemptFilterParams>({
+  keyword: undefined,
+  levelId: undefined,
+  subjectId: undefined,
+  status: undefined,
+  from: undefined,
+  to: undefined
+});
+
+const filteredSubjects = computed(() => {
+  if (!filters.levelId) return subjects.value;
+  return subjects.value.filter(s => s.levelId === filters.levelId);
+});
+
+const onLevelChange = () => {
+  filters.subjectId = undefined; // Reset subject when level changes
+  applyFilters();
+};
+
+const applyFilters = () => {
+  pagination.page = 0;
+  loadAttempts();
+};
+
+const resetFilters = () => {
+  filters.keyword = undefined;
+  filters.levelId = undefined;
+  filters.subjectId = undefined;
+  filters.status = undefined;
+  filters.from = undefined;
+  filters.to = undefined;
+  applyFilters();
+};
 
 const formatDate = (value?: string) => {
   if (!value) return '-';
@@ -223,11 +324,45 @@ const getScorePanelBg = (score?: number) => {
   return 'bg-rose-50/50';
 };
 
+const loadFiltersData = async () => {
+  try {
+    const [lRes, sRes] = await Promise.all([getLevels(), getSubjects()]);
+    levels.value = lRes.data?.data || [];
+    subjects.value = sRes.data?.data || [];
+  } catch (err) {
+    console.error('Failed to load filter metadata', err);
+  }
+};
+
 const loadAttempts = async () => {
   if (!auth.isAuthenticated) { attempts.value = []; return; }
   loading.value = true; error.value = null;
   try {
-    const response = await getMyAttempts({ page: pagination.page, size: pagination.size, sort: 'startedAt,DESC' });
+    // Format date specifically for from/to if needed, usually simple string works if API accepts 'YYYY-MM-DD'
+    const queryParams: Record<string, any> = { 
+      page: pagination.page, 
+      size: pagination.size, 
+      sort: 'startedAt,DESC',
+      ...filters 
+    };
+
+    // Remove empty/undefined filters
+    Object.keys(queryParams).forEach(key => {
+      if (queryParams[key] === undefined || queryParams[key] === null || queryParams[key] === '') {
+        delete queryParams[key];
+      }
+    });
+    
+    // API from and to might need time postfix if it's purely date from input type date.
+    // E.g. from="2026-05-01T00:00:00"
+    if (queryParams.from && !queryParams.from.includes('T')) {
+      queryParams.from = `${queryParams.from}T00:00:00`;
+    }
+    if (queryParams.to && !queryParams.to.includes('T')) {
+      queryParams.to = `${queryParams.to}T23:59:59`;
+    }
+
+    const response = await getMyAttempts(queryParams);
     const payload = response.data?.data ?? {};
     attempts.value = Array.isArray(payload.items) ? payload.items : [];
     pagination.totalPages = Number(payload.totalPages ?? 0);
@@ -242,5 +377,10 @@ const changePage = (newPage: number) => {
   loadAttempts();
 };
 
-onMounted(() => { loadAttempts(); });
+onMounted(() => { 
+  if (auth.isAuthenticated) {
+    loadFiltersData();
+  }
+  loadAttempts(); 
+});
 </script>
