@@ -62,6 +62,11 @@ const router = createRouter({
       name: 'profile',
       component: () => import('../views/ProfileView.vue'),
     },
+    {
+      path: '/math-test',
+      name: 'math-test',
+      component: () => import('../views/MathTest.vue'),
+    },
   ],
 });
 
