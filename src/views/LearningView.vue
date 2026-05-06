@@ -293,7 +293,7 @@
 
               <div class="prose max-w-none">
                 <p class="text-lg font-bold text-slate-900 leading-relaxed mb-6">
-                  <MathContent :content="q.content" />
+                  <MathContent :content="q.content" :format="q.contentFormat" />
                 </p>
                 <img v-if="q.url" :src="resolveAssetUrl(q.url)" class="rounded-2xl max-h-80 w-auto mb-6 shadow-sm border border-slate-100" />
               </div>
@@ -312,7 +312,7 @@
                     {{ String.fromCharCode(65 + Number(oi)) }}
                   </span>
                   <span class="text-sm font-bold" :class="opt.isCorrect ? 'text-emerald-700' : 'text-slate-600'">
-                    <MathContent :content="opt.content.replace(/^[A-D]\.\s*/, '')" />
+                    <MathContent :content="opt.content.replace(/^[A-D]\.\s*/, '')" :format="q.contentFormat" />
                   </span>
                   <i v-if="opt.isCorrect" class="fa-solid fa-check text-emerald-500 ml-auto"></i>
                 </div>
@@ -328,7 +328,7 @@
                 </div>
                 <div class="rounded-2xl bg-indigo-50/30 p-6 border border-indigo-100/50">
                   <p class="text-sm font-bold text-slate-700 leading-relaxed m-0 italic">
-                    <MathContent :content="q.explanation || q.sampleAnswer" />
+                    <MathContent :content="q.explanation || q.sampleAnswer" :format="q.contentFormat" />
                   </p>
                 </div>
               </div>

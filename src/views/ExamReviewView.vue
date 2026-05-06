@@ -125,7 +125,7 @@
             <!-- Question content -->
             <div class="px-6 py-6 sm:px-8 sm:py-8 flex flex-col grow">
               <h2 class="m-0 text-lg font-black leading-relaxed text-slate-900 transition-colors group-hover:text-indigo-700 min-h-[4.5rem]">
-                <MathContent :content="q.content || q.contentSnapshot || q.questionContent || 'Nội dung câu hỏi'" />
+                <MathContent :content="q.content || q.contentSnapshot || q.questionContent || 'Nội dung câu hỏi'" :format="q.contentFormat" />
               </h2>
 
               <div v-if="q.url" class="mt-6 overflow-hidden rounded-[1.5rem] border border-slate-100 bg-slate-50/50 p-3">
@@ -147,7 +147,7 @@
                     {{ String.fromCharCode(65 + Number(oi)) }}
                   </span>
                   <span class="relative z-10 text-base font-bold leading-relaxed grow transition-colors" :class="opt.isCorrect ? 'text-emerald-900' : (opt._isSelected ? 'text-rose-900' : 'text-slate-600')">
-                    <MathContent :content="opt.content" />
+                    <MathContent :content="opt.content.replace(/^[A-D]\.\s*/, '')" :format="q.contentFormat" />
                   </span>
                   <i v-if="opt.isCorrect" class="relative z-10 fa-solid fa-circle-check text-emerald-500 text-2xl shrink-0 animate-scale-in"></i>
                   <i v-else-if="opt._isSelected" class="relative z-10 fa-solid fa-circle-xmark text-rose-500 text-2xl shrink-0 animate-scale-in"></i>
@@ -177,7 +177,7 @@
                   {{ q.sampleAnswer ? 'DÁP ÁN MẪU' : 'GIẢI THÍCH CHI TIẾT' }}
                 </p>
                 <p class="text-sm text-slate-700 leading-relaxed m-0 font-bold whitespace-pre-line">
-                  <MathContent :content="q.explanation || q.sampleAnswer" />
+                  <MathContent :content="q.explanation || q.sampleAnswer" :format="q.contentFormat" />
                 </p>
               </div>
               <div v-else-if="!q._isCorrect && !q.explanation" class="mt-8 rounded-[1.5rem] border-2 border-slate-50 bg-slate-50/30 px-6 py-5 shrink-0">

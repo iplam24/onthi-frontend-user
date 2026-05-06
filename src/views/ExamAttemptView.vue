@@ -212,7 +212,7 @@
 
         <div class="px-6 py-7 sm:px-8 sm:py-8 flex flex-col grow">
           <h2 class="m-0 text-lg sm:text-xl font-bold leading-relaxed text-slate-800 transition-colors group-hover:text-indigo-700">
-            <MathContent :content="question.content" />
+            <MathContent :content="question.content" :format="question.contentFormat" />
           </h2>
 
           <div v-if="question.imageUrl" class="group/img mt-6 relative overflow-hidden rounded-[1.5rem] border border-slate-100 bg-slate-50/50 p-3">
@@ -256,7 +256,7 @@
                 {{ String.fromCharCode(65 + question.options.findIndex((x) => x.value === option.value)) }}
               </span>
               <span class="text-sm font-semibold leading-relaxed grow transition-colors" :class="isSelected(question.id, option.value) ? 'text-indigo-900' : 'text-slate-600'">
-                <MathContent :content="option.label.replace(/^[A-D]\.\s*/, '')" />
+                <MathContent :content="option.label.replace(/^[A-D]\.\s*/, '')" :format="question.contentFormat" />
               </span>
             </label>
           </div>
@@ -291,6 +291,7 @@ import MathContent from '@/components/common/MathContent.vue';
 type AttemptQuestion = {
   id: number;
   content: string;
+  contentFormat?: 'PLAIN_TEXT' | 'LATEX';
   imageUrl?: string;
   options: Array<{ label: string; value: string; optionId: number | null }>;
 };
@@ -322,6 +323,7 @@ type ExamQuestion = {
   questionContent?: string;
   contentSnapshot?: string;
   content?: string;
+  contentFormat?: 'PLAIN_TEXT' | 'LATEX';
   url?: string;
   options?: Array<{
     id?: number;
@@ -443,6 +445,7 @@ const normalizeQuestions = (items: ExamQuestion[] = []): AttemptQuestion[] =>
     return {
       id: Number(item.questionId ?? item.id),
       content: String(questionContent),
+      contentFormat: item.contentFormat,
       imageUrl: resolveAssetUrl(item.url),
       options: options.map((option, index) => {
         const parsedOptionId = Number(option.id);
