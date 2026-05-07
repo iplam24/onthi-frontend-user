@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import Cookies from 'js-cookie';
 
 type AuthUser = {
   id: number;
@@ -23,8 +24,8 @@ type LoginData = {
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: localStorage.getItem('token') || null,
-    user: JSON.parse(localStorage.getItem('user') || 'null') as AuthUser | null,
+    token: Cookies.get('token') || null,
+    user: JSON.parse(Cookies.get('user') || 'null') as AuthUser | null,
   }),
   getters: {
     isAuthenticated: (state) => !!state.token,
@@ -40,19 +41,20 @@ export const useAuthStore = defineStore('auth', {
         roles: data.roles,
         balance: data.balance ?? 0,
       };
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(this.user));
+      // Save to cookies with 7 days expiration
+      Cookies.set('token', data.token, { expires: 7 });
+      Cookies.set('user', JSON.stringify(this.user), { expires: 7 });
     },
     logout() {
       this.token = null;
       this.user = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      Cookies.remove('token');
+      Cookies.remove('user');
     },
     setUser(user: Partial<AuthUser>) {
       if (this.user) {
         this.user = { ...this.user, ...user };
-        localStorage.setItem('user', JSON.stringify(this.user));
+        Cookies.set('user', JSON.stringify(this.user), { expires: 7 });
       }
     },
   },

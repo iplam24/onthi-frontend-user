@@ -87,126 +87,53 @@
       </div>
 
       <!-- Questions list -->
-      <div v-if="questions.length" class="space-y-5">
+      <div v-if="questions.length" class="space-y-12">
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-extrabold text-slate-900 m-0 sm:text-2xl">Chi tiết từng câu hỏi</h2>
           <span class="text-sm font-semibold text-slate-600">{{ questions.length }} câu</span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
-          <article
-            v-for="(q, index) in questions"
-            :key="q.questionId || index"
-            class="animate-slide-up-reveal group flex flex-col h-full overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-2 transition-all duration-500 hover:border-indigo-100 hover:shadow-2xl hover:shadow-indigo-500/5"
-            :style="{ animationDelay: `${200 + Number(index) * 50}ms` }"
+        <div v-for="(section, sIndex) in sections" :key="sIndex" class="space-y-6">
+          <div v-if="section.title" class="flex items-center gap-4">
+            <div class="h-px grow bg-slate-100"></div>
+            <h3 class="m-0 text-sm font-black uppercase tracking-[0.3em] text-indigo-500 bg-white px-4">
+              {{ section.title }}
+            </h3>
+            <div class="h-px grow bg-slate-100"></div>
+          </div>
+
+          <div 
+            class="grid gap-8 items-stretch"
+            :class="[
+              uiLayoutHint === 'LITERATURE' || uiLayoutHint === 'ESSAY' 
+                ? 'grid-cols-1 max-w-4xl mx-auto' 
+                : 'grid-cols-1 md:grid-cols-2'
+            ]"
           >
-            <!-- Question header -->
-            <div class="flex items-center justify-between gap-3 border-b border-slate-50 px-6 py-3.5 bg-slate-50/50 rounded-t-[1.75rem]">
-              <div class="flex items-center gap-3">
-                <span
-                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black shadow-inner transition-all duration-500 group-hover:scale-110"
-                  :class="q._isCorrect ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'"
-                >
-                  {{ (Number(index) + 1).toString().padStart(2, '0') }}
-                </span>
-                <span
-                  class="inline-flex items-center gap-2 rounded-xl px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] shadow-sm border border-white"
-                  :class="q._isCorrect ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'"
-                >
-                  <i :class="q._isCorrect ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'"></i>
-                  {{ q._isCorrect ? 'Đúng' : 'Sai' }}
-                </span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span v-if="q.score" class="text-[10px] font-black uppercase tracking-widest text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-100">{{ q.score }} điểm</span>
-              </div>
-            </div>
-
-            <!-- Question content -->
-            <div class="px-6 py-6 sm:px-8 sm:py-8 flex flex-col grow">
-              <h2 class="m-0 text-lg font-black leading-relaxed text-slate-900 transition-colors group-hover:text-indigo-700 min-h-[4.5rem]">
-                <MathContent :content="q.content || q.contentSnapshot || q.questionContent || 'Nội dung câu hỏi'" :format="q.contentFormat" />
-              </h2>
-
-              <div v-if="q.url" class="mt-6 overflow-hidden rounded-[1.5rem] border border-slate-100 bg-slate-50/50 p-3">
-                <img :src="resolveAssetUrl(q.url)" class="max-h-64 rounded-xl object-contain w-full transition-transform duration-500 group-hover:scale-[1.02]" alt="Hình ảnh câu hỏi" />
-              </div>
-
-              <!-- Options -->
-              <div v-if="q._options && q._options.length" class="mt-8 space-y-4 grow">
-                <div
-                  v-for="(opt, oi) in q._options"
-                  :key="opt.id || oi"
-                  class="flex items-center gap-4 rounded-2xl border-2 px-5 py-4 transition-all duration-300 relative overflow-hidden"
-                  :class="getOptionClass(opt)"
-                >
-                  <span
-                    class="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-black shadow-sm transition-all duration-300"
-                    :class="opt.isCorrect ? 'bg-emerald-500 text-white' : (opt._isSelected ? 'bg-rose-500 text-white' : 'bg-white text-slate-600 border border-slate-100')"
-                  >
-                    {{ String.fromCharCode(65 + Number(oi)) }}
-                  </span>
-                  <span class="relative z-10 text-base font-bold leading-relaxed grow transition-colors" :class="opt.isCorrect ? 'text-emerald-900' : (opt._isSelected ? 'text-rose-900' : 'text-slate-600')">
-                    <MathContent :content="opt.content.replace(/^[A-D]\.\s*/, '')" :format="q.contentFormat" />
-                  </span>
-                  <i v-if="opt.isCorrect" class="relative z-10 fa-solid fa-circle-check text-emerald-500 text-2xl shrink-0 animate-scale-in"></i>
-                  <i v-else-if="opt._isSelected" class="relative z-10 fa-solid fa-circle-xmark text-rose-500 text-2xl shrink-0 animate-scale-in"></i>
-                </div>
-              </div>
-
-              <!-- Answer Summary -->
-              <div v-if="q._options && q._options.length" class="mt-8 pt-6 border-t border-slate-50 flex flex-col gap-3">
-                <div class="flex items-center gap-4">
-                  <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 w-24">Bạn đã chọn:</span>
-                  <span class="text-sm font-black" :class="q._isCorrect ? 'text-emerald-600' : (q._options.find((o: any) => o._isSelected) ? 'text-rose-600' : 'text-slate-300')">
-                    <MathContent 
-                      v-if="q._options.find((o: any) => o._isSelected)"
-                      :content="q._options.find((o: any) => o._isSelected).content.replace(/^[A-D]\.\s*/, '')" 
-                      :format="q.contentFormat" 
-                    />
-                    <span v-else>Chưa chọn</span>
-                  </span>
-                </div>
-                <div v-if="!q._isCorrect" class="flex items-center gap-4">
-                  <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 w-24">Đáp án đúng:</span>
-                  <span class="text-sm font-black text-emerald-600">
-                    <MathContent 
-                      v-if="q._options.find((o: any) => o.isCorrect)"
-                      :content="q._options.find((o: any) => o.isCorrect).content.replace(/^[A-D]\.\s*/, '')" 
-                      :format="q.contentFormat" 
-                    />
-                    <span v-else>Đang cập nhật</span>
-                  </span>
-                </div>
-              </div>
-
-              <!-- Essay Answer -->
-              <div v-if="(!q._options || !q._options.length) && q._essayAnswer" class="mt-8 pt-6 border-t border-slate-50 flex flex-col gap-3">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 m-0">Câu trả lời của bạn:</p>
-                <div class="rounded-2xl bg-slate-50 p-5 text-sm font-semibold text-slate-800 border border-slate-100">
-                  <MathContent :content="q._essayAnswer" :format="q.contentFormat" />
-                </div>
-              </div>
-
-              <!-- Explanation / Sample Answer -->
-              <div v-if="q.explanation || q.sampleAnswer" class="mt-8 rounded-[1.5rem] border-2 border-blue-100 bg-blue-50/30 px-6 py-6 shrink-0 shadow-xl shadow-blue-500/5">
-                <p class="text-[10px] font-black uppercase tracking-[0.25em] text-blue-500 m-0 mb-4 flex items-center">
-                  <i class="fa-solid fa-lightbulb mr-2 text-blue-400 text-base"></i> 
-                  {{ q.sampleAnswer ? 'DÁP ÁN MẪU' : 'GIẢI THÍCH CHI TIẾT' }}
-                </p>
-                <p class="text-sm text-slate-700 leading-relaxed m-0 font-bold whitespace-pre-line">
-                  <MathContent :content="q.explanation || q.sampleAnswer" :format="q.contentFormat" />
-                </p>
-              </div>
-              <div v-else-if="!q._isCorrect && !q.explanation" class="mt-8 rounded-[1.5rem] border-2 border-slate-50 bg-slate-50/30 px-6 py-5 shrink-0">
-                <p class="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 m-0 flex items-center">
-                  <i class="fa-solid fa-circle-info mr-2 text-slate-300"></i> Chưa có giải thích cho câu hỏi này
-                </p>
-              </div>
-            </div>
-          </article>
+            <QuestionCard
+              v-for="(q, index) in section.questions"
+              :key="q.questionId || index"
+              :id="q.questionId"
+              :index="Number(index) + 1"
+              :content="q.content"
+              :content-format="q.contentFormat"
+              :image-url="q.url ? resolveAssetUrl(q.url) : undefined"
+              :options="q._options"
+              :score="q.score"
+              :is-review="true"
+              :is-correct="q._isCorrect"
+              :essay-answer="q._essayAnswer"
+              :explanation="q.explanation"
+              :sample-answer="q.sampleAnswer"
+              :feedback="q._feedback"
+              :grading-method="q._gradingMethod"
+              :ui-layout-hint="uiLayoutHint"
+              :animation-delay="200 + Number(index) * 50"
+              @zoom="resolveAssetUrl($event)"
+            />
         </div>
       </div>
+    </div>
 
       <!-- No questions fallback -->
       <div v-else class="card-elevated px-6 py-14 text-center">
@@ -231,6 +158,7 @@ import { getExamById } from '@/services/examService';
 import { getQuestionById } from '@/services/questionService';
 import QuestionEditModal from '@/components/admin/QuestionEditModal.vue';
 import MathContent from '@/components/common/MathContent.vue';
+import QuestionCard from '@/components/common/QuestionCard.vue';
 
 const auth = useAuthStore();
 
@@ -249,6 +177,8 @@ const loading = ref(true);
 const error = ref<string | null>(null);
 const attempt = ref<any>(null);
 const questions = ref<any[]>([]);
+const sections = ref<Array<{ title: string; questions: any[] }>>([]);
+const uiLayoutHint = ref<'STANDARD' | 'LITERATURE' | 'ESSAY' | 'MIXED'>('STANDARD');
 
 // Admin Edit Logic (Removed)
 
@@ -275,50 +205,69 @@ const loadAttempt = async () => {
       try {
         const examRes = await getExamById(examId);
         const examData = examRes.data?.data || examRes.data;
+        uiLayoutHint.value = examData.uiLayoutHint || 'STANDARD';
 
         if (examData?.questions?.length) {
           const submittedAnswers: any[] = attemptData.details || attemptData.answers || attemptData.submittedAnswers || [];
-
-          // Fetch full details for each question to get isCorrect and explanation
           const detailedQuestions = await Promise.all(
-            examData.questions.map(async (q: any) => {
+            submittedAnswers.map(async (ans: any) => {
+              const qId = ans.questionId || ans.question?.id;
+              if (!qId) return null;
               try {
-                const qId = q.questionId || q.id;
                 const qRes = await getQuestionById(qId);
-                return qRes.data?.data || qRes.data || q;
-              } catch {
-                return q; // Fallback to basic info if detail fetch fails
+                const qData = qRes.data?.data || qRes.data;
+                return { ...qData, userAnswer: ans };
+              } catch (err) {
+                console.error(`Failed to fetch question ${qId}:`, err);
+                return { id: qId, userAnswer: ans, content: 'Không thể tải nội dung câu hỏi.' };
               }
             })
-          );
+          ).then(results => results.filter(r => r !== null));
 
           questions.value = detailedQuestions.map((q: any) => {
+            const userAnswer = q.userAnswer;
             const qId = q.id || q.questionId;
-            const userAnswer = submittedAnswers.find((a: any) =>
-              (a.questionId === qId) || (a.question?.id === qId)
-            );
-
-            const options = q.options || [];
+            
+            const rawOptions = q.options || q.questionOptions || q.choices || [];
+            const options = Array.isArray(rawOptions) ? rawOptions : [];
+            
             const selectedOptionId = userAnswer?.selectedOptionId ?? userAnswer?.optionId;
             const correctOption = options.find((o: any) => o.isCorrect);
 
             const isCorrect = userAnswer && userAnswer.isCorrect !== undefined 
                 ? userAnswer.isCorrect 
-                : (selectedOptionId ? correctOption?.id === selectedOptionId : false);
+                : (selectedOptionId ? String(correctOption?.id) === String(selectedOptionId) : false);
 
             return {
               ...q,
               questionId: qId,
               score: userAnswer?.score ?? q.score,
               content: q.content || q.contentSnapshot || '',
+              url: q.url || q.imageUrl,
+              explanation: q.explanation || userAnswer?.explanation || null,
+              sampleAnswer: q.sampleAnswer || userAnswer?.sampleAnswer || null,
               _options: options.map((opt: any) => ({
                 ...opt,
-                _isSelected: opt.id === selectedOptionId,
+                _isSelected: String(opt.id) === String(selectedOptionId),
               })),
               _isCorrect: isCorrect,
               _essayAnswer: userAnswer?.essayAnswer ?? null,
+              _feedback: userAnswer?.feedback ?? userAnswer?.aiFeedback ?? null,
+              _gradingMethod: userAnswer?.gradingMethod ?? null,
             };
           });
+
+          if (examData.sections && examData.sections.length > 0) {
+            sections.value = examData.sections.map((s: any) => {
+              const sectionQuestionIds = (s.questions || []).map((sq: any) => sq.questionId || sq.id);
+              return {
+                title: s.title,
+                questions: questions.value.filter((q: any) => sectionQuestionIds.includes(q.questionId))
+              };
+            });
+          } else {
+            sections.value = [{ title: '', questions: questions.value }];
+          }
         }
       } catch {
         // If exam fetch fails, just show score without details
@@ -326,6 +275,7 @@ const loadAttempt = async () => {
       }
     }
   } catch (err) {
+    console.error('[loadAttempt:error]', err);
     error.value = 'Không thể tải chi tiết bài thi. Vui lòng thử lại sau.';
   } finally {
     loading.value = false;

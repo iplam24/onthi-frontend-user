@@ -124,7 +124,7 @@
                       : 'border-slate-200 bg-white text-slate-400 hover:border-indigo-200 hover:text-indigo-500',
                 ]"
               >
-                {{ index + 1 }}
+                {{ Number(index) + 1 }}
               </button>
             </div>
           </div>
@@ -193,84 +193,42 @@
       </div>
     </div>
 
-    <form v-else-if="attempt" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch mt-8" @submit.prevent="handleSubmit">
-      <article
-        v-for="(question, index) in questions"
-        :id="`q-${question.id}`"
-        :key="question.id"
-        class="animate-slide-up-reveal group flex flex-col h-full overflow-hidden rounded-[2rem] border border-slate-100/80 bg-white transition-all duration-500 hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5"
-        :style="{ animationDelay: `${index * 40}ms` }"
-      >
-        <div class="flex items-center justify-between gap-3 border-b border-slate-50 px-6 py-3.5 bg-slate-50/50">
-          <div class="flex items-center gap-3">
-            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white text-[11px] font-black shadow-lg shadow-indigo-500/20">
-              {{ (index + 1).toString().padStart(2, '0') }}
-            </span>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Câu hỏi</span>
-          </div>
+    <form v-else-if="attempt" class="space-y-12 mt-8" @submit.prevent="handleSubmit">
+      <div v-for="(section, sIndex) in sections" :key="sIndex" class="space-y-6">
+        <div v-if="section.title" class="flex items-center gap-4">
+          <div class="h-px grow bg-slate-100"></div>
+          <h3 class="m-0 text-sm font-black uppercase tracking-[0.3em] text-indigo-500 bg-white px-4">
+            {{ section.title }}
+          </h3>
+          <div class="h-px grow bg-slate-100"></div>
         </div>
 
-        <div class="px-6 py-7 sm:px-8 sm:py-8 flex flex-col grow">
-          <h2 class="m-0 text-lg sm:text-xl font-bold leading-relaxed text-slate-800 transition-colors group-hover:text-indigo-700">
-            <MathContent :content="question.content" :format="question.contentFormat" />
-          </h2>
-
-          <div v-if="question.imageUrl" class="group/img mt-6 relative overflow-hidden rounded-[1.5rem] border border-slate-100 bg-slate-50/50 p-3">
-            <img
-              :src="question.imageUrl"
-              :alt="question.content"
-              class="max-h-[360px] w-full rounded-xl object-contain transition-all duration-500 group-hover/img:scale-[1.02] cursor-zoom-in"
-              loading="lazy"
-              @click="zoomImageUrl = question.imageUrl"
-            />
-            <button 
-              type="button"
-              @click="zoomImageUrl = question.imageUrl"
-              class="absolute bottom-6 right-6 flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-slate-600 shadow-xl backdrop-blur-md opacity-0 transition-all duration-300 group-hover/img:opacity-100 hover:bg-indigo-600 hover:text-white"
-              title="Phóng to ảnh"
-            >
-              <i class="fa-solid fa-magnifying-glass-plus text-sm"></i>
-            </button>
-          </div>
-
-          <div v-if="question.options.length" class="mt-8 space-y-4 grow">
-            <label
-              v-for="option in question.options"
-              :key="`${question.id}-${option.value}`"
-              @click="currentQuestionId = question.id"
-              class="flex cursor-pointer items-center gap-4 rounded-2xl border-2 px-5 py-3.5 transition-all duration-300"
-              :class="isSelected(question.id, option.value) 
-                ? 'border-indigo-400 bg-indigo-50/40 shadow-md shadow-indigo-500/5' 
-                : 'border-slate-100 bg-slate-50/20 hover:border-indigo-200 hover:bg-white hover:shadow-sm'"
-            >
-              <input
-                v-model="answers[question.id]"
-                :value="option.value"
-                type="radio"
-                :name="`question-${question.id}`"
-                class="hidden"
-              />
-              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-black shadow-sm transition-all duration-300"
-                :class="isSelected(question.id, option.value) ? 'bg-indigo-600 text-white scale-105' : 'bg-white text-slate-400 border border-slate-100'"
-              >
-                {{ String.fromCharCode(65 + question.options.findIndex((x) => x.value === option.value)) }}
-              </span>
-              <span class="text-sm font-semibold leading-relaxed grow transition-colors" :class="isSelected(question.id, option.value) ? 'text-indigo-900' : 'text-slate-600'">
-                <MathContent :content="option.label.replace(/^[A-D]\.\s*/, '')" :format="question.contentFormat" />
-              </span>
-            </label>
-          </div>
-
-          <div v-else class="mt-8 grow">
-            <textarea
-              v-model="answers[question.id]"
-              @focus="currentQuestionId = question.id"
-              :placeholder="`Nhập đáp án của bạn tại đây...`"
-              class="w-full h-40 rounded-2xl border-2 border-slate-100 bg-slate-50/30 px-6 py-5 text-sm font-semibold text-slate-800 outline-none transition-all duration-300 focus:border-indigo-400 focus:bg-white focus:shadow-lg focus:shadow-indigo-500/5 resize-none"
-            ></textarea>
-          </div>
+        <div 
+          class="grid gap-6 items-stretch"
+          :class="[
+            uiLayoutHint === 'LITERATURE' || uiLayoutHint === 'ESSAY' 
+              ? 'grid-cols-1 max-w-5xl mx-auto px-4 sm:px-8' 
+              : 'grid-cols-1 md:grid-cols-2'
+          ]"
+        >
+          <QuestionCard
+            v-for="(question, index) in section.questions"
+            :key="question.id"
+            :id="question.id"
+            :index="questions.findIndex(q => q.id === question.id) + 1"
+            :content="question.content"
+            :content-format="question.contentFormat"
+            :image-url="question.imageUrl"
+            :options="question.options"
+            v-model="answers[question.id]"
+            :ui-layout-hint="uiLayoutHint"
+            :animation-delay="Number(index) * 40"
+            @select="answers[question.id] = $event"
+            @zoom="zoomImageUrl = $event"
+            @focus="currentQuestionId = question.id"
+          />
         </div>
-      </article>
+      </div>
     </form>
   </section>
   </div>
@@ -282,11 +240,12 @@ import type { AxiosError } from 'axios';
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import { startAttempt, submitAttempt, getAttemptById, reportViolation } from '@/services/attemptService';
+import { startAttempt, submitAttempt, getAttemptById, reportViolation, getMyAttempts } from '@/services/attemptService';
 import { getExamById } from '@/services/examService';
 import { checkInStreak } from '@/services/userService';
 import QuestionEditModal from '@/components/admin/QuestionEditModal.vue';
 import MathContent from '@/components/common/MathContent.vue';
+import QuestionCard from '@/components/common/QuestionCard.vue';
 
 type AttemptQuestion = {
   id: number;
@@ -337,6 +296,8 @@ type ExamDetails = {
   id: number;
   title?: string;
   duration?: number;
+  uiLayoutHint?: 'STANDARD' | 'LITERATURE' | 'ESSAY' | 'MIXED';
+  sections?: Array<{ title: string; questions: any[] }>;
   questions?: ExamQuestion[];
 };
 
@@ -370,6 +331,8 @@ const redirectInterval = ref<ReturnType<typeof setInterval> | null>(null);
 const tabSwitchCount = ref(0);
 const isCheating = ref(false); // New ref to track cheating status
 const streakCheckedIn = ref(false);
+const uiLayoutHint = ref<'STANDARD' | 'LITERATURE' | 'ESSAY' | 'MIXED'>('STANDARD');
+const sections = ref<Array<{ title: string; questions: AttemptQuestion[] }>>([]);
 const answers = reactive<Record<number, string>>({});
 const zoomImageUrl = ref<string | null>(null);
 let initPromise: Promise<void> | null = null;
@@ -439,7 +402,9 @@ const resolveAssetUrl = (assetUrl?: string) => {
 
 const normalizeQuestions = (items: ExamQuestion[] = []): AttemptQuestion[] =>
   items.map((item) => {
-    const options = Array.isArray(item.options) ? item.options : [];
+    // Check multiple possible field names for options
+    const rawOptions = item.options || (item as any).questionOptions || (item as any).choices || [];
+    const options = Array.isArray(rawOptions) ? rawOptions : [];
     const questionContent = item.questionContent ?? item.contentSnapshot ?? item.content ?? '';
 
     return {
@@ -630,12 +595,66 @@ const loadAttempt = async () => {
       Object.assign(answers, draft.answers);
       tabSwitchCount.value = Number(draft.tabSwitchCount ?? 0);
     } else {
-      const attemptResponse = await startAttempt(examId.value);
-      const attemptPayload = attemptResponse.data?.data ?? attemptResponse.data;
-      const attemptId = getAttemptIdFromPayload(attemptPayload);
+      // Step 1: Check if there's an ongoing (DOING) attempt for this exam
+      console.log('[loadAttempt:checkExisting] Checking for ongoing attempts...');
+      let ongoingAttempt = null;
+      
+      try {
+        const existingAttemptsResponse = await getMyAttempts({ 
+          status: 'DOING',
+          size: 50 // Get more to be sure
+        });
+        
+        const content = existingAttemptsResponse.data?.data?.content || existingAttemptsResponse.data?.content || [];
+        // Manual filter to be 100% sure we match the current exam
+        ongoingAttempt = content.find((a: any) => Number(a.examId) === Number(examId.value));
+      } catch (e) {
+        console.warn('[loadAttempt:checkExisting] Failed to pre-check attempts:', e);
+      }
 
+      let attemptPayload;
+      if (ongoingAttempt) {
+        console.log('[loadAttempt:continue] Found ongoing attempt via pre-check:', ongoingAttempt);
+        attemptPayload = ongoingAttempt;
+      } else {
+        try {
+          // Step 2: If no ongoing attempt found, try to start a new one
+          console.log('[loadAttempt:start] No ongoing attempt. Starting new one...');
+          const attemptResponse = await startAttempt(examId.value);
+          attemptPayload = attemptResponse.data?.data ?? attemptResponse.data;
+        } catch (err: any) {
+          // Step 3: Handle the case where backend says it exists even if pre-check missed it
+          const errMsg = err.response?.data?.message || err.message || '';
+          if (errMsg.includes('chưa nộp') || errMsg.includes('already has a doing attempt') || err.response?.status === 400) {
+            console.log('[loadAttempt:fallback] Backend reported existing attempt. Fetching all DOING attempts to find match...');
+            const fallbackResponse = await getMyAttempts({ status: 'DOING', size: 100 });
+            const fallbackContent = fallbackResponse.data?.data?.content || fallbackResponse.data?.content || [];
+            
+            // Try to find by examId first, if not find the most recent DOING one
+            ongoingAttempt = fallbackContent.find((a: any) => Number(a.examId ?? a.exam?.id) === Number(examId.value));
+            
+            if (!ongoingAttempt && fallbackContent.length > 0) {
+              // If still not found by ID, maybe the backend doesn't return examId in the list, 
+              // take the first DOING one as a last resort if it's the only one
+              ongoingAttempt = fallbackContent[0];
+            }
+
+            if (ongoingAttempt) {
+              console.log('[loadAttempt:fallback:success] Found attempt to resume:', ongoingAttempt);
+              attemptPayload = ongoingAttempt;
+            } else {
+              throw err; 
+            }
+          } else {
+            throw err;
+          }
+        }
+      }
+
+      const attemptId = getAttemptIdFromPayload(attemptPayload);
       if (!attemptId) {
-        throw new Error('Invalid start attempt payload');
+        console.error('[loadAttempt:error] No attemptId in payload:', attemptPayload);
+        throw new Error('Invalid attempt payload');
       }
 
       attempt.value = {
@@ -644,11 +663,23 @@ const loadAttempt = async () => {
         startTime: attemptPayload.startTime ?? attemptPayload.startedAt ?? new Date().toISOString(),
       };
 
+      // (Optional) If the backend returns answers in the ongoing attempt, restore them
+      if (ongoingAttempt?.answers && Array.isArray(ongoingAttempt.answers)) {
+        ongoingAttempt.answers.forEach((ans: any) => {
+          if (ans.questionId) {
+            const val = ans.selectedOptionId ? String(ans.selectedOptionId) : (ans.essayAnswer || '');
+            if (val) answers[ans.questionId] = val;
+          }
+        });
+      }
+
       clearDraft();
       saveDraft();
     }
 
+    console.log('[loadAttempt:step2] Calling getExamById for examId:', examId.value);
     const examResponse = await getExamById(examId.value);
+    console.log('[loadAttempt:step2] getExamById success:', examResponse);
     const examPayload = (examResponse.data?.data ?? examResponse.data) as ExamDetails | undefined;
 
     if (!examPayload) {
@@ -656,7 +687,21 @@ const loadAttempt = async () => {
     }
 
     examTitle.value = examPayload.title ?? '';
-    questions.value = normalizeQuestions(examPayload.questions ?? []);
+    uiLayoutHint.value = examPayload.uiLayoutHint ?? 'STANDARD';
+    const allQuestions = normalizeQuestions(examPayload.questions ?? []);
+    questions.value = allQuestions;
+
+    if (examPayload.sections && examPayload.sections.length > 0) {
+      sections.value = examPayload.sections.map(s => {
+        const sectionQuestionIds = (s.questions || []).map((sq: any) => sq.questionId || sq.id);
+        return {
+          title: s.title,
+          questions: allQuestions.filter(q => sectionQuestionIds.includes(q.id))
+        };
+      });
+    } else {
+      sections.value = [{ title: '', questions: allQuestions }];
+    }
 
     if (!questions.value.length) {
       throw new Error('Exam has no questions');
@@ -675,6 +720,7 @@ const loadAttempt = async () => {
   try {
     await initPromise;
   } catch (err) {
+    console.error('[loadAttempt:error]', err);
     error.value = getApiErrorMessage(err, 'Không thể bắt đầu bài thi. Vui lòng thử lại.');
   } finally {
     initPromise = null;
@@ -765,6 +811,35 @@ const handleSubmit = async () => {
     });
     result.value = mapSubmitResult(response.data?.data ?? response.data);
     
+    // Celebration effects
+    if (typeof (window as any).confetti === 'function') {
+      (window as any).confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#6366f1', '#4f46e5', '#06b6d4', '#10b981']
+      });
+      
+      // Secondary burst
+      setTimeout(() => {
+        (window as any).confetti({
+          particleCount: 100,
+          spread: 100,
+          origin: { y: 0.7 },
+          colors: ['#f59e0b', '#ef4444', '#8b5cf6']
+        });
+      }, 300);
+    }
+
+    // Success sound
+    try {
+      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
+      audio.volume = 0.5;
+      void audio.play();
+    } catch (e) {
+      console.warn('Failed to play success sound:', e);
+    }
+
     // Check-in streak only if not already active today
     if (!auth.user?.activeToday) {
       try {

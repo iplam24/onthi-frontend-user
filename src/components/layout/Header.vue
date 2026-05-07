@@ -18,7 +18,6 @@
         </div>
         <div>
           <p class="m-0 text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl">{{ appName }}</p>
-          <p class="m-0 text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-500">Learning Platform</p>
         </div>
       </router-link>
 

@@ -6,6 +6,16 @@ export type SubmitAnswerPayload = {
   essayAnswer: string | null;
 };
 
+export type AttemptAnswerResponse = {
+  questionId: number;
+  selectedOptionId: number | null;
+  essayAnswer: string | null;
+  score: number;
+  isCorrect: boolean;
+  feedback?: string;
+  gradingMethod?: string;
+};
+
 export type SubmitAttemptPayload = {
   answers: SubmitAnswerPayload[];
   tabSwitchCount: number;
@@ -45,7 +55,7 @@ export type AttemptFilterParams = {
 };
 
 export const startAttempt = (examId: number) => {
-  console.log('[attempt:start] request body', { examId });
+  console.log('[attempt:start] request body:', { examId });
   return api.post('/attempts/start', { examId });
 };
 
