@@ -170,7 +170,7 @@
                        <span v-if="attempt.subjectName" class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-0.5 text-[10px] font-black text-indigo-600">{{ attempt.subjectName }}</span>
                     </div>
                     <h3 class="m-0 text-lg font-extrabold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
-                      {{ attempt.examTitle || `Đề thi #${attempt.examId}` }}
+                      <MathContent :content="attempt.examTitle || `Đề thi #${attempt.examId}`" />
                     </h3>
                     <p class="mt-1.5 m-0 text-xs font-medium text-slate-400 flex items-center gap-2">
                       <i class="fa-regular fa-calendar text-[10px]"></i>
@@ -242,6 +242,7 @@ import { onMounted, reactive, ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { getMyAttempts, type AttemptHistoryItem, type AttemptFilterParams } from '@/services/attemptService';
 import { getLevels, getSubjects, type LevelItem, type SubjectItem } from '@/services/learningService';
+import MathContent from '@/components/common/MathContent.vue';
 
 const auth = useAuthStore();
 const loading = ref(false);

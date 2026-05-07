@@ -17,7 +17,10 @@ const renderedContent = computed(() => {
   let text = props.content;
   let hasDelimiters = false;
 
-  if (props.format === 'LATEX') {
+  // Auto-detect LaTeX if not explicitly provided but contains common math symbols
+  const isLatex = props.format === 'LATEX' || /\\frac|\\sqrt|\\int|\\sum|\^|_|\\begin|\\end|\$|\\\(|\\\[/.test(text);
+
+  if (isLatex) {
     // Replace block math $$ ... $$
     text = text.replace(/\$\$([\s\S]+?)\$\$/g, (match, formula) => {
       hasDelimiters = true;
@@ -48,35 +51,34 @@ const renderedContent = computed(() => {
       }
     });
 
-    // Replace inline math $ ... $
+    // Replace inline math $ ... $ (only if it looks like math, e.g. contains backslash, ^, _, or more than 1 char)
     text = text.replace(/\$([\s\S]+?)\$/g, (match, formula) => {
-      hasDelimiters = true;
-      try {
-        return katex.renderToString(formula, { displayMode: false, throwOnError: false });
-      } catch (e) {
-        return match;
+      if (formula.length > 0) {
+        hasDelimiters = true;
+        try {
+          return katex.renderToString(formula, { displayMode: false, throwOnError: false });
+        } catch (e) {
+          return match;
+        }
       }
+      return match;
     });
 
-    // Fallback: If no delimiters were found but format is LATEX, 
-    // split the text into non-math and math parts to avoid font errors on leading text.
+    // Fallback: If no delimiters were found but it's likely LaTeX, 
+    // render the whole thing or detect the math part
     if (!hasDelimiters) {
-      const firstMathTrigger = text.search(/\\|\^|_/);
-      if (firstMathTrigger !== -1) {
-        const prefix = text.substring(0, firstMathTrigger);
-        const mathPart = text.substring(firstMathTrigger);
-        
-        // We only attempt this if the math part looks substantial or the whole thing starts with math
-        if (firstMathTrigger === 0 || mathPart.length > 3) {
-          try {
-            // Check for Vietnamese in the math part - if present, maybe don't render as math
-            const containsVietnameseInMath = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(mathPart);
-            if (!containsVietnameseInMath) {
-              text = prefix + katex.renderToString(mathPart, { displayMode: false, throwOnError: false });
-            }
-          } catch (e) {
-            // Keep original
+      // Check if it's purely math or starts with a math symbol
+      const startsWithMath = /^[\\\$]/.test(text.trim());
+      const containsMathCommand = /\\(frac|sqrt|alpha|beta|gamma|theta|pi|infty|int|sum|prod|lim|log|sin|cos|tan)/.test(text);
+      
+      if (startsWithMath || containsMathCommand) {
+        try {
+          const containsVietnamese = /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(text);
+          if (!containsVietnamese) {
+            return katex.renderToString(text, { displayMode: false, throwOnError: false });
           }
+        } catch (e) {
+          // Keep original
         }
       }
     }

@@ -572,17 +572,33 @@ const startTimer = (startTime: string, durationMinutes: number) => {
 
   const startedAt = new Date(startTime).getTime();
   const endTime = startedAt + durationMinutes * 60 * 1000;
+  
+  // Flag to prevent immediate submission on first tick due to clock skew
+  let isFirstTick = true;
 
   const updateTimer = () => {
-    const remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+    const now = Date.now();
+    const remaining = Math.max(0, Math.floor((endTime - now) / 1000));
     timeRemainingSeconds.value = remaining;
 
     if (remaining <= 0) {
       stopTimer();
+      
+      // If it's the very first tick and the attempt is "new" (started < 30s ago), 
+      // don't auto-submit. This handles server-client clock skew.
+      const isVeryRecent = (now - startedAt) < 30000;
+      if (isFirstTick && isVeryRecent) {
+        console.warn('Timer started at <= 0 but attempt is very recent. Ignoring auto-submit to allow for clock skew.');
+        timeRemainingSeconds.value = 1; // Give it at least 1s
+        isFirstTick = false;
+        return;
+      }
+
       if (attempt.value && !submitting.value && !result.value) {
         void handleSubmit();
       }
     }
+    isFirstTick = false;
   };
 
   updateTimer();
@@ -670,30 +686,24 @@ const isSelected = (questionId: number, optionValue: string) => answers[question
 
 const handleVisibilityChange = () => {
   if (document.hidden) {
-    if (isCheating.value) {
-      // If already cheating, do nothing or log for further monitoring
-      console.warn('Cheating already detected, ignoring further tab switches.'); //
-      // If cheating is already detected, we still want to ensure the exam is submitted
-      // and the cheating message persists.
+    if (isCheating.value || result.value) {
       return;
     }
 
     tabSwitchCount.value += 1;
     console.log(`Tab switch detected. Current count: ${tabSwitchCount.value}`);
 
-    // Report violation to the server
     if (attempt.value?.attemptId) {
       void reportViolation(attempt.value.attemptId, 'TAB_SWITCH').catch((err) => {
         console.error('Failed to report tab switch violation:', err);
       });
     }
 
-    const MAX_TAB_SWITCHES = 7; // Define the threshold for cheating
+    const MAX_TAB_SWITCHES = 15; // Increased threshold
     if (tabSwitchCount.value > MAX_TAB_SWITCHES) {
       isCheating.value = true;
       error.value = 'Bạn đã mở tab quá nhiều lần và bị phát hiện gian lận. Bài thi của bạn đã bị nộp.';
       console.warn('Cheating detected! Automatically submitting exam.');
-      // Automatically submit the exam, ensuring the cheating error message is preserved.
       void handleSubmit();
     }
   }
@@ -755,12 +765,15 @@ const handleSubmit = async () => {
     });
     result.value = mapSubmitResult(response.data?.data ?? response.data);
     
-    // Check-in streak
-    try {
-      await checkInStreak();
-      streakCheckedIn.value = true;
-    } catch (err) {
-      console.warn('Failed to check-in streak:', err);
+    // Check-in streak only if not already active today
+    if (!auth.user?.activeToday) {
+      try {
+        await checkInStreak();
+        streakCheckedIn.value = true;
+        auth.setUser({ activeToday: true }); // Update store state
+      } catch (err) {
+        console.warn('Failed to check-in streak:', err);
+      }
     }
 
     stopTimer();
@@ -793,7 +806,11 @@ watch(
 );
 
 onMounted(() => {
-  document.addEventListener('visibilitychange', handleVisibilityChange);
+  // Delay visibility monitoring to avoid issues during page transition
+  setTimeout(() => {
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+  }, 2000);
+  
   void loadAttempt();
 });
 

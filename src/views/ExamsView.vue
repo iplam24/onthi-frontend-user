@@ -321,6 +321,9 @@ const startExam = (exam: ExamDisplayItem) => {
     return;
   }
 
+  // Clear any existing draft for this exam to ensure a fresh start
+  sessionStorage.removeItem(`v-edu-exam-draft:${exam.id}`);
+
   router.push(`/exams/${exam.id}/attempt`);
 };
 

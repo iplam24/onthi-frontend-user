@@ -159,14 +159,32 @@
                 <div class="flex items-center gap-4">
                   <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 w-24">Bạn đã chọn:</span>
                   <span class="text-sm font-black" :class="q._isCorrect ? 'text-emerald-600' : (q._options.find((o: any) => o._isSelected) ? 'text-rose-600' : 'text-slate-300')">
-                    {{ q._options.find((o: any) => o._isSelected)?.content || 'Chưa chọn' }}
+                    <MathContent 
+                      v-if="q._options.find((o: any) => o._isSelected)"
+                      :content="q._options.find((o: any) => o._isSelected).content.replace(/^[A-D]\.\s*/, '')" 
+                      :format="q.contentFormat" 
+                    />
+                    <span v-else>Chưa chọn</span>
                   </span>
                 </div>
                 <div v-if="!q._isCorrect" class="flex items-center gap-4">
                   <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 w-24">Đáp án đúng:</span>
                   <span class="text-sm font-black text-emerald-600">
-                    {{ q._options.find((o: any) => o.isCorrect)?.content || 'Đang cập nhật' }}
+                    <MathContent 
+                      v-if="q._options.find((o: any) => o.isCorrect)"
+                      :content="q._options.find((o: any) => o.isCorrect).content.replace(/^[A-D]\.\s*/, '')" 
+                      :format="q.contentFormat" 
+                    />
+                    <span v-else>Đang cập nhật</span>
                   </span>
+                </div>
+              </div>
+
+              <!-- Essay Answer -->
+              <div v-if="(!q._options || !q._options.length) && q._essayAnswer" class="mt-8 pt-6 border-t border-slate-50 flex flex-col gap-3">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 m-0">Câu trả lời của bạn:</p>
+                <div class="rounded-2xl bg-slate-50 p-5 text-sm font-semibold text-slate-800 border border-slate-100">
+                  <MathContent :content="q._essayAnswer" :format="q.contentFormat" />
                 </div>
               </div>
 
