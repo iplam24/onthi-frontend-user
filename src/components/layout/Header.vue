@@ -264,8 +264,10 @@ const userMenuOpen = ref(false);
 
 const dropdownLinks = [
   { to: '/profile', label: 'Thông tin cá nhân', icon: 'fa-user-gear', bg: 'bg-indigo-50', color: 'text-indigo-600' },
-  { to: '/attempts', label: 'Lịch sử làm bài', icon: 'fa-clock-rotate-left', bg: 'bg-emerald-50', color: 'text-emerald-600' },
-  { to: '/evaluation', label: 'Đánh giá năng lực', icon: 'fa-chart-pie', bg: 'bg-amber-50', color: 'text-amber-600' },
+  { to: '/deposit', label: 'Nạp tiền vào ví', icon: 'fa-wallet', bg: 'bg-emerald-50', color: 'text-emerald-600' },
+  { to: '/transactions', label: 'Lịch sử giao dịch', icon: 'fa-receipt', bg: 'bg-amber-50', color: 'text-amber-600' },
+  { to: '/attempts', label: 'Lịch sử làm bài', icon: 'fa-clock-rotate-left', bg: 'bg-blue-50', color: 'text-blue-600' },
+  { to: '/evaluation', label: 'Đánh giá năng lực', icon: 'fa-chart-pie', bg: 'bg-purple-50', color: 'text-purple-600' },
 ];
 
 const formatCurrency = (val) => {

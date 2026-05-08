@@ -21,6 +21,7 @@ export interface UserProfileResponse {
   avatar: string | null;
   createdAt: string;
   updatedAt: string;
+  balance: number;
   streak: UserStreakResponse;
 }
 

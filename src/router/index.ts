@@ -6,6 +6,8 @@ import AttemptsHistoryView from '../views/AttemptsHistoryView.vue';
 import LearningView from '../views/LearningView.vue';
 import PolicyView from '../views/PolicyView.vue';
 import ContactView from '../views/ContactView.vue';
+import PaymentSuccessView from '../views/PaymentSuccessView.vue';
+import PaymentCancelView from '../views/PaymentCancelView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,6 +68,26 @@ const router = createRouter({
       path: '/math-test',
       name: 'math-test',
       component: () => import('../views/MathTest.vue'),
+    },
+    {
+      path: '/payment/success',
+      name: 'payment-success',
+      component: PaymentSuccessView,
+    },
+    {
+      path: '/payment/cancel',
+      name: 'payment-cancel',
+      component: () => import('../views/PaymentCancelView.vue'),
+    },
+    {
+      path: '/deposit',
+      name: 'deposit',
+      component: () => import('../views/DepositView.vue'),
+    },
+    {
+      path: '/transactions',
+      name: 'transactions',
+      component: () => import('../views/TransactionsView.vue'),
     },
   ],
 });

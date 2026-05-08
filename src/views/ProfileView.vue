@@ -166,6 +166,21 @@
 
          <div class="card-elevated p-8 border border-slate-100">
            <h3 class="m-0 text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
+              <i class="fa-solid fa-wallet text-indigo-500"></i> Ví của tôi
+           </h3>
+           <div class="bg-slate-50 rounded-2xl p-5 mb-5 border border-slate-100">
+             <p class="text-[10px] font-extrabold uppercase tracking-[0.2em] text-slate-400 m-0">Số dư hiện tại</p>
+             <p class="text-2xl font-black text-slate-900 mt-1 tabular-nums">
+               {{ formatPrice(profile?.balance || 0) }}đ
+             </p>
+           </div>
+           <router-link to="/deposit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition-all hover:bg-slate-800 active:scale-95 shadow-lg shadow-slate-900/20">
+              <i class="fa-solid fa-plus-circle"></i> Nạp thêm tiền
+           </router-link>
+         </div>
+
+         <div class="card-elevated p-8 border border-slate-100">
+           <h3 class="m-0 text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
               <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Lịch sử gần đây
            </h3>
            <p class="text-sm text-slate-500 font-medium mb-5 leading-relaxed">
@@ -178,6 +193,7 @@
       </div>
     </div>
   </section>
+
 
   <!-- Large Preview Modal -->
   <teleport to="body">
@@ -236,6 +252,7 @@ import { useAuthStore } from '@/stores/auth';
 import { getUserProfile, updateUserProfile, type UserProfileResponse, type UserInformationRequest } from '@/services/userService';
 import { getLevels, type LevelItem } from '@/services/learningService';
 import { uploadFile } from '@/services/fileService';
+import { createPayment } from '@/services/paymentService';
 
 const auth = useAuthStore();
 const loading = ref(true);
@@ -263,6 +280,10 @@ const showLargePreview = ref(false);
 const isNewAvatar = ref(false);
 const updatingAvatar = ref(false);
 const avatarMenuContainer = ref<HTMLElement | null>(null);
+
+const formatPrice = (value: number) => {
+  return new Intl.NumberFormat('vi-VN').format(value);
+};
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
