@@ -176,7 +176,7 @@
     >
       <h3 class="m-0 text-xl font-bold">Chúc mừng, bạn đã nộp bài thành công!</h3>
       <p class="mb-0 mt-2 text-sm text-emerald-700">
-        Hệ thống sẽ chuyển bạn sang trang xem lại bài thi sau {{ redirectSeconds ?? 0 }} giây.
+        Bài làm của bạn đang được <strong>hệ thống chấm điểm chi tiết</strong>. Hệ thống sẽ chuyển bạn sang trang kết quả sau {{ redirectSeconds ?? 0 }} giây.
       </p>
       <div v-if="streakCheckedIn" class="mt-4 flex items-center gap-2 text-orange-600 bg-orange-100/50 px-3 py-2 rounded-lg text-sm font-bold w-fit">
         <i class="fa-solid fa-fire text-orange-500"></i> Bạn đã giữ lửa ôn thi thành công hôm nay!
@@ -762,22 +762,26 @@ const scrollToQuestion = (questionId: number) => {
 };
 
 const handleSubmit = async () => {
-  if (!attempt.value || submitting.value || result.value) { // Prevent multiple submissions or submitting after result
+  if (!attempt.value || submitting.value || result.value) {
     return;
   }
 
   submitting.value = true;
-  if (!isCheating.value) { // Only clear error if not a cheating-triggered submission
-    error.value = null;
-  }
+  try {
+    if (!isCheating.value) {
+      error.value = null;
+    }
 
-  const payloadAnswers = questions.value.reduce<SubmitAnswerPayload[]>((accumulator, question) => {
-      const answerValue = answers[question.id]?.trim() ?? '';
+    const payloadAnswers = questions.value.reduce<SubmitAnswerPayload[]>((accumulator, question) => {
+      // Ensure we have a string to trim
+      const rawVal = answers[question.id];
+      const answerValue = (typeof rawVal === 'string' ? rawVal : String(rawVal ?? '')).trim();
+      
       if (!answerValue) {
         return accumulator;
       }
 
-      if (question.options.length) {
+      if (question.options && question.options.length > 0) {
         const matchedOption = question.options.find((option) => option.value === answerValue);
         const selectedOptionId = matchedOption?.optionId ?? null;
 
@@ -790,25 +794,23 @@ const handleSubmit = async () => {
           selectedOptionId,
           essayAnswer: null,
         });
-
-        return accumulator;
+      } else {
+        accumulator.push({
+          questionId: question.id,
+          selectedOptionId: null,
+          essayAnswer: answerValue,
+        });
       }
-
-      accumulator.push({
-        questionId: question.id,
-        selectedOptionId: null,
-        essayAnswer: answerValue,
-      });
 
       return accumulator;
     }, []);
 
-  try {
     const response = await submitAttempt(attempt.value.attemptId, {
       answers: payloadAnswers,
-      tabSwitchCount: tabSwitchCount.value, // Always send tab switch count
-      violationScore: isCheating.value ? 1 : 0, // Send violation score if cheating is detected
+      tabSwitchCount: tabSwitchCount.value,
+      violationScore: isCheating.value ? 1 : 0,
     });
+    
     result.value = mapSubmitResult(response.data?.data ?? response.data);
     
     // Celebration effects
@@ -820,7 +822,6 @@ const handleSubmit = async () => {
         colors: ['#6366f1', '#4f46e5', '#06b6d4', '#10b981']
       });
       
-      // Secondary burst
       setTimeout(() => {
         (window as any).confetti({
           particleCount: 100,
@@ -840,12 +841,11 @@ const handleSubmit = async () => {
       console.warn('Failed to play success sound:', e);
     }
 
-    // Check-in streak only if not already active today
     if (!auth.user?.activeToday) {
       try {
         await checkInStreak();
         streakCheckedIn.value = true;
-        auth.setUser({ activeToday: true }); // Update store state
+        auth.setUser({ activeToday: true });
       } catch (err) {
         console.warn('Failed to check-in streak:', err);
       }
@@ -855,6 +855,7 @@ const handleSubmit = async () => {
     clearDraft();
     startRedirectCountdown();
   } catch (err) {
+    console.error('[handleSubmit:error]', err);
     error.value = getApiErrorMessage(err, 'Nộp bài thất bại. Vui lòng thử lại.');
   } finally {
     submitting.value = false;

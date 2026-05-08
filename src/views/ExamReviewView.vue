@@ -20,7 +20,7 @@
           class="group inline-flex items-center gap-3 rounded-2xl bg-slate-900 px-6 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95 shadow-xl shadow-slate-900/10"
         >
           <i class="fa-solid fa-arrow-left-long text-xs transition-transform group-hover:-translate-x-1"></i>
-          Về lịch sử
+          {{ attempt?.status === 'GRADING' ? 'Xem sau' : 'Về lịch sử' }}
         </router-link>
       </div>
     </div>
@@ -55,94 +55,127 @@
 
     <!-- Content -->
     <template v-else-if="attempt">
-      <!-- Score Card -->
-      <!-- Score Card -->
-      <div class="animate-slide-up-reveal stagger-1 overflow-hidden rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-indigo-500/5">
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-50">
-          <div class="p-8 sm:p-10 text-center">
-            <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Điểm số</p>
-            <p class="text-6xl font-black text-indigo-600 m-0 tracking-tighter">{{ attempt.score ?? '-' }}</p>
+      <!-- Grading State -->
+      <div v-if="attempt.status === 'GRADING'" class="animate-slide-up-reveal py-12 text-center space-y-8">
+        <div class="relative mx-auto w-32 h-32">
+          <div class="absolute inset-0 rounded-full bg-indigo-100 animate-ping opacity-25"></div>
+          <div class="absolute inset-0 rounded-full border-4 border-indigo-100 border-t-indigo-600 animate-spin"></div>
+          <div class="absolute inset-2 rounded-full bg-white shadow-inner flex items-center justify-center">
+            <i class="fa-solid fa-pen-nib text-4xl text-indigo-600 animate-bounce"></i>
           </div>
-          <div class="p-8 sm:p-10 text-center">
-            <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trả lời đúng</p>
-            <p class="text-4xl font-black text-emerald-500 m-0 tabular-nums">
-              {{ attempt.correctCount ?? attempt.totalCorrect ?? 0 }}
-              <span class="text-base font-bold text-slate-200">/ {{ totalQuestions }}</span>
-            </p>
+        </div>
+        
+        <div class="max-w-md mx-auto space-y-4">
+          <h2 class="m-0 text-3xl font-black text-slate-900">Hệ thống đang chấm điểm...</h2>
+          <p class="text-slate-500 font-medium leading-relaxed">
+            Hệ thống đang phân tích chi tiết bài làm của bạn để đưa ra điểm số và nhận xét chính xác nhất.
+          </p>
+          <div class="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-indigo-50 text-indigo-700 text-sm font-black">
+            <span class="flex h-2 w-2 rounded-full bg-indigo-600 animate-pulse"></span>
+            Vui lòng chờ trong giây lát
           </div>
-          <div class="p-8 sm:p-10 text-center">
-            <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trả lời sai</p>
-            <p class="text-4xl font-black text-rose-500 m-0 tabular-nums">
-              {{ attempt.wrongCount ?? attempt.totalIncorrect ?? 0 }}
-            </p>
-          </div>
-          <div class="p-8 sm:p-10 flex flex-col items-center justify-center">
-            <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trạng thái</p>
-            <span class="inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-5 py-2 text-xs font-black uppercase tracking-widest text-indigo-600">
-              <span class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
-              {{ attempt.status === 'SUBMITTED' ? 'Đã nộp' : (attempt.status || 'Hoàn thành') }}
-            </span>
-          </div>
+        </div>
+
+        <div class="pt-8 grid gap-4 max-w-sm mx-auto">
+          <router-link to="/attempts" class="btn-secondary py-4 text-xs font-black uppercase tracking-widest">
+            Quay lại sau
+          </router-link>
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            Tự động cập nhật sau mỗi 3 giây
+          </p>
         </div>
       </div>
 
-      <!-- Questions list -->
-      <div v-if="questions.length" class="space-y-12">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl font-extrabold text-slate-900 m-0 sm:text-2xl">Chi tiết từng câu hỏi</h2>
-          <span class="text-sm font-semibold text-slate-600">{{ questions.length }} câu</span>
+      <!-- Result Content -->
+      <template v-else>
+        <!-- Score Card -->
+        <div class="animate-slide-up-reveal stagger-1 overflow-hidden rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-indigo-500/5">
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-50">
+            <div class="p-8 sm:p-10 text-center">
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Điểm số</p>
+              <p class="text-6xl font-black text-indigo-600 m-0 tracking-tighter">{{ attempt.score ?? '-' }}</p>
+            </div>
+            <div class="p-8 sm:p-10 text-center">
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trả lời đúng</p>
+              <p class="text-4xl font-black text-emerald-500 m-0 tabular-nums">
+                {{ attempt.correctCount ?? attempt.totalCorrect ?? 0 }}
+                <span class="text-base font-bold text-slate-200">/ {{ totalQuestions }}</span>
+              </p>
+            </div>
+            <div class="p-8 sm:p-10 text-center">
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trả lời sai</p>
+              <p class="text-4xl font-black text-rose-500 m-0 tabular-nums">
+                {{ attempt.wrongCount ?? attempt.totalIncorrect ?? 0 }}
+              </p>
+            </div>
+            <div class="p-8 sm:p-10 flex flex-col items-center justify-center">
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trạng thái</p>
+              <span class="inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-5 py-2 text-xs font-black uppercase tracking-widest text-indigo-600">
+                <span class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                {{ attempt.status === 'SUBMITTED' ? 'Đã nộp' : (attempt.status === 'GRADING' ? 'Đang chấm' : (attempt.status || 'Hoàn thành')) }}
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div v-for="(section, sIndex) in sections" :key="sIndex" class="space-y-6">
-          <div v-if="section.title" class="flex items-center gap-4">
-            <div class="h-px grow bg-slate-100"></div>
-            <h3 class="m-0 text-sm font-black uppercase tracking-[0.3em] text-indigo-500 bg-white px-4">
-              {{ section.title }}
-            </h3>
-            <div class="h-px grow bg-slate-100"></div>
+        <!-- Questions list -->
+        <div v-if="questions.length" class="space-y-12">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-extrabold text-slate-900 m-0 sm:text-2xl">Chi tiết từng câu hỏi</h2>
+            <span class="text-sm font-semibold text-slate-600">{{ questions.length }} câu</span>
           </div>
 
-          <div 
-            class="grid gap-8 items-stretch"
-            :class="[
-              uiLayoutHint === 'LITERATURE' || uiLayoutHint === 'ESSAY' 
-                ? 'grid-cols-1 max-w-4xl mx-auto' 
-                : 'grid-cols-1 md:grid-cols-2'
-            ]"
-          >
-            <QuestionCard
-              v-for="(q, index) in section.questions"
-              :key="q.questionId || index"
-              :id="q.questionId"
-              :index="Number(index) + 1"
-              :content="q.content"
-              :content-format="q.contentFormat"
-              :image-url="q.url ? resolveAssetUrl(q.url) : undefined"
-              :options="q._options"
-              :score="q.score"
-              :is-review="true"
-              :is-correct="q._isCorrect"
-              :essay-answer="q._essayAnswer"
-              :explanation="q.explanation"
-              :sample-answer="q.sampleAnswer"
-              :feedback="q._feedback"
-              :grading-method="q._gradingMethod"
-              :ui-layout-hint="uiLayoutHint"
-              :animation-delay="200 + Number(index) * 50"
-              @zoom="resolveAssetUrl($event)"
-            />
-        </div>
-      </div>
-    </div>
+          <div v-for="(section, sIndex) in sections" :key="sIndex" class="space-y-6">
+            <div v-if="section.title" class="flex items-center gap-4">
+              <div class="h-px grow bg-slate-100"></div>
+              <h3 class="m-0 text-sm font-black uppercase tracking-[0.3em] text-indigo-500 bg-white px-4">
+                {{ section.title }}
+              </h3>
+              <div class="h-px grow bg-slate-100"></div>
+            </div>
 
-      <!-- No questions fallback -->
-      <div v-else class="card-elevated px-6 py-14 text-center">
-        <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 mb-4">
-          <i class="fa-solid fa-file-circle-question text-slate-400 text-2xl"></i>
+            <div 
+              class="grid gap-8 items-stretch"
+              :class="[
+                uiLayoutHint === 'LITERATURE' || uiLayoutHint === 'ESSAY' 
+                  ? 'grid-cols-1 max-w-4xl mx-auto' 
+                  : 'grid-cols-1 md:grid-cols-2'
+              ]"
+            >
+              <QuestionCard
+                v-for="(q, index) in section.questions"
+                :key="q.questionId || index"
+                :id="q.questionId"
+                :index="Number(index) + 1"
+                :content="q.content"
+                :content-format="q.contentFormat"
+                :image-url="q.url ? resolveAssetUrl(q.url) : undefined"
+                :options="q._options"
+                :score="q.score"
+                :is-review="true"
+                :is-correct="q._isCorrect"
+                :essay-answer="q._essayAnswer"
+                :explanation="q.explanation"
+                :sample-answer="q.sampleAnswer"
+                :feedback="q._feedback"
+                :grading-method="q._gradingMethod"
+                :ui-layout-hint="uiLayoutHint"
+                :animation-delay="200 + Number(index) * 50"
+                @zoom="resolveAssetUrl($event)"
+              />
+            </div>
+          </div>
         </div>
-        <p class="text-base font-semibold text-slate-500 m-0">Không có chi tiết câu hỏi cho bài thi này.</p>
-        <p class="text-sm text-slate-400 m-0 mt-1">Hệ thống sẽ hiển thị khi dữ liệu được cập nhật.</p>
-      </div>
+
+        <!-- No questions fallback -->
+        <div v-else class="card-elevated px-6 py-14 text-center">
+          <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 mb-4">
+            <i class="fa-solid fa-file-circle-question text-slate-400 text-2xl"></i>
+          </div>
+          <p class="text-base font-semibold text-slate-500 m-0">Không có chi tiết câu hỏi cho bài thi này.</p>
+          <p class="text-sm text-slate-400 m-0 mt-1">Hệ thống sẽ hiển thị khi dữ liệu được cập nhật.</p>
+        </div>
+      </template>
     </template>
   </section>
 
@@ -150,7 +183,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { getAttemptById } from '@/services/attemptService';
@@ -179,6 +212,7 @@ const attempt = ref<any>(null);
 const questions = ref<any[]>([]);
 const sections = ref<Array<{ title: string; questions: any[] }>>([]);
 const uiLayoutHint = ref<'STANDARD' | 'LITERATURE' | 'ESSAY' | 'MIXED'>('STANDARD');
+const pollingInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
 // Admin Edit Logic (Removed)
 
@@ -186,18 +220,33 @@ const totalQuestions = computed(() => {
   return attempt.value?.totalQuestions ?? questions.value.length ?? 0;
 });
 
-const loadAttempt = async () => {
+const loadAttempt = async (isPolling = false) => {
   if (!id) {
     error.value = 'Mã bài thi không hợp lệ.';
     loading.value = false;
     return;
   }
 
+  if (!isPolling) {
+    loading.value = true;
+  }
+  
   try {
     // Step 1: Fetch attempt basic info
     const attemptRes = await getAttemptById(id);
     const attemptData = attemptRes.data?.data || attemptRes.data;
     attempt.value = attemptData;
+
+    // Handle polling based on status
+    if (attemptData.status === 'GRADING') {
+      startPolling();
+      // If we are grading, we might not have all details yet, 
+      // but we still want to show the grading UI.
+      if (!isPolling) loading.value = false;
+      return;
+    } else {
+      stopPolling();
+    }
 
     // Step 2: Fetch exam details (questions + options with isCorrect)
     const examId = attemptData.examId;
@@ -276,9 +325,29 @@ const loadAttempt = async () => {
     }
   } catch (err) {
     console.error('[loadAttempt:error]', err);
-    error.value = 'Không thể tải chi tiết bài thi. Vui lòng thử lại sau.';
+    if (!isPolling) {
+      error.value = 'Không thể tải chi tiết bài thi. Vui lòng thử lại sau.';
+    }
   } finally {
-    loading.value = false;
+    if (!isPolling) {
+      loading.value = false;
+    }
+  }
+};
+
+const startPolling = () => {
+  if (pollingInterval.value) return;
+  console.log('[ExamReview] Starting polling for GRADING status...');
+  pollingInterval.value = setInterval(() => {
+    loadAttempt(true);
+  }, 3000);
+};
+
+const stopPolling = () => {
+  if (pollingInterval.value) {
+    console.log('[ExamReview] Stopping polling.');
+    clearInterval(pollingInterval.value);
+    pollingInterval.value = null;
   }
 };
 
@@ -294,5 +363,9 @@ const getOptionClass = (opt: any) => {
 
 onMounted(() => {
   loadAttempt();
+});
+
+onBeforeUnmount(() => {
+  stopPolling();
 });
 </script>

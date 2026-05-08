@@ -153,9 +153,12 @@
 
           <div class="flex flex-col sm:flex-row items-stretch">
             <!-- Score Panel -->
-            <div class="flex items-center justify-center sm:w-36 shrink-0 p-6 sm:border-r border-b sm:border-b-0 transition-colors duration-500" :class="getScorePanelBg(attempt.score)">
+            <div class="flex items-center justify-center sm:w-36 shrink-0 p-6 sm:border-r border-b sm:border-b-0 transition-colors duration-500" :class="getScorePanelBg(attempt.score, attempt.status)">
               <div class="text-center">
-                <span class="block text-4xl font-extrabold tabular-nums" :class="getScoreTextColor(attempt.score)">{{ attempt.score ?? '-' }}</span>
+                <span v-if="attempt.status === 'GRADING'" class="block text-3xl font-extrabold text-indigo-500 animate-pulse">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </span>
+                <span v-else class="block text-4xl font-extrabold tabular-nums" :class="getScoreTextColor(attempt.score)">{{ attempt.score ?? '-' }}</span>
                 <span class="block text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mt-1">Điểm</span>
               </div>
             </div>
@@ -178,9 +181,25 @@
                     </p>
                   </div>
                   <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-widest whitespace-nowrap"
-                    :class="attempt.status === 'SUBMITTED' ? 'bg-emerald-50 text-emerald-600' : (attempt.status === 'DOING' ? 'bg-amber-50 text-amber-600' : 'bg-slate-50 text-slate-400')">
-                    <span class="h-1.5 w-1.5 rounded-full" :class="attempt.status === 'SUBMITTED' ? 'bg-emerald-500' : (attempt.status === 'DOING' ? 'bg-amber-500' : 'bg-slate-300')"></span>
-                    {{ attempt.status === 'SUBMITTED' ? 'Đã nộp' : (attempt.status === 'DOING' ? 'Đang làm' : (attempt.status || 'N/A')) }}
+                    :class="[
+                      attempt.status === 'SUBMITTED' ? 'bg-emerald-50 text-emerald-600' : 
+                      attempt.status === 'DOING' ? 'bg-amber-50 text-amber-600' : 
+                      attempt.status === 'GRADING' ? 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200 shadow-sm' : 
+                      'bg-slate-50 text-slate-400'
+                    ]">
+                    <span class="h-1.5 w-1.5 rounded-full" 
+                      :class="[
+                        attempt.status === 'SUBMITTED' ? 'bg-emerald-500' : 
+                        attempt.status === 'DOING' ? 'bg-amber-500' : 
+                        attempt.status === 'GRADING' ? 'bg-indigo-500 animate-pulse' : 
+                        'bg-slate-300'
+                      ]"></span>
+                    {{ 
+                      attempt.status === 'SUBMITTED' ? 'Đã nộp' : 
+                      attempt.status === 'DOING' ? 'Đang làm' : 
+                      attempt.status === 'GRADING' ? 'Đang chấm bài' : 
+                      (attempt.status || 'N/A') 
+                    }}
                   </span>
                 </div>
               </div>
@@ -317,7 +336,8 @@ const getScoreBar = (score?: number) => {
   return 'bg-gradient-to-r from-rose-400 to-rose-300';
 };
 
-const getScorePanelBg = (score?: number) => {
+const getScorePanelBg = (score?: number, status?: string) => {
+  if (status === 'GRADING') return 'bg-indigo-50/30';
   if (score == null) return 'bg-slate-50/50';
   if (score >= 8) return 'bg-emerald-50/50';
   if (score >= 6.5) return 'bg-indigo-50/50';

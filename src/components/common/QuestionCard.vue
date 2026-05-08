@@ -161,12 +161,12 @@
           </div>
         </div>
 
-        <!-- AI Feedback -->
+        <!-- Detailed Feedback -->
         <div v-if="feedback" class="mt-6 overflow-hidden rounded-[1.5rem] border-2 border-indigo-100 bg-indigo-50/50 p-6 relative">
           <div class="absolute -right-4 -top-4 h-20 w-20 bg-indigo-500/10 blur-2xl pointer-events-none"></div>
           <p class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 m-0 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-robot animate-bounce"></i> 
-            {{ gradingMethod || 'Nhận xét từ AI' }}
+            <i class="fa-solid fa-pen-nib"></i> 
+            Nhận xét của giáo viên
           </p>
           <div class="space-y-4">
             <div v-for="(part, pi) in formattedFeedback" :key="pi" 
