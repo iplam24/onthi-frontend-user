@@ -13,10 +13,10 @@
             <i class="fa-solid fa-shield-halved"></i> Thanh toán bảo mật PayOS
           </div>
           <h1 class="text-5xl font-black text-slate-900 leading-[1.1] mb-6 tracking-tight">
-            Nâng cấp <br/> <span class="text-indigo-600">tài khoản</span> của bạn.
+            Nạp tiền vào <br/> <span class="text-indigo-600">ví V-Edu</span> của bạn.
           </h1>
           <p class="text-lg text-slate-500 font-medium leading-relaxed mb-10">
-            Nạp tiền vào ví V-Edu để mở khóa các tính năng cao cấp, đề thi VIP và hệ thống chấm bài AI không giới hạn.
+            Tích lũy số dư để mở khóa các bài thi VIP, mua tài liệu hoặc sử dụng hệ thống chấm bài AI chuyên sâu bất cứ lúc nào.
           </p>
 
           <div class="space-y-6">
@@ -65,10 +65,10 @@
                 ]"
               >
                 <div v-if="pkg.popular" class="absolute top-0 right-0 bg-indigo-600 text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-bl-xl">
-                  Phổ biến
+                  Gợi ý
                 </div>
                 <p :class="['text-[10px] font-black uppercase tracking-[0.2em] mb-1', depositAmount === pkg.amount ? 'text-indigo-600' : 'text-slate-400']">
-                  Gói {{ pkg.label }}
+                  Mức {{ pkg.label }}
                 </p>
                 <p class="text-2xl font-black text-slate-900">{{ formatPrice(pkg.amount) }}đ</p>
                 <div v-if="depositAmount === pkg.amount" class="absolute bottom-4 right-4 text-indigo-600 animate-bounce-slow">
@@ -121,19 +121,21 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { createPayment } from '@/services/paymentService';
 import { useAuthStore } from '@/stores/auth';
 import { getUserProfile } from '@/services/userService';
 
+const router = useRouter();
 const auth = useAuthStore();
 const depositAmount = ref(50000);
 const creating = ref(false);
 
 const depositPackages = [
-  { amount: 20000, label: 'Cơ bản', popular: false },
-  { amount: 50000, label: 'Tiêu chuẩn', popular: true },
-  { amount: 100000, label: 'Pro', popular: false },
-  { amount: 200000, label: 'Ultimate', popular: false }
+  { amount: 20000, label: '20k', popular: false },
+  { amount: 50000, label: '50k', popular: true },
+  { amount: 100000, label: '100k', popular: false },
+  { amount: 200000, label: '200k', popular: false }
 ];
 
 const formatPrice = (value: number) => {
@@ -145,9 +147,15 @@ const handleDeposit = async () => {
   creating.value = true;
   try {
     const res = await createPayment(depositAmount.value);
-    const checkoutUrl = res.data?.data;
-    if (checkoutUrl) {
-      window.location.href = checkoutUrl;
+    const paymentData = res.data?.data;
+    if (paymentData) {
+      // Save to session storage for persistence
+      sessionStorage.setItem('lastPayment', JSON.stringify(paymentData));
+      // Navigate to our custom checkout page
+      router.push({ 
+        name: 'checkout', 
+        state: { paymentData } 
+      });
     }
   } catch (err: any) {
     console.error(err);

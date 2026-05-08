@@ -9,5 +9,5 @@ export const getTransactions = (page = 0, size = 10) => {
 };
 
 export const createPayment = async (amount: number) => {
-  return api.post('/payment/create', { amount });
+  return api.post<{ data: any }>('/payment/create', { amount });
 };
