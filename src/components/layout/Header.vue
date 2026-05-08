@@ -308,7 +308,8 @@ const fetchUserData = async () => {
         fireLevel: streak?.fireLevel,
         activeToday: streak?.activeToday,
         currentStreak: streak?.currentStreak,
-        avatar: profile?.avatar
+        avatar: profile?.avatar,
+        balance: profile?.balance
       });
     }
   } catch (err) {
