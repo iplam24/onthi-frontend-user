@@ -100,7 +100,7 @@
                 <circle class="text-slate-100 stroke-current" stroke-width="8" cx="50" cy="50" r="40" fill="transparent"></circle>
                 <!-- Progress circle -->
                 <circle class="stroke-current" :class="getScoreTextColor(evaluation.overallScore)" stroke-width="8" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent" 
-                  :stroke-dasharray="`${(safePercent(evaluation.overallScore) / 100) * 251.2} 251.2`" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
+                  :stroke-dasharray="((safePercent(evaluation.overallScore) / 100) * 251.2) + ' 251.2'" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
                 <span class="text-2xl sm:text-4xl font-black break-words" :class="getScoreTextColor(evaluation.overallScore)">{{ evaluation.overallScore?.toFixed(1) }}</span>
@@ -226,44 +226,61 @@
             </div>
          </div>
       </div>
-
-      <!-- 3. GỢI Ý & ĐỘ KHÓ -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-         <!-- Recommendations -->
-         <div class="lg:col-span-2 card-elevated p-6 sm:p-8">
-            <h3 class="flex items-center gap-2 m-0 text-base sm:text-lg font-black text-slate-900 mb-6">
-               <i class="fa-solid fa-lightbulb text-amber-500"></i> Lộ trình & Gợi ý tiếp theo
-            </h3>
-            <div class="space-y-4">
-               <div v-for="(rec, i) in evaluation.recommendations" :key="i" class="flex items-start gap-3 sm:gap-4 p-4 rounded-2xl bg-amber-50/50 border border-amber-100/50 hover:bg-amber-50 transition-colors">
-                  <div class="h-8 w-8 sm:h-10 sm:w-10 shrink-0 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-black text-xs sm:text-sm">{{ i + 1 }}</div>
-                  <p class="m-0 text-[13px] sm:text-sm font-bold text-slate-800 leading-relaxed pt-1 sm:pt-1.5 break-words">{{ rec }}</p>
-               </div>
-               <div v-if="!evaluation.recommendations?.length" class="text-sm text-slate-400 italic">Hãy làm thêm bài tập để nhận gợi ý.</div>
+      
+      <!-- 3.5 AI PERSONALIZED LEARNING PATH -->
+      <div class="card-elevated p-8 sm:p-12 relative overflow-hidden bg-slate-900 border border-indigo-500/30 group mt-8">
+        <!-- AI Background Effects -->
+        <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-600/20 blur-[100px] animate-pulse"></div>
+        <div class="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-cyan-600/10 blur-[60px]"></div>
+        
+        <div class="relative z-10">
+          <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="flex-1 text-center md:text-left">
+              <div class="inline-flex items-center gap-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-300 mb-6">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                AI Personalized
+              </div>
+              <h2 class="text-3xl sm:text-4xl font-black text-white m-0">Lộ trình học tập thông minh</h2>
+              <p class="mt-4 text-slate-400 font-medium text-sm sm:text-base leading-relaxed max-w-2xl">
+                Dựa trên phân tích sâu các bài làm gần đây, AI của V-Edu sẽ xây dựng riêng cho bạn một kế hoạch ôn tập tối ưu nhất.
+              </p>
             </div>
-         </div>
+            
+            <div class="shrink-0">
+              <button 
+                @click="generateAiPath" 
+                :disabled="aiLoading"
+                class="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl font-black text-white shadow-xl shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:translate-y-0"
+              >
+                <i v-if="aiLoading" class="fa-solid fa-spinner fa-spin"></i>
+                <i v-else class="fa-solid fa-bolt"></i>
+                {{ aiLoading ? 'Đang phân tích...' : 'Tạo lộ trình ngay' }}
+              </button>
+            </div>
+          </div>
 
-         <!-- Difficulty Breakdown -->
-         <div class="lg:col-span-1 card-elevated p-6 sm:p-8">
-            <h3 class="m-0 text-base sm:text-lg font-black text-slate-900 mb-6">Theo độ khó</h3>
-            <div class="space-y-5">
-               <div v-for="diff in evaluation.difficultyEvaluations" :key="diff.difficulty" class="space-y-2">
-                  <div class="flex items-center justify-between">
-                     <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-500">
-                        {{ diff.difficulty === 'EASY' ? 'Dễ' : (diff.difficulty === 'MEDIUM' ? 'Trung bình' : 'Khó') }}
-                     </span>
-                     <span class="text-[11px] sm:text-sm font-black text-slate-900">{{ diff.accuracyRate?.toFixed(1) }}% đúng</span>
-                  </div>
-                  <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                     <div class="h-full rounded-full transition-all duration-1000" 
-                        :class="diff.difficulty === 'EASY' ? 'bg-emerald-500' : (diff.difficulty === 'MEDIUM' ? 'bg-amber-500' : 'bg-rose-500')"
-                        :style="{ width: `${safePercent(diff.accuracyRate)}%` }"></div>
-                  </div>
-                  <p class="m-0 text-[10px] text-right text-slate-400 font-bold">{{ diff.correctAnswers }}/{{ diff.totalAnswers }} câu</p>
+          <!-- AI Response Area -->
+          <Transition
+            enter-active-class="transition duration-500 ease-out"
+            enter-from-class="opacity-0 translate-y-8"
+            enter-to-class="opacity-100 translate-y-0"
+          >
+            <div v-if="aiLearningPath" class="mt-12 p-6 sm:p-10 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-md">
+               <div class="max-w-none">
+                  <div class="whitespace-pre-wrap leading-relaxed text-sm sm:text-base font-medium text-slate-200 ai-markdown-content" v-html="formattedAiPath"></div>
+               </div>
+               
+               <div class="mt-8 flex justify-center border-t border-white/10 pt-6">
+                  <button @click="aiLearningPath = null" class="text-xs font-bold text-slate-500 hover:text-white transition-colors uppercase tracking-widest">
+                    <i class="fa-solid fa-chevron-up mr-2"></i> Thu gọn lộ trình
+                  </button>
                </div>
             </div>
-         </div>
+          </Transition>
+        </div>
       </div>
+
+      <!-- 4. PHÂN TÍCH MÔN HỌC -->
 
       <!-- 4. PHÂN TÍCH MÔN HỌC -->
       <div v-if="evaluation.subjectEvaluations?.length" class="card-elevated p-6 sm:p-8">
@@ -302,7 +319,7 @@
 
          <!-- Mobile Subject Cards -->
          <div class="md:hidden divide-y divide-slate-100">
-            <div v-for="sub in evaluation.subjectEvaluations" :key="`mob-sub-${sub.subjectId}`" class="py-4 space-y-3">
+            <div v-for="sub in evaluation.subjectEvaluations" :key="'mob-sub-' + sub.subjectId" class="py-4 space-y-3">
                <div class="flex items-center justify-between">
                   <span class="text-sm font-black text-slate-900">{{ sub.subjectName }}</span>
                   <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ sub.levelName }}</span>
@@ -335,11 +352,32 @@ import { ref, reactive, onMounted, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { getStudentEvaluation, type StudentEvaluationResponse } from '@/services/statisticsService';
 import { getLevels, getSubjects, type LevelItem, type SubjectItem } from '@/services/learningService';
+import { getAiLearningPath } from '@/services/aiService';
 
 const auth = useAuthStore();
 const loading = ref(false);
+const aiLoading = ref(false);
+const aiLearningPath = ref<string | null>(null);
 const error = ref<string | null>(null);
 const evaluation = ref<StudentEvaluationResponse | null>(null);
+
+// @ts-ignore
+const formattedAiPath = computed(() => {
+  return aiLearningPath.value || '';
+});
+
+const generateAiPath = async () => {
+  if (aiLoading.value) return;
+  aiLoading.value = true;
+  try {
+    const res = await getAiLearningPath();
+    aiLearningPath.value = res.data?.data?.learningPath;
+  } catch (err) {
+    console.error('AI Path Error:', err);
+  } finally {
+    aiLoading.value = false;
+  }
+};
 
 const showFilters = ref(false);
 

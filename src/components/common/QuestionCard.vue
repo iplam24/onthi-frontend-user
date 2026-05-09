@@ -150,7 +150,7 @@
 
       <!-- Review Extra Info (Explanation & AI Feedback) -->
       <template v-if="isReview">
-        <!-- Explanation -->
+        <!-- Default Explanation from Database -->
         <div v-if="explanation || sampleAnswer" class="mt-8 rounded-[1.5rem] border-2 border-blue-100 bg-blue-50/30 px-6 py-6 shrink-0 shadow-xl shadow-blue-500/5">
           <p class="text-[10px] font-black uppercase tracking-[0.25em] text-blue-500 m-0 mb-4 flex items-center">
             <i class="fa-solid fa-lightbulb mr-2 text-blue-400 text-base"></i> 
@@ -159,6 +159,42 @@
           <div class="text-sm text-slate-700 leading-relaxed m-0 font-bold whitespace-pre-line">
             <MathContent :content="explanation || sampleAnswer || ''" :format="contentFormat" />
           </div>
+        </div>
+
+        <!-- AI Tutor Explanation -->
+        <div class="mt-6 relative">
+          <div v-if="aiExplaining" class="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-10 rounded-[1.5rem] border border-indigo-100">
+            <div class="flex flex-col items-center gap-3">
+              <div class="h-8 w-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+              <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Gia sư AI đang suy nghĩ...</span>
+            </div>
+          </div>
+
+          <div v-if="aiExplanation" class="rounded-[1.5rem] border-2 border-indigo-500/20 bg-indigo-50/30 p-6 shadow-xl shadow-indigo-500/5 animate-slide-up-reveal">
+             <p class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 m-0 mb-4 flex items-center gap-2">
+               <i class="fa-solid fa-wand-magic-sparkles"></i> 
+               Giải thích từ Gia sư AI
+             </p>
+             <div class="text-sm text-slate-800 leading-relaxed font-medium ai-explanation-content">
+                <MathContent :content="aiExplanation" :format="contentFormat" />
+             </div>
+             <div class="mt-4 flex justify-end">
+                <button @click="aiExplanation = ''" class="text-[10px] font-bold text-slate-400 hover:text-indigo-600 transition-colors uppercase tracking-widest">
+                  Đóng giải thích
+                </button>
+             </div>
+          </div>
+
+          <button 
+            v-else
+            @click="$emit('askAi', id)"
+            class="w-full group/ai flex items-center justify-center gap-3 py-4 rounded-2xl border-2 border-dashed border-indigo-200 bg-indigo-50/20 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-300"
+          >
+            <div class="h-8 w-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-indigo-600 group-hover/ai:scale-110 transition-transform">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <span class="text-xs font-black uppercase tracking-widest text-indigo-600">Bạn chưa hiểu câu này? Hỏi Gia sư AI ngay</span>
+          </button>
         </div>
 
         <!-- Detailed Feedback -->
@@ -226,6 +262,8 @@ const props = defineProps<{
   gradingMethod?: string;
   uiLayoutHint?: 'STANDARD' | 'LITERATURE' | 'ESSAY' | 'MIXED';
   animationDelay?: number;
+  aiExplanation?: string;
+  aiExplaining?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -233,6 +271,7 @@ const emit = defineEmits<{
   'select': [value: string];
   'zoom': [url: string];
   'focus': [];
+  'askAi': [id: number];
 }>();
 
 const animationStyle = {

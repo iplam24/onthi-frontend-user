@@ -1,8 +1,18 @@
-<template>
+  <template>
   <div id="app" :class="appClass">
+    <!-- ProMax Pristine Background -->
+    <div v-if="plan === 'promax'" class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+      <div class="absolute top-[-10%] left-[-10%] w-[80%] h-[80%] bg-pink-200/20 blur-[150px] animate-blob"></div>
+      <div class="absolute bottom-[-10%] right-[-10%] w-[70%] h-[70%] bg-blue-100/20 blur-[150px] animate-blob" style="animation-delay: 5s"></div>
+      <div class="absolute top-[30%] left-[20%] w-[50%] h-[50%] bg-amber-100/30 blur-[150px] animate-blob" style="animation-delay: 10s"></div>
+      <!-- Soft pearlescent noise -->
+      <div class="absolute inset-0 bg-white/20 backdrop-blur-[2px]"></div>
+    </div>
+
     <!-- Loading Bar -->
     <div 
-      class="fixed top-0 left-0 z-[100] h-1 bg-gradient-to-r from-indigo-500 via-cyan-400 to-indigo-600 transition-all duration-300 ease-out"
+      class="fixed top-0 left-0 z-[100] h-1 transition-all duration-300 ease-out"
+      :class="plan === 'promax' ? 'bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 shadow-[0_0_10px_rgba(251,191,36,0.5)]' : 'bg-gradient-to-r from-indigo-500 via-cyan-400 to-indigo-600'"
       :style="{ width: loadingProgress + '%', opacity: loadingProgress > 0 && loadingProgress < 100 ? 1 : 0 }"
     ></div>
 
@@ -19,6 +29,9 @@
     </main>
 
     <Footer v-if="!isExamShellHiddenRoute" />
+    
+    <!-- AI Study Buddy -->
+    <FloatingAiChat v-if="auth.isAuthenticated" />
   </div>
 </template>
 
@@ -28,6 +41,7 @@ import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import Header from '@/components/layout/Header.vue';
 import Footer from '@/components/layout/Footer.vue';
+import FloatingAiChat from '@/components/common/FloatingAiChat.vue';
 
 const route = useRoute();
 const auth = useAuthStore();
@@ -65,11 +79,15 @@ const isExamShellHiddenRoute = computed(() => {
   return false;
 });
 
-const appClass = computed(() =>
-  isExamShellHiddenRoute.value
+const plan = computed(() => (auth.user?.planName || 'free').toLowerCase());
+
+const appClass = computed(() => {
+  const base = isExamShellHiddenRoute.value
     ? 'relative flex min-h-screen flex-col bg-white'
-    : 'relative flex min-h-screen flex-col',
-);
+    : 'relative flex min-h-screen flex-col bg-slate-50';
+  const plan = (auth.user?.planName || 'free').toLowerCase();
+  return `${base} plan-${plan} transition-colors duration-500`;
+});
 
 const mainClass = computed(() =>
   isExamShellHiddenRoute.value
@@ -111,6 +129,16 @@ const mainClass = computed(() =>
 .page-cross-fade-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+@keyframes animate-blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+.animate-blob {
+  animation: animate-blob 10s infinite alternate ease-in-out;
 }
 
 /* Ensure the container doesn't collapse during transition */

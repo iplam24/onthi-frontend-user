@@ -161,7 +161,10 @@
                 :grading-method="q._gradingMethod"
                 :ui-layout-hint="uiLayoutHint"
                 :animation-delay="200 + Number(index) * 50"
+                :ai-explanation="aiExplanations[q.questionId]"
+                :ai-explaining="aiExplainingIds.has(q.questionId)"
                 @zoom="resolveAssetUrl($event)"
+                @ask-ai="handleAskAi"
               />
             </div>
           </div>
@@ -178,8 +181,6 @@
       </template>
     </template>
   </section>
-
-<!-- Edit Modal Removed -->
 </template>
 
 <script setup lang="ts">
@@ -190,13 +191,17 @@ import { getAttemptById } from '@/services/attemptService';
 import { getExamById } from '@/services/examService';
 import { getQuestionById } from '@/services/questionService';
 import QuestionEditModal from '@/components/admin/QuestionEditModal.vue';
-import MathContent from '@/components/common/MathContent.vue';
 import QuestionCard from '@/components/common/QuestionCard.vue';
+import { getAiExplanation } from '@/services/aiService';
+
+const props = defineProps<{
+  id: string | number;
+}>();
 
 const auth = useAuthStore();
 
 const route = useRoute();
-const id = Number(route.params.id);
+const id = Number(props.id || route.params.id);
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8080/api';
 const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
@@ -213,6 +218,26 @@ const questions = ref<any[]>([]);
 const sections = ref<Array<{ title: string; questions: any[] }>>([]);
 const uiLayoutHint = ref<'STANDARD' | 'LITERATURE' | 'ESSAY' | 'MIXED'>('STANDARD');
 const pollingInterval = ref<ReturnType<typeof setInterval> | null>(null);
+
+const aiExplanations = ref<Record<number, string>>({});
+const aiExplainingIds = ref<Set<number>>(new Set());
+
+const handleAskAi = async (questionId: number) => {
+  if (aiExplainingIds.value.has(questionId)) return;
+  
+  const question = questions.value.find(q => q.questionId === questionId);
+  const studentAnswer = question?._essayAnswer || ''; // Hoặc lấy từ options nếu là MCQ
+  
+  aiExplainingIds.value.add(questionId);
+  try {
+    const res = await getAiExplanation(questionId, studentAnswer);
+    aiExplanations.value[questionId] = res.data?.explanation;
+  } catch (err) {
+    console.error('AI Tutor Error:', err);
+  } finally {
+    aiExplainingIds.value.delete(questionId);
+  }
+};
 
 // Admin Edit Logic (Removed)
 

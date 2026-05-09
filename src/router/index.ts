@@ -60,6 +60,16 @@ const router = createRouter({
       component: () => import('../views/StudentEvaluationView.vue'),
     },
     {
+      path: '/pricing',
+      name: 'pricing',
+      component: () => import('../views/PricingView.vue'),
+    },
+    {
+      path: '/ai-guide',
+      name: 'ai-guide',
+      component: () => import('../views/AiGuideView.vue'),
+    },
+    {
       path: '/profile',
       name: 'profile',
       component: () => import('../views/ProfileView.vue'),

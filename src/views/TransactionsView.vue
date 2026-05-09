@@ -58,7 +58,7 @@
                   <td class="px-8 py-6">
                     <span class="text-xs font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
                       <i :class="tx.type === 'DEPOSIT' ? 'fa-solid fa-arrow-down-to-bracket text-emerald-500' : 'fa-solid fa-arrow-up-from-bracket text-rose-500'"></i>
-                      {{ tx.type === 'DEPOSIT' ? 'Nạp tiền' : 'Thanh toán' }}
+                      {{ tx.type === 'DEPOSIT' ? 'Nạp tiền' : tx.type === 'PURCHASE' ? 'Thanh toán' : 'Trừ tiền' }}
                     </span>
                   </td>
                   <td class="px-8 py-6 text-right">
@@ -91,7 +91,7 @@
                     <i :class="tx.type === 'DEPOSIT' ? 'fa-solid fa-arrow-down-to-bracket' : 'fa-solid fa-arrow-up-from-bracket'"></i>
                   </div>
                   <div>
-                    <p class="m-0 text-sm font-black text-slate-900">{{ tx.type === 'DEPOSIT' ? 'Nạp tiền vào ví' : 'Thanh toán đề thi' }}</p>
+                    <p class="m-0 text-sm font-black text-slate-900">{{ tx.type === 'DEPOSIT' ? 'Nạp tiền vào ví' : tx.type === 'PURCHASE' ? 'Thanh toán đề thi' : 'Mua gói cước' }}</p>
                     <p class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">#{{ tx.orderCode || tx.id }}</p>
                   </div>
                 </div>

@@ -11,6 +11,7 @@ type AuthUser = {
   activeToday?: boolean;
   currentStreak?: number;
   avatar?: string | null;
+  planName?: string;
 };
 
 type LoginData = {
@@ -20,6 +21,7 @@ type LoginData = {
   email: string;
   roles: string[];
   balance?: number;
+  planName?: string;
 };
 
 export const useAuthStore = defineStore('auth', {
@@ -40,6 +42,7 @@ export const useAuthStore = defineStore('auth', {
         email: data.email,
         roles: data.roles,
         balance: data.balance ?? 0,
+        planName: data.planName || 'FREE'
       };
       // Save to cookies with 7 days expiration
       Cookies.set('token', data.token, { expires: 7 });

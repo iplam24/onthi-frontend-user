@@ -22,7 +22,7 @@
       v-if="auth.isAuthenticated && countdowns.length > 0"
       class="animate-slide-up-reveal relative overflow-hidden rounded-[2rem] p-[2px] bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 shadow-2xl shadow-indigo-500/15"
     >
-      <div class="relative overflow-hidden rounded-[calc(2rem-2px)] bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-8 sm:p-10 lg:p-12">
+      <div class="relative overflow-hidden rounded-[calc(2rem-2px)] bg-white/80 backdrop-blur-3xl p-8 sm:p-10 lg:p-12">
         <div class="pointer-events-none absolute -right-10 -top-10 h-72 w-72 rounded-full bg-indigo-500/15 blur-[80px] animate-pulse"></div>
         <div class="pointer-events-none absolute -left-10 -bottom-10 h-72 w-72 rounded-full bg-purple-500/15 blur-[80px] animate-pulse" style="animation-delay: -2s"></div>
         <div class="pointer-events-none absolute top-1/3 right-12 h-14 w-14 rounded-xl bg-white/5 rotate-12 animate-float-slow"></div>
@@ -34,18 +34,18 @@
                 <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
                 <span class="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
               </span>
-              <span class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-white/80">Đường tới thành công</span>
+              <span class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-indigo-600">Đường tới thành công</span>
             </div>
-            <h2 class="m-0 text-2xl font-extrabold text-white sm:text-4xl lg:text-5xl tracking-tight leading-[1.15]">
+            <h2 class="m-0 text-2xl font-extrabold text-slate-900 sm:text-4xl lg:text-5xl tracking-tight leading-[1.15]">
               {{ countdowns[0]?.title }}
             </h2>
             <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3">
-              <span class="inline-flex items-center gap-2 rounded-lg bg-white/10 px-3.5 py-1.5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/90">
-                <i class="fa-solid fa-graduation-cap text-indigo-300"></i>
+              <span class="inline-flex items-center gap-2 rounded-lg bg-indigo-50 px-3.5 py-1.5 border border-indigo-100 text-[10px] font-bold uppercase tracking-widest text-indigo-600">
+                <i class="fa-solid fa-graduation-cap text-indigo-500"></i>
                 {{ countdowns[0]?.levelName }}
               </span>
-              <span class="text-[10px] font-bold text-white/50 uppercase tracking-wider flex items-center gap-2">
-                <i class="fa-regular fa-calendar text-indigo-300/60"></i>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-regular fa-calendar text-slate-400"></i>
                 {{ countdowns[0] ? new Date(countdowns[0].examDate).toLocaleDateString('vi-VN', { day: '2-digit', month: 'long', year: 'numeric' }) : '' }}
               </span>
             </div>
@@ -55,16 +55,16 @@
           <div class="flex items-center gap-8">
             <div class="group relative">
               <div class="absolute -inset-4 rounded-3xl bg-indigo-500/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-              <div class="relative h-28 w-28 sm:h-36 sm:w-36 rounded-[1.75rem] bg-white/[0.07] border border-white/10 backdrop-blur-sm flex flex-col items-center justify-center transition-transform duration-500 hover:scale-105">
-                <span class="text-5xl sm:text-6xl font-extrabold text-white tracking-tighter leading-none tabular-nums">
+              <div class="relative h-28 w-28 sm:h-36 sm:w-36 rounded-[1.75rem] bg-indigo-50/50 border border-indigo-100 backdrop-blur-sm flex flex-col items-center justify-center transition-transform duration-500 hover:scale-105">
+                <span class="text-5xl sm:text-6xl font-extrabold text-slate-900 tracking-tighter leading-none tabular-nums">
                   {{ countdowns[0] ? calculateDaysRemaining(countdowns[0].examDate) : 0 }}
                 </span>
-                <span class="text-[8px] font-extrabold uppercase tracking-[0.25em] text-indigo-300 mt-1.5">Ngày còn lại</span>
+                <span class="text-[8px] font-extrabold uppercase tracking-[0.25em] text-indigo-600 mt-1.5">Ngày còn lại</span>
               </div>
             </div>
             <router-link
               to="/learning"
-              class="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-white px-5 sm:px-7 py-3 sm:py-4 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-slate-900 shadow-xl transition-all hover:shadow-2xl hover:scale-[1.02] active:scale-95"
+              class="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-indigo-600 px-5 sm:px-7 py-3 sm:py-4 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-white shadow-xl transition-all hover:shadow-2xl hover:scale-[1.02] active:scale-95"
             >
               <span class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-indigo-100 to-transparent transition-transform duration-700 group-hover:translate-x-full skew-x-12"></span>
               <span class="relative z-10">Ôn tập</span>
@@ -86,35 +86,35 @@
       <div class="relative z-10 flex flex-col lg:flex-row items-center gap-12 p-10 sm:p-16 lg:p-20">
         <!-- Text -->
         <div class="flex-1 text-center lg:text-left space-y-8 max-w-2xl">
-          <span class="animate-slide-up-reveal inline-flex items-center gap-2.5 rounded-full border border-white/25 bg-white/15 px-5 py-2 text-[10px] font-extrabold uppercase tracking-[0.25em] text-white backdrop-blur-sm">
+          <span class="animate-slide-up-reveal inline-flex items-center gap-2.5 rounded-full border border-indigo-100 bg-indigo-50 px-5 py-2 text-[10px] font-extrabold uppercase tracking-[0.25em] text-indigo-600 shadow-sm">
             <span class="relative flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-300 opacity-75"></span>
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75"></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-indigo-600"></span>
             </span>
             Next-Gen Education
           </span>
 
-          <h1 class="animate-slide-up-reveal stagger-1 m-0 text-3xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
+          <h1 class="animate-slide-up-reveal stagger-1 m-0 text-3xl font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
             Học thông minh,
             <br class="hidden sm:block" />
-            <span class="bg-gradient-to-r from-cyan-200 via-white to-indigo-200 bg-clip-text text-transparent">vươn tới tầm cao</span>
+            <span class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">vươn tới tầm cao</span>
           </h1>
 
-          <p class="animate-slide-up-reveal stagger-2 m-0 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg font-medium">
+          <p class="animate-slide-up-reveal stagger-2 m-0 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg font-medium">
             Trải nghiệm nền tảng luyện thi cá nhân hóa với công nghệ vượt trội, giúp bạn bứt phá giới hạn.
           </p>
 
           <div class="animate-slide-up-reveal stagger-3 flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
             <router-link
               to="/exams"
-              class="group inline-flex items-center gap-3 rounded-2xl bg-white px-8 py-4 text-sm font-extrabold uppercase tracking-widest text-indigo-600 shadow-xl shadow-indigo-900/10 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-2xl active:scale-95"
+              class="group inline-flex items-center gap-3 rounded-2xl bg-indigo-600 px-8 py-4 text-sm font-extrabold uppercase tracking-widest text-white shadow-xl shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-2xl active:scale-95"
             >
               Bắt đầu ngay
               <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
             </router-link>
             <router-link
               to="/learning"
-              class="inline-flex items-center gap-3 rounded-2xl border border-white/30 bg-white/10 backdrop-blur-sm px-8 py-4 text-sm font-extrabold uppercase tracking-widest text-white transition-all duration-300 hover:bg-white/20 hover:border-white/50 active:scale-95"
+              class="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-8 py-4 text-sm font-extrabold uppercase tracking-widest text-slate-600 transition-all duration-300 hover:bg-slate-100 hover:border-slate-300 active:scale-95"
             >
               Tìm hiểu thêm
             </router-link>
