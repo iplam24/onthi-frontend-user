@@ -31,75 +31,111 @@
           <router-link to="/deposit" class="btn-secondary px-8">Nạp tiền ngay</router-link>
         </div>
 
-        <div v-else class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-slate-50/50 border-b border-slate-100">
-                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thời gian</th>
-                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Mã giao dịch</th>
-                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Loại</th>
-                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Số tiền</th>
-                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-50">
-              <tr v-for="tx in transactions" :key="tx.id" class="hover:bg-slate-50/30 transition-colors group">
-                <td class="px-8 py-6">
-                  <div class="flex flex-col">
-                    <span class="text-sm font-bold text-slate-900">{{ formatDate(tx.createdAt) }}</span>
-                    <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">{{ formatTime(tx.createdAt) }}</span>
-                  </div>
-                </td>
-                <td class="px-8 py-6">
-                  <span class="text-xs font-mono font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-md">#{{ tx.orderCode || tx.id }}</span>
-                </td>
-                <td class="px-8 py-6">
-                  <span class="text-xs font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
-                    <i :class="tx.type === 'DEPOSIT' ? 'fa-solid fa-arrow-down-to-bracket text-emerald-500' : 'fa-solid fa-arrow-up-from-bracket text-rose-500'"></i>
-                    {{ tx.type === 'DEPOSIT' ? 'Nạp tiền' : 'Thanh toán' }}
-                  </span>
-                </td>
-                <td class="px-8 py-6 text-right">
-                  <span :class="['text-base font-black tabular-nums', tx.type === 'DEPOSIT' ? 'text-emerald-600' : 'text-slate-900']">
-                    {{ tx.type === 'DEPOSIT' ? '+' : '-' }}{{ formatPrice(tx.amount) }}đ
-                  </span>
-                </td>
-                <td class="px-8 py-6">
-                  <div class="flex justify-center">
-                    <span :class="[
-                      'px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest',
-                      tx.status === 'SUCCESS' ? 'bg-emerald-50 text-emerald-600' : 
-                      tx.status === 'PENDING' ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600'
-                    ]">
-                      {{ formatStatus(tx.status) }}
+        <template v-else>
+          <!-- Desktop Table -->
+          <div class="hidden sm:block overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50/50 border-b border-slate-100">
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thời gian</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Mã giao dịch</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Loại</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Số tiền</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-50">
+                <tr v-for="tx in transactions" :key="tx.id" class="hover:bg-slate-50/30 transition-colors group">
+                  <td class="px-8 py-6">
+                    <div class="flex flex-col">
+                      <span class="text-sm font-bold text-slate-900">{{ formatDate(tx.createdAt) }}</span>
+                      <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">{{ formatTime(tx.createdAt) }}</span>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6">
+                    <span class="text-xs font-mono font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-md">#{{ tx.orderCode || tx.id }}</span>
+                  </td>
+                  <td class="px-8 py-6">
+                    <span class="text-xs font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                      <i :class="tx.type === 'DEPOSIT' ? 'fa-solid fa-arrow-down-to-bracket text-emerald-500' : 'fa-solid fa-arrow-up-from-bracket text-rose-500'"></i>
+                      {{ tx.type === 'DEPOSIT' ? 'Nạp tiền' : 'Thanh toán' }}
                     </span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                  <td class="px-8 py-6 text-right">
+                    <span :class="['text-base font-black tabular-nums', tx.type === 'DEPOSIT' ? 'text-emerald-600' : 'text-slate-900']">
+                      {{ tx.type === 'DEPOSIT' ? '+' : '-' }}{{ formatPrice(tx.amount) }}đ
+                    </span>
+                  </td>
+                  <td class="px-8 py-6">
+                    <div class="flex justify-center">
+                      <span :class="[
+                        'px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest',
+                        tx.status === 'SUCCESS' ? 'bg-emerald-50 text-emerald-600' : 
+                        tx.status === 'PENDING' ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600'
+                      ]">
+                        {{ formatStatus(tx.status) }}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-          <!-- Pagination -->
-          <div class="p-6 border-t border-slate-100 flex items-center justify-between bg-white">
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">
-              Trang {{ pagination.page + 1 }} / {{ pagination.totalPages }}
-            </p>
-            <div class="flex items-center gap-2">
-              <button 
-                @click="changePage(pagination.page - 1)" 
-                :disabled="pagination.page === 0"
-                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 text-slate-600 transition-all hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-transparent"
-              >
-                <i class="fa-solid fa-chevron-left text-xs"></i>
-              </button>
-              <button 
-                @click="changePage(pagination.page + 1)" 
-                :disabled="pagination.page >= pagination.totalPages - 1"
-                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 text-slate-600 transition-all hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-transparent"
-              >
-                <i class="fa-solid fa-chevron-right text-xs"></i>
-              </button>
+          <!-- Mobile List -->
+          <div class="sm:hidden divide-y divide-slate-100">
+            <div v-for="tx in transactions" :key="`mob-${tx.id}`" class="p-5 flex flex-col gap-4 bg-white active:bg-slate-50 transition-colors">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <div :class="['h-10 w-10 flex items-center justify-center rounded-xl', tx.type === 'DEPOSIT' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600']">
+                    <i :class="tx.type === 'DEPOSIT' ? 'fa-solid fa-arrow-down-to-bracket' : 'fa-solid fa-arrow-up-from-bracket'"></i>
+                  </div>
+                  <div>
+                    <p class="m-0 text-sm font-black text-slate-900">{{ tx.type === 'DEPOSIT' ? 'Nạp tiền vào ví' : 'Thanh toán đề thi' }}</p>
+                    <p class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">#{{ tx.orderCode || tx.id }}</p>
+                  </div>
+                </div>
+                <span :class="['text-lg font-black tabular-nums', tx.type === 'DEPOSIT' ? 'text-emerald-600' : 'text-slate-900']">
+                  {{ tx.type === 'DEPOSIT' ? '+' : '-' }}{{ formatPrice(tx.amount) }}
+                </span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <i class="fa-regular fa-clock text-slate-300 text-xs"></i>
+                  <span class="text-xs font-bold text-slate-500">{{ formatDate(tx.createdAt) }} {{ formatTime(tx.createdAt) }}</span>
+                </div>
+                <span :class="[
+                  'px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest',
+                  tx.status === 'SUCCESS' ? 'bg-emerald-50 text-emerald-600' : 
+                  tx.status === 'PENDING' ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600'
+                ]">
+                  {{ formatStatus(tx.status) }}
+                </span>
+              </div>
             </div>
+          </div>
+        </template>
+
+        <!-- Pagination -->
+        <div class="p-6 border-t border-slate-100 flex items-center justify-between bg-white">
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">
+            Trang {{ pagination.page + 1 }} / {{ pagination.totalPages }}
+          </p>
+          <div class="flex items-center gap-2">
+            <button 
+              @click="changePage(pagination.page - 1)" 
+              :disabled="pagination.page === 0"
+              class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 text-slate-600 transition-all hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-transparent"
+            >
+              <i class="fa-solid fa-chevron-left text-xs"></i>
+            </button>
+            <button 
+              @click="changePage(pagination.page + 1)" 
+              :disabled="pagination.page >= pagination.totalPages - 1"
+              class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 text-slate-600 transition-all hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-transparent"
+            >
+              <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
   <section class="space-y-10 max-w-6xl mx-auto px-4 sm:px-6 pb-20 pt-6" style="animation: slide-up 650ms cubic-bezier(0.16,1,0.3,1) both">
     
     <!-- Header -->
-    <div class="relative overflow-hidden rounded-[2.5rem] bg-slate-900 border border-slate-800 p-8 sm:p-12 shadow-2xl flex flex-col md:flex-row items-center md:items-stretch gap-8">
+    <div class="relative overflow-hidden rounded-[2.5rem] bg-slate-900 border border-slate-800 p-6 sm:p-12 shadow-2xl flex flex-col lg:flex-row items-center lg:items-stretch gap-8">
       <div class="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-indigo-500/20 blur-[100px]"></div>
       
       <!-- Avatar Section -->
@@ -73,12 +73,12 @@
           </div>
         </div>
         <!-- Fire Level -->
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center col-span-2 lg:col-span-2">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center col-span-2">
           <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 m-0">Mức độ giữ lửa</p>
           <div class="mt-3 w-full max-w-[200px]">
             <div class="flex justify-between mb-1">
               <span class="text-xs font-bold" :class="getFireColorClass(profile?.streak?.fireLevel)">{{ getFireLabel(profile?.streak?.fireLevel) }}</span>
-              <span class="text-xs text-slate-400 font-bold">Level {{ profile?.streak?.fireLevel || 0 }}/5</span>
+              <span class="text-xs text-slate-400 font-bold">Lvl {{ profile?.streak?.fireLevel || 0 }}/5</span>
             </div>
             <div class="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
                <div class="h-full rounded-full transition-all duration-1000" :class="getFireBgClass(profile?.streak?.fireLevel)" :style="{ width: `${((profile?.streak?.fireLevel || 0) / 5) * 100}%` }"></div>
@@ -102,7 +102,7 @@
     <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
       <!-- Left Column: Form -->
-      <div class="lg:col-span-2 card-elevated p-8 border border-slate-100">
+      <div class="lg:col-span-2 card-elevated p-6 sm:p-8 border border-slate-100">
         <div class="flex items-center justify-between mb-8">
           <h2 class="m-0 text-xl font-extrabold text-slate-900 flex items-center gap-3">
             <i class="fa-solid fa-user-pen text-indigo-500"></i> Thông tin cá nhân

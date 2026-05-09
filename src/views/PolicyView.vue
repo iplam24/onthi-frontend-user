@@ -29,7 +29,7 @@
         <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full opacity-0 transition-all duration-700 group-hover:opacity-100 group-hover:scale-150"
           :class="item.bgGlow"></div>
         
-        <div class="relative z-10 flex gap-6">
+        <div class="relative z-10 flex flex-col sm:flex-row gap-6">
           <div class="shrink-0">
             <div 
               class="h-14 w-14 flex items-center justify-center rounded-2xl shadow-sm transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"

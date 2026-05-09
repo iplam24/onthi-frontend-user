@@ -14,7 +14,7 @@
   >
     <!-- Header -->
     <div 
-      class="flex items-center justify-between gap-3 border-b px-8 py-5"
+      class="flex items-center justify-between gap-3 border-b px-4 py-3 sm:px-8 sm:py-5"
       :class="uiLayoutHint === 'LITERATURE' ? 'border-amber-100/30 bg-amber-50/20' : 'border-slate-50 bg-slate-50/50'"
     >
       <div class="flex items-center gap-4">
@@ -44,7 +44,7 @@
     </div>
 
     <!-- Content Area -->
-    <div class="px-6 py-7 sm:px-8 sm:py-10 flex flex-col grow">
+    <div class="px-5 py-6 sm:px-8 sm:py-10 flex flex-col grow">
       <h2 
         class="m-0 leading-relaxed transition-colors"
         :class="[
@@ -79,19 +79,19 @@
           v-for="(option, oi) in options"
           :key="option.id || oi"
           @click="!isReview && $emit('select', option.value)"
-          class="flex items-center gap-4 rounded-2xl border-2 px-5 py-3.5 transition-all duration-300 relative overflow-hidden"
+          class="flex items-center gap-3 sm:gap-4 rounded-xl sm:rounded-2xl border-2 px-4 py-3 sm:px-5 sm:py-3.5 transition-all duration-300 relative overflow-hidden"
           :class="[
             isReview ? getReviewOptionClass(option) : getAttemptOptionClass(option),
             !isReview ? 'cursor-pointer' : ''
           ]"
         >
           <span
-            class="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-black shadow-sm transition-all duration-300"
+            class="relative z-10 flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg sm:rounded-xl text-xs sm:text-sm font-black shadow-sm transition-all duration-300"
             :class="getOptionBadgeClass(option)"
           >
             {{ String.fromCharCode(65 + oi) }}
           </span>
-          <span class="relative z-10 text-base font-bold leading-relaxed grow transition-colors" :class="getOptionTextClass(option)">
+          <span class="relative z-10 text-sm sm:text-base font-bold leading-relaxed grow transition-colors" :class="getOptionTextClass(option)">
             <MathContent :content="option.label || option.content || ''" :format="contentFormat" />
           </span>
           

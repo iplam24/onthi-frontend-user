@@ -1,56 +1,65 @@
 <template>
-  <section class="space-y-10 max-w-7xl mx-auto px-4 sm:px-6 pb-20 pt-6" style="animation: slide-up 650ms cubic-bezier(0.16,1,0.3,1) both">
+  <section class="space-y-8 sm:space-y-10 max-w-7xl mx-auto px-2 sm:px-6 pb-20 pt-4 sm:pt-6" style="animation: slide-up 650ms cubic-bezier(0.16,1,0.3,1) both">
     
     <!-- Header Area -->
-    <div class="relative overflow-hidden rounded-[2.5rem] bg-slate-900 border border-slate-800 p-8 sm:p-12 shadow-2xl">
+    <div class="relative overflow-hidden rounded-3xl sm:rounded-[2.5rem] bg-slate-900 border border-slate-800 p-6 sm:p-12 shadow-2xl">
       <div class="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-indigo-500/20 blur-[100px]"></div>
       <div class="pointer-events-none absolute -left-20 -bottom-20 h-80 w-80 rounded-full bg-cyan-500/10 blur-[80px]"></div>
       
       <div class="relative z-10 flex flex-col md:flex-row items-center gap-8 md:gap-12">
         <div class="flex-1 text-center md:text-left">
-          <div class="inline-flex items-center gap-2.5 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-cyan-300 mb-5">
-            <i class="fa-solid fa-chart-pie text-[10px]"></i>
+          <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-3 py-1 sm:px-4 sm:py-1.5 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wide sm:tracking-[0.2em] text-cyan-300 mb-4 sm:mb-5 max-w-full">
+            <i class="fa-solid fa-chart-pie text-[9px] sm:text-[10px]"></i>
             Phân tích năng lực
           </div>
-          <h1 class="m-0 text-3xl font-extrabold tracking-tight text-white sm:text-5xl">Đánh giá học sinh</h1>
-          <p class="mb-0 mt-4 text-sm font-medium text-slate-300 leading-relaxed max-w-xl">
+          <h1 class="m-0 text-xl font-extrabold tracking-tight text-white sm:text-5xl">Đánh giá học sinh</h1>
+          <p class="mb-0 mt-3 sm:mt-4 text-[13px] sm:text-sm font-medium text-slate-300 leading-relaxed max-w-xl mx-auto md:mx-0 break-words">
             Báo cáo chi tiết về hiệu suất học tập, điểm mạnh, điểm yếu và lộ trình cải thiện cá nhân hóa dựa trên dữ liệu làm bài của bạn.
           </p>
         </div>
         
         <!-- Filter Toggle -->
-        <div class="shrink-0">
-           <button @click="showFilters = !showFilters" class="btn-primary bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold px-6 py-3 rounded-2xl shadow-lg shadow-indigo-500/30">
+        <div class="shrink-0 w-full sm:w-auto">
+           <button @click="showFilters = !showFilters" class="w-full sm:w-auto btn-primary bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold px-6 py-3 rounded-2xl shadow-lg shadow-indigo-500/30 text-xs sm:text-sm">
               <i class="fa-solid fa-filter mr-2"></i> {{ showFilters ? 'Ẩn bộ lọc' : 'Bộ lọc phân tích' }}
            </button>
         </div>
       </div>
 
       <!-- Filters Panel -->
-      <div v-show="showFilters" class="relative z-10 mt-8 pt-8 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-slide-up-reveal">
-         <div class="space-y-1.5">
-            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Khối/Lớp</label>
-            <select v-model="filters.levelId" @change="onLevelChange" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm appearance-none outline-none focus:border-indigo-500 transition-colors">
-              <option :value="undefined">Tất cả khối</option>
-              <option v-for="l in levels" :key="l.id" :value="l.id">{{ l.name }}</option>
-            </select>
-          </div>
-          <div class="space-y-1.5">
-            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Môn học</label>
-            <select v-model="filters.subjectId" @change="fetchEvaluation" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm appearance-none outline-none focus:border-indigo-500 transition-colors">
-              <option :value="undefined">Tất cả môn</option>
-              <option v-for="s in filteredSubjects" :key="s.id" :value="s.id">{{ s.name }}</option>
-            </select>
-          </div>
-          <div class="space-y-1.5">
-            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Từ ngày</label>
-            <input v-model="filters.from" type="date" @change="fetchEvaluation" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors" />
-          </div>
-          <div class="space-y-1.5">
-            <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Đến ngày</label>
-            <input v-model="filters.to" type="date" @change="fetchEvaluation" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors" />
-          </div>
-      </div>
+      <Transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="transform -translate-y-4 opacity-0"
+        enter-to-class="transform translate-y-0 opacity-100"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="transform translate-y-0 opacity-100"
+        leave-to-class="transform -translate-y-4 opacity-0"
+      >
+        <div v-if="showFilters" class="relative z-10 mt-8 pt-8 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+           <div class="space-y-1.5">
+              <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Khối/Lớp</label>
+              <select v-model="filters.levelId" @change="onLevelChange" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm appearance-none outline-none focus:border-indigo-500 transition-colors">
+                <option :value="undefined">Tất cả khối</option>
+                <option v-for="l in levels" :key="l.id" :value="l.id">{{ l.name }}</option>
+              </select>
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Môn học</label>
+              <select v-model="filters.subjectId" @change="fetchEvaluation" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm appearance-none outline-none focus:border-indigo-500 transition-colors">
+                <option :value="undefined">Tất cả môn</option>
+                <option v-for="s in filteredSubjects" :key="s.id" :value="s.id">{{ s.name }}</option>
+              </select>
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Từ ngày</label>
+              <input v-model="filters.from" type="date" @change="fetchEvaluation" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors" />
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Đến ngày</label>
+              <input v-model="filters.to" type="date" @change="fetchEvaluation" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors" />
+            </div>
+        </div>
+      </Transition>
     </div>
 
     <!-- Error/Loading -->
@@ -78,47 +87,47 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <!-- Điểm Tổng Hợp -->
-        <div class="card-elevated p-8 flex flex-col justify-center items-center text-center relative overflow-hidden bg-white">
-           <div class="absolute top-0 right-0 p-6">
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest" :class="getLabelColor(evaluation.overallScore)">
+        <div class="card-elevated p-4 sm:p-8 flex flex-col justify-center items-center text-center relative overflow-hidden bg-white">
+           <div class="absolute top-0 right-0 p-2 sm:p-6">
+              <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest" :class="getLabelColor(evaluation.overallScore)">
                  {{ evaluation.performanceLabel }}
               </span>
            </div>
            
-           <div class="relative h-40 w-40 flex items-center justify-center mb-6">
+           <div class="relative h-28 w-28 sm:h-40 sm:w-40 min-w-[112px] min-h-[112px] aspect-square flex items-center justify-center mb-4 sm:mb-6">
               <!-- Background circle -->
               <svg class="absolute inset-0 h-full w-full" viewBox="0 0 100 100">
                 <circle class="text-slate-100 stroke-current" stroke-width="8" cx="50" cy="50" r="40" fill="transparent"></circle>
                 <!-- Progress circle -->
                 <circle class="stroke-current" :class="getScoreTextColor(evaluation.overallScore)" stroke-width="8" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent" 
-                  :stroke-dasharray="`${(evaluation.overallScore / 100) * 251.2} 251.2`" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
+                  :stroke-dasharray="`${(safePercent(evaluation.overallScore) / 100) * 251.2} 251.2`" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span class="text-4xl font-black" :class="getScoreTextColor(evaluation.overallScore)">{{ evaluation.overallScore?.toFixed(1) }}</span>
+                <span class="text-2xl sm:text-4xl font-black break-words" :class="getScoreTextColor(evaluation.overallScore)">{{ evaluation.overallScore?.toFixed(1) }}</span>
               </div>
            </div>
-           <h3 class="text-lg font-black text-slate-900 m-0">Điểm tổng hợp</h3>
-           <p class="text-sm font-medium text-slate-500 mt-2 max-w-[250px]">Kết hợp từ kiến thức, tốc độ, tiến bộ và kỷ luật học tập.</p>
+           <h3 class="text-base sm:text-lg font-black text-slate-900 m-0">Điểm tổng hợp</h3>
+           <p class="text-[13px] sm:text-sm font-medium text-slate-500 mt-2 max-w-[250px]">Dựa trên kiến thức, tốc độ, tiến bộ và kỷ luật.</p>
            
-           <div class="flex items-center justify-center gap-6 mt-6 w-full border-t border-slate-50 pt-6">
+           <div class="flex items-center justify-center gap-4 sm:gap-6 mt-6 w-full border-t border-slate-50 pt-6">
               <div class="text-center">
-                 <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Đã làm</p>
-                 <p class="text-xl font-black text-slate-900">{{ evaluation.totalAttempts }} <span class="text-xs font-bold text-slate-500">đề</span></p>
+                 <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase mb-1">Đã làm</p>
+                 <p class="text-lg sm:text-xl font-black text-slate-900">{{ evaluation.totalAttempts }} <span class="text-[10px] sm:text-xs font-bold text-slate-500">đề</span></p>
               </div>
-              <div class="text-center border-l border-slate-100 pl-6">
-                 <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Điểm TB</p>
-                 <p class="text-xl font-black text-slate-900">{{ evaluation.averageScore?.toFixed(1) }}</p>
+              <div class="text-center border-l border-slate-100 pl-4 sm:pl-6">
+                 <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase mb-1">Điểm TB</p>
+                 <p class="text-lg sm:text-xl font-black text-slate-900">{{ evaluation.averageScore?.toFixed(1) }}</p>
               </div>
            </div>
         </div>
 
         <!-- 4 Trục đánh giá -->
-        <div class="lg:col-span-2 card-elevated p-8">
-           <h3 class="flex items-center gap-2 m-0 text-lg font-black text-slate-900 mb-6">
+        <div class="lg:col-span-2 card-elevated p-6 sm:p-8">
+           <h3 class="flex items-center gap-2 m-0 text-base sm:text-lg font-black text-slate-900 mb-6">
               <i class="fa-solid fa-radar text-indigo-500"></i> Phân tích năng lực chi tiết
            </h3>
            
-           <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8">
+           <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 sm:gap-x-12 gap-y-8">
               <!-- Knowledge -->
               <div>
                  <div class="flex items-end justify-between mb-2">
@@ -180,37 +189,37 @@
 
       <!-- 2. NHẬN XÉT -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-         <div class="lg:col-span-1 card-elevated p-8 bg-gradient-to-br from-indigo-600 to-indigo-800 text-white relative overflow-hidden">
+         <div class="lg:col-span-1 card-elevated p-6 sm:p-8 bg-gradient-to-br from-indigo-600 to-indigo-800 text-white relative overflow-hidden">
             <div class="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10 blur-2xl"></div>
-            <i class="fa-solid fa-quote-left text-3xl text-indigo-400/50 mb-4 block"></i>
-            <h3 class="text-xl font-black text-white mb-4">Nhận xét hệ thống</h3>
-            <p class="text-indigo-100 leading-relaxed font-medium text-sm">{{ evaluation.summary }}</p>
+            <i class="fa-solid fa-quote-left text-2xl sm:text-3xl text-indigo-400/50 mb-4 block"></i>
+            <h3 class="text-lg sm:text-xl font-black text-white mb-4">Nhận xét hệ thống</h3>
+            <p class="text-indigo-100 leading-relaxed font-medium text-[13px] sm:text-sm break-words">{{ evaluation.summary }}</p>
          </div>
 
-         <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
+         <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Strengths -->
-            <div class="card-elevated p-8 border border-emerald-100/50">
-               <h3 class="flex items-center gap-2 m-0 text-lg font-black text-emerald-700 mb-5">
+            <div class="card-elevated p-6 sm:p-8 border border-emerald-100/50">
+               <h3 class="flex items-center gap-2 m-0 text-base sm:text-lg font-black text-emerald-700 mb-5">
                   <i class="fa-solid fa-arrow-trend-up"></i> Điểm mạnh
                </h3>
                <ul class="space-y-4 m-0 p-0 list-none">
                   <li v-for="(str, i) in evaluation.strengths" :key="i" class="flex items-start gap-3">
                      <span class="shrink-0 mt-0.5 h-5 w-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[10px]"><i class="fa-solid fa-check"></i></span>
-                     <span class="text-sm font-bold text-slate-700 leading-relaxed">{{ str }}</span>
+                     <span class="text-[13px] sm:text-sm font-bold text-slate-700 leading-relaxed break-words">{{ str }}</span>
                   </li>
                   <li v-if="!evaluation.strengths?.length" class="text-sm text-slate-400 italic">Chưa có đủ dữ liệu.</li>
                </ul>
             </div>
 
             <!-- Weaknesses -->
-            <div class="card-elevated p-8 border border-rose-100/50">
-               <h3 class="flex items-center gap-2 m-0 text-lg font-black text-rose-600 mb-5">
+            <div class="card-elevated p-6 sm:p-8 border border-rose-100/50">
+               <h3 class="flex items-center gap-2 m-0 text-base sm:text-lg font-black text-rose-600 mb-5">
                   <i class="fa-solid fa-triangle-exclamation"></i> Cần khắc phục
                </h3>
                <ul class="space-y-4 m-0 p-0 list-none">
                   <li v-for="(wkn, i) in evaluation.weaknesses" :key="i" class="flex items-start gap-3">
                      <span class="shrink-0 mt-0.5 h-5 w-5 rounded-full bg-rose-100 text-rose-500 flex items-center justify-center text-[10px]"><i class="fa-solid fa-xmark"></i></span>
-                     <span class="text-sm font-bold text-slate-700 leading-relaxed">{{ wkn }}</span>
+                     <span class="text-[13px] sm:text-sm font-bold text-slate-700 leading-relaxed break-words">{{ wkn }}</span>
                   </li>
                   <li v-if="!evaluation.weaknesses?.length" class="text-sm text-slate-400 italic">Chưa có đủ dữ liệu.</li>
                </ul>
@@ -221,34 +230,34 @@
       <!-- 3. GỢI Ý & ĐỘ KHÓ -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
          <!-- Recommendations -->
-         <div class="lg:col-span-2 card-elevated p-8">
-            <h3 class="flex items-center gap-2 m-0 text-lg font-black text-slate-900 mb-6">
+         <div class="lg:col-span-2 card-elevated p-6 sm:p-8">
+            <h3 class="flex items-center gap-2 m-0 text-base sm:text-lg font-black text-slate-900 mb-6">
                <i class="fa-solid fa-lightbulb text-amber-500"></i> Lộ trình & Gợi ý tiếp theo
             </h3>
             <div class="space-y-4">
-               <div v-for="(rec, i) in evaluation.recommendations" :key="i" class="flex items-start gap-4 p-4 rounded-2xl bg-amber-50/50 border border-amber-100/50 hover:bg-amber-50 transition-colors">
-                  <div class="h-10 w-10 shrink-0 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-black">{{ i + 1 }}</div>
-                  <p class="m-0 text-sm font-bold text-slate-800 leading-relaxed pt-1.5">{{ rec }}</p>
+               <div v-for="(rec, i) in evaluation.recommendations" :key="i" class="flex items-start gap-3 sm:gap-4 p-4 rounded-2xl bg-amber-50/50 border border-amber-100/50 hover:bg-amber-50 transition-colors">
+                  <div class="h-8 w-8 sm:h-10 sm:w-10 shrink-0 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-black text-xs sm:text-sm">{{ i + 1 }}</div>
+                  <p class="m-0 text-[13px] sm:text-sm font-bold text-slate-800 leading-relaxed pt-1 sm:pt-1.5 break-words">{{ rec }}</p>
                </div>
                <div v-if="!evaluation.recommendations?.length" class="text-sm text-slate-400 italic">Hãy làm thêm bài tập để nhận gợi ý.</div>
             </div>
          </div>
 
          <!-- Difficulty Breakdown -->
-         <div class="lg:col-span-1 card-elevated p-8">
-            <h3 class="m-0 text-lg font-black text-slate-900 mb-6">Theo độ khó</h3>
+         <div class="lg:col-span-1 card-elevated p-6 sm:p-8">
+            <h3 class="m-0 text-base sm:text-lg font-black text-slate-900 mb-6">Theo độ khó</h3>
             <div class="space-y-5">
                <div v-for="diff in evaluation.difficultyEvaluations" :key="diff.difficulty" class="space-y-2">
                   <div class="flex items-center justify-between">
-                     <span class="text-xs font-black uppercase tracking-widest text-slate-500">
+                     <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-500">
                         {{ diff.difficulty === 'EASY' ? 'Dễ' : (diff.difficulty === 'MEDIUM' ? 'Trung bình' : 'Khó') }}
                      </span>
-                     <span class="text-sm font-black text-slate-900">{{ diff.accuracyRate?.toFixed(1) }}% đúng</span>
+                     <span class="text-[11px] sm:text-sm font-black text-slate-900">{{ diff.accuracyRate?.toFixed(1) }}% đúng</span>
                   </div>
                   <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                      <div class="h-full rounded-full transition-all duration-1000" 
                         :class="diff.difficulty === 'EASY' ? 'bg-emerald-500' : (diff.difficulty === 'MEDIUM' ? 'bg-amber-500' : 'bg-rose-500')"
-                        :style="{ width: `${diff.accuracyRate}%` }"></div>
+                        :style="{ width: `${safePercent(diff.accuracyRate)}%` }"></div>
                   </div>
                   <p class="m-0 text-[10px] text-right text-slate-400 font-bold">{{ diff.correctAnswers }}/{{ diff.totalAnswers }} câu</p>
                </div>
@@ -257,11 +266,11 @@
       </div>
 
       <!-- 4. PHÂN TÍCH MÔN HỌC -->
-      <div v-if="evaluation.subjectEvaluations?.length" class="card-elevated p-8">
-         <h3 class="flex items-center gap-2 m-0 text-lg font-black text-slate-900 mb-6">
+      <div v-if="evaluation.subjectEvaluations?.length" class="card-elevated p-6 sm:p-8">
+         <h3 class="flex items-center gap-2 m-0 text-base sm:text-lg font-black text-slate-900 mb-6">
             <i class="fa-solid fa-layer-group text-blue-500"></i> Phân tích theo môn học
          </h3>
-         <div class="overflow-x-auto">
+         <div class="overflow-x-auto hidden md:block">
             <table class="w-full text-left text-sm">
                <thead>
                   <tr class="border-b border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -280,7 +289,7 @@
                      <td class="py-4 px-4">
                         <div class="flex items-center gap-2">
                            <div class="h-1.5 w-16 bg-slate-100 rounded-full overflow-hidden">
-                              <div class="h-full rounded-full bg-indigo-500" :style="{ width: `${sub.accuracyRate}%` }"></div>
+                              <div class="h-full rounded-full bg-indigo-500" :style="{ width: `${safePercent(sub.accuracyRate)}%` }"></div>
                            </div>
                            <span class="text-xs font-bold text-slate-600">{{ sub.accuracyRate?.toFixed(1) }}%</span>
                         </div>
@@ -289,6 +298,31 @@
                   </tr>
                </tbody>
             </table>
+         </div>
+
+         <!-- Mobile Subject Cards -->
+         <div class="md:hidden divide-y divide-slate-100">
+            <div v-for="sub in evaluation.subjectEvaluations" :key="`mob-sub-${sub.subjectId}`" class="py-4 space-y-3">
+               <div class="flex items-center justify-between">
+                  <span class="text-sm font-black text-slate-900">{{ sub.subjectName }}</span>
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{{ sub.levelName }}</span>
+               </div>
+               <div class="grid grid-cols-2 gap-4">
+                  <div>
+                     <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Số bài / Điểm TB</p>
+                     <p class="text-sm font-black text-slate-700">
+                        {{ sub.attemptCount }} đề / <span :class="getScoreTextColor(sub.averageScore)">{{ sub.averageScore?.toFixed(1) }}</span>
+                     </p>
+                  </div>
+                  <div class="text-right">
+                     <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Tỷ lệ đúng</p>
+                     <p class="text-sm font-black text-indigo-600">{{ sub.accuracyRate?.toFixed(1) }}%</p>
+                  </div>
+               </div>
+               <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full bg-indigo-500" :style="{ width: `${safePercent(sub.accuracyRate)}%` }"></div>
+               </div>
+            </div>
          </div>
       </div>
        
@@ -327,6 +361,11 @@ const filteredSubjects = computed(() => {
 const onLevelChange = () => {
   filters.subjectId = undefined;
   fetchEvaluation();
+};
+
+const safePercent = (value?: number) => {
+  if (value == null) return 0;
+  return Math.min(100, Math.max(0, value));
 };
 
 const getScoreTextColor = (score?: number) => {

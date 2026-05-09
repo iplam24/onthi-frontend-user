@@ -63,12 +63,12 @@
     </transition>
   </teleport>
 
-<div class="text-slate-900 pb-12 pt-[180px] sm:pt-[150px] max-w-7xl mx-auto px-2 sm:px-4">
+<div class="text-slate-900 pb-12 pt-[160px] sm:pt-[150px] max-w-7xl mx-auto px-2 sm:px-4">
     <!-- Fixed Header -->
     <div class="fixed top-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-2xl border-b border-white/50 shadow-lg shadow-indigo-500/5">
       <div class="max-w-7xl mx-auto w-full flex flex-col">
         <!-- Header row -->
-        <div class="flex flex-wrap items-center justify-between gap-4 px-6 py-4 sm:px-10">
+        <div class="flex items-center justify-between gap-3 px-4 py-3 sm:px-10 sm:py-4">
           <div class="flex items-center gap-6">
             <router-link
               to="/exams"
@@ -78,13 +78,13 @@
               <i class="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i>
             </router-link>
 
-            <div>
-              <p class="m-0 text-xl font-black tracking-tight text-slate-900 sm:text-3xl">{{ examTitle || 'Làm bài thi' }}</p>
+            <div class="min-w-0 flex-1">
+              <p class="m-0 text-lg font-black tracking-tight text-slate-900 sm:text-3xl truncate">{{ examTitle || 'Làm bài thi' }}</p>
             </div>
 
-            <div class="hidden sm:flex items-center gap-3 rounded-2xl bg-indigo-50 px-5 py-2.5 shadow-inner">
-              <i class="fa-regular fa-clock text-indigo-500 text-lg animate-pulse"></i>
-              <span class="text-xl font-black text-indigo-700 tabular-nums">{{ timeLabel }}</span>
+            <div class="flex items-center gap-2 sm:gap-3 rounded-2xl bg-indigo-50 px-3 py-2 sm:px-5 sm:py-2.5 shadow-inner">
+              <i class="fa-regular fa-clock text-indigo-500 text-sm sm:text-lg animate-pulse"></i>
+              <span class="text-base sm:text-xl font-black text-indigo-700 tabular-nums">{{ timeLabel }}</span>
             </div>
           </div>
 
@@ -97,26 +97,26 @@
               type="button"
               @click="handleSubmit"
               :disabled="submitting || !attempt"
-              class="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-indigo-600 px-8 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-indigo-500/20 transition-all hover:bg-indigo-700 active:scale-95 disabled:opacity-50"
+              class="group relative inline-flex items-center gap-2 sm:gap-3 overflow-hidden rounded-xl sm:rounded-2xl bg-indigo-600 px-4 py-2.5 sm:px-8 sm:py-3.5 text-xs sm:text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-indigo-500/20 transition-all hover:bg-indigo-700 active:scale-95 disabled:opacity-50"
             >
-              <span class="relative z-10">{{ submitting ? 'Đang nộp...' : 'Nộp bài' }}</span>
-              <i class="fa-solid fa-paper-plane text-xs relative z-10 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+              <span class="relative z-10">{{ submitting ? '...' : 'Nộp bài' }}</span>
+              <i class="fa-solid fa-paper-plane text-[10px] sm:text-xs relative z-10 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
             </button>
           </div>
         </div>
 
         <!-- Question Navigation row -->
-        <div class="border-t border-slate-100 bg-slate-50/50 px-6 py-4 sm:px-10 overflow-x-auto">
+        <div class="border-t border-slate-100 bg-slate-50/50 px-4 py-3 sm:px-10 overflow-x-auto custom-scrollbar">
           <div class="flex items-center gap-3">
-            <p class="m-0 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mr-4 whitespace-nowrap">Danh sách câu:</p>
-            <div class="flex gap-2">
+            <p class="m-0 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mr-2 sm:mr-4 whitespace-nowrap">Câu:</p>
+            <div class="flex gap-1.5 sm:gap-2">
               <button
                 v-for="(question, index) in questions"
                 :key="`nav-${question.id}`"
                 type="button"
                 @click="scrollToQuestion(question.id)"
                 :class="[
-                  'h-10 w-10 shrink-0 rounded-xl border text-xs font-black transition-all duration-200 hover:scale-110 active:scale-90',
+                  'h-8 w-8 sm:h-10 sm:w-10 shrink-0 rounded-lg sm:rounded-xl border text-[10px] sm:text-xs font-black transition-all duration-200 hover:scale-110 active:scale-90',
                   currentQuestionId === question.id
                     ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-500/40'
                     : answers[question.id]

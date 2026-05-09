@@ -11,7 +11,7 @@
           <i class="fa-solid fa-envelope text-cyan-200"></i>
           Kênh liên lạc
         </div>
-        <h1 class="m-0 text-4xl font-black text-white sm:text-5xl tracking-tight">Liên hệ với chúng tôi</h1>
+        <h1 class="m-0 text-3xl font-black text-white sm:text-5xl tracking-tight">Liên hệ với chúng tôi</h1>
         <p class="mb-0 mt-4 text-base font-medium text-white/90 max-w-lg leading-relaxed">
           Cần hỗ trợ kỹ thuật hoặc tư vấn lộ trình học? Đội ngũ V-Edu luôn sẵn sàng đồng hành cùng bạn.
         </p>

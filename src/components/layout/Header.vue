@@ -17,7 +17,7 @@
           />
         </div>
         <div>
-          <p class="m-0 text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl">{{ appName }}</p>
+          <p class="m-0 text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl truncate max-w-[120px] sm:max-w-none">{{ appName }}</p>
         </div>
       </router-link>
 
@@ -130,7 +130,7 @@
       <!-- Mobile menu toggle -->
       <button
         @click.stop="mobileOpen = !mobileOpen"
-        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition-all duration-300 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 md:hidden active:scale-90"
+        class="inline-flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition-all duration-300 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 md:hidden active:scale-90"
         aria-label="Mở menu"
       >
         <i :class="['fa-solid text-sm transition-all duration-500', mobileOpen ? 'fa-xmark rotate-180' : 'fa-bars']" aria-hidden="true"></i>

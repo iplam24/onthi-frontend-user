@@ -36,7 +36,7 @@
               </span>
               <span class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-white/80">Đường tới thành công</span>
             </div>
-            <h2 class="m-0 text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl tracking-tight leading-[1.15]">
+            <h2 class="m-0 text-2xl font-extrabold text-white sm:text-4xl lg:text-5xl tracking-tight leading-[1.15]">
               {{ countdowns[0]?.title }}
             </h2>
             <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3">
@@ -64,10 +64,10 @@
             </div>
             <router-link
               to="/learning"
-              class="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-white px-7 py-4 text-[11px] font-extrabold uppercase tracking-widest text-slate-900 shadow-xl transition-all hover:shadow-2xl hover:scale-[1.02] active:scale-95"
+              class="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-white px-5 sm:px-7 py-3 sm:py-4 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-slate-900 shadow-xl transition-all hover:shadow-2xl hover:scale-[1.02] active:scale-95"
             >
               <span class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-indigo-100 to-transparent transition-transform duration-700 group-hover:translate-x-full skew-x-12"></span>
-              <span class="relative z-10">Ôn tập ngay</span>
+              <span class="relative z-10">Ôn tập</span>
               <i class="fa-solid fa-bolt-lightning text-xs relative z-10 text-indigo-500"></i>
             </router-link>
           </div>
@@ -94,7 +94,7 @@
             Next-Gen Education
           </span>
 
-          <h1 class="animate-slide-up-reveal stagger-1 m-0 text-5xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
+          <h1 class="animate-slide-up-reveal stagger-1 m-0 text-3xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
             Học thông minh,
             <br class="hidden sm:block" />
             <span class="bg-gradient-to-r from-cyan-200 via-white to-indigo-200 bg-clip-text text-transparent">vươn tới tầm cao</span>
@@ -155,7 +155,7 @@
         </button>
       </div>
 
-      <div class="grid gap-6 sm:grid-cols-3">
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <article
           v-for="(item, idx) in heroStats"
           :key="item.key"

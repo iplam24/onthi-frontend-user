@@ -47,7 +47,7 @@
 
     <div v-else class="space-y-8">
       <!-- Filter Bar -->
-      <div class="card-elevated p-6 space-y-4">
+      <div class="card-elevated p-4 sm:p-6 space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Keyword -->
           <div class="space-y-1.5">
@@ -95,9 +95,9 @@
             <label class="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Đến ngày</label>
             <input v-model="filters.to" type="date" @change="applyFilters" class="input-primary text-sm" />
           </div>
-          <div class="lg:col-span-2 flex items-end justify-end gap-3 mt-4 lg:mt-0">
-             <button @click="resetFilters" class="btn-secondary text-xs font-extrabold px-4">Xóa lọc</button>
-             <button @click="applyFilters" :disabled="loading" class="btn-primary text-xs font-extrabold px-6">
+          <div class="sm:col-span-2 flex items-end justify-end gap-3 mt-4 sm:mt-0">
+             <button @click="resetFilters" class="flex-1 sm:flex-none btn-secondary text-[10px] font-extrabold px-4">Xóa lọc</button>
+             <button @click="applyFilters" :disabled="loading" class="flex-1 sm:flex-none btn-primary text-[10px] font-extrabold px-6">
                 <i class="fa-solid fa-filter text-[10px] mr-1" :class="{'animate-pulse': loading}"></i>
                 Lọc kết quả
              </button>
@@ -153,18 +153,18 @@
 
           <div class="flex flex-col sm:flex-row items-stretch">
             <!-- Score Panel -->
-            <div class="flex items-center justify-center sm:w-36 shrink-0 p-6 sm:border-r border-b sm:border-b-0 transition-colors duration-500" :class="getScorePanelBg(attempt.score, attempt.status)">
+            <div class="flex items-center justify-center sm:w-32 shrink-0 p-4 sm:p-6 sm:border-r border-b sm:border-b-0 transition-colors duration-500" :class="getScorePanelBg(attempt.score, attempt.status)">
               <div class="text-center">
-                <span v-if="attempt.status === 'GRADING'" class="block text-3xl font-extrabold text-indigo-500 animate-pulse">
+                <span v-if="attempt.status === 'GRADING'" class="block text-2xl sm:text-3xl font-extrabold text-indigo-500 animate-pulse">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </span>
-                <span v-else class="block text-4xl font-extrabold tabular-nums" :class="getScoreTextColor(attempt.score)">{{ attempt.score ?? '-' }}</span>
-                <span class="block text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mt-1">Điểm</span>
+                <span v-else class="block text-3xl sm:text-4xl font-extrabold tabular-nums" :class="getScoreTextColor(attempt.score)">{{ attempt.score ?? '-' }}</span>
+                <span class="block text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mt-1">Điểm</span>
               </div>
             </div>
 
             <!-- Content -->
-            <div class="flex-1 p-6 sm:p-7 flex flex-col justify-between gap-4">
+            <div class="flex-1 p-5 sm:p-7 flex flex-col justify-between gap-4">
               <div>
                 <div class="flex items-start justify-between gap-3">
                   <div class="min-w-0">

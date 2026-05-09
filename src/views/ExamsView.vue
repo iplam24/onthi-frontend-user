@@ -3,14 +3,14 @@
     <div v-if="!auth.isAuthenticated" class="relative overflow-hidden rounded-[2.5rem] bg-white border border-slate-100/80 p-8 sm:p-12 shadow-xl shadow-slate-200/20">
       <div class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-indigo-50/60 blur-3xl"></div>
       <div class="flex flex-col sm:flex-row items-center gap-8 sm:gap-12">
-        <div class="flex-1">
-          <h1 class="m-0 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Hệ thống Đề thi</h1>
+        <div class="flex-1 text-center sm:text-left">
+          <h1 class="m-0 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Hệ thống Đề thi</h1>
           <p class="mb-0 mt-3 text-sm font-medium text-slate-500 leading-relaxed max-w-md">
             Khám phá kho tàng kiến thức phong phú với hàng trăm đề thi chất lượng.
           </p>
         </div>
         <div class="shrink-0 hidden sm:block">
-          <img src="@/asset/illustrations/exam-illustration.png" alt="Exam" class="h-32 w-auto drop-shadow-lg animate-float-slow" />
+          <img src="@/asset/illustrations/exam-illustration.png" alt="Exam" class="h-24 sm:h-32 w-auto drop-shadow-lg animate-float-slow" />
         </div>
       </div>
     </div>
