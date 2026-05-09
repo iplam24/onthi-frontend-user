@@ -28,10 +28,15 @@ export const aiService = {
 };
 
 export const getAiExplanation = async (questionId: number, studentAnswer: string) => {
-  const response = await apiClient.get('/ai-tutor/explain', { 
-    params: { questionId, studentAnswer } 
+  const response = await apiClient.get('/ai-tutor/explain', {
+    params: { questionId, studentAnswer }
   });
   return response.data;
+};
+
+export const getAiLearningPath = async () => {
+  const response = await apiClient.get('/ai-recommendation/my-path');
+  return response;
 };
 
 export default aiService;
