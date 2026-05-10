@@ -158,7 +158,10 @@ const isContactTyping = ref(false);
 const messageContainer = ref<HTMLElement | null>(null);
 let typingTimeout: any = null;
 
-const BACKEND_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api').replace(/\/api\/?$/, '');
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+const BACKEND_ORIGIN = API_BASE_URL.startsWith('http') 
+    ? API_BASE_URL.replace(/\/api\/?$/, '') 
+    : `${window.location.origin}${API_BASE_URL.replace(/\/api\/?$/, '')}`;
 
 const resolveImageUrl = (url?: string | null) => {
   if (!url) return undefined;
@@ -280,7 +283,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  chatService.disconnect();
+  chatService.disconnect(onMessageReceived, onTypingReceived);
 });
 
 watch(() => auth.isAuthenticated, (val) => {
@@ -288,7 +291,7 @@ watch(() => auth.isAuthenticated, (val) => {
     fetchFriends();
     chatService.connect(auth.user.id, onMessageReceived, auth.token ?? undefined, false, onTypingReceived);
   } else {
-    chatService.disconnect();
+    chatService.disconnect(onMessageReceived, onTypingReceived);
   }
 });
 </script>

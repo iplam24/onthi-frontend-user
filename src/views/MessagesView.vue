@@ -132,6 +132,7 @@
               </button>
               <input 
                 v-model="newMessage"
+                @input="handleTyping"
                 type="text" 
                 placeholder="Nhập tin nhắn..." 
                 class="flex-1 h-11 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-slate-50 border-none text-base sm:text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-inner"
@@ -172,7 +173,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick, watch } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, nextTick, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { chatService } from '@/services/chatService';
@@ -186,9 +187,14 @@ const selectedContact = ref<any>(null);
 const messages = ref<any[]>([]);
 const newMessage = ref('');
 const searchQuery = ref('');
+const isContactTyping = ref(false);
 const messageContainer = ref<HTMLElement | null>(null);
+let typingTimeout: any = null;
 
-const BACKEND_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api').replace(/\/api\/?$/, '');
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+const BACKEND_ORIGIN = API_BASE_URL.startsWith('http') 
+    ? API_BASE_URL.replace(/\/api\/?$/, '') 
+    : `${window.location.origin}${API_BASE_URL.replace(/\/api\/?$/, '')}`;
 
 const resolveImageUrl = (url?: string | null) => {
   if (!url) return undefined;
@@ -268,13 +274,46 @@ const handleSendMessage = () => {
   messages.value.push(msg);
   chatService.sendMessage(msg);
   newMessage.value = '';
+
+  // Send typing false when message sent
+  chatService.sendTyping({
+    senderId: auth.user!.id,
+    receiverId: selectedContact.value.id,
+    isTyping: false
+  });
+
   scrollToBottom();
+};
+
+const handleTyping = () => {
+  if (!selectedContact.value || !auth.user) return;
+  
+  chatService.sendTyping({
+    senderId: auth.user!.id,
+    receiverId: selectedContact.value.id,
+    isTyping: true
+  });
+  
+  if (typingTimeout) clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    chatService.sendTyping({
+      senderId: auth.user!.id,
+      receiverId: selectedContact.value.id,
+      isTyping: false
+    });
+  }, 3000);
 };
 
 const scrollToBottom = async () => {
   await nextTick();
   if (messageContainer.value) {
     messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+  }
+};
+
+const onTypingReceived = (typing: any) => {
+  if (selectedContact.value && typing.senderId === selectedContact.value.id) {
+    isContactTyping.value = typing.isTyping;
   }
 };
 
@@ -293,7 +332,20 @@ const onMessageReceived = (msg: any) => {
 onMounted(() => {
   if (auth.isAuthenticated && auth.user?.id) {
     fetchContacts();
-    chatService.connect(auth.user.id, onMessageReceived, auth.token ?? undefined);
+    chatService.connect(auth.user.id, onMessageReceived, auth.token ?? undefined, false, onTypingReceived);
+  }
+});
+
+onBeforeUnmount(() => {
+  chatService.disconnect(onMessageReceived, onTypingReceived);
+});
+
+watch(() => auth.isAuthenticated, (val) => {
+  if (val && auth.user?.id) {
+    fetchContacts();
+    chatService.connect(auth.user.id, onMessageReceived, auth.token ?? undefined, false, onTypingReceived);
+  } else {
+    chatService.disconnect(onMessageReceived, onTypingReceived);
   }
 });
 
