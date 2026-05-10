@@ -9,7 +9,7 @@ class ChatService {
     private stompClient: any = null;
     private subscriptions: Map<string, any> = new Map();
 
-    connect(userId: number, onMessageReceived: (message: any) => void, token?: string, debug: boolean = false) {
+    connect(userId: number, onMessageReceived: (message: any) => void, token?: string, debug: boolean = false, onTypingReceived?: (typing: any) => void) {
         const socket = new SockJS(WS_URL, undefined, { withCredentials: true } as any);
         this.stompClient = Stomp.over(socket);
         this.stompClient.debug = debug ? console.log.bind(console) : () => {}; // optionally enable debug logs
@@ -21,29 +21,37 @@ class ChatService {
             if (debug) console.log('WebSocket connected for user', userId);
 
             // Subscribe to possible broker destinations to maximize compatibility.
-            const topics = [`/user/queue/messages`, `/user/${userId}/queue/messages`];
+            const topics = [
+                { path: `/user/queue/messages`, callback: onMessageReceived },
+                { path: `/user/${userId}/queue/messages`, callback: onMessageReceived },
+                { path: `/user/queue/typing`, callback: onTypingReceived },
+                { path: `/user/${userId}/queue/typing`, callback: onTypingReceived }
+            ];
+
             topics.forEach((topic) => {
-                try {
-                    if (!this.subscriptions.has(topic)) {
-                        const sub = this.stompClient.subscribe(topic, (sdkEvent: any) => {
-                            try {
-                                const parsed = JSON.parse(sdkEvent.body);
-                                if (debug) console.log('WS message', topic, parsed);
-                                onMessageReceived(parsed);
-                            } catch (err) {
-                                if (debug) console.error('Failed to parse WS message', err, sdkEvent.body);
-                            }
-                        });
-                        this.subscriptions.set(topic, sub);
+                if (topic.callback) {
+                    try {
+                        if (!this.subscriptions.has(topic.path)) {
+                            const sub = this.stompClient.subscribe(topic.path, (sdkEvent: any) => {
+                                try {
+                                    const parsed = JSON.parse(sdkEvent.body);
+                                    if (debug) console.log('WS message', topic.path, parsed);
+                                    topic.callback!(parsed);
+                                } catch (err) {
+                                    if (debug) console.error('Failed to parse WS message', err, sdkEvent.body);
+                                }
+                            });
+                            this.subscriptions.set(topic.path, sub);
+                        }
+                    } catch (e) {
+                        if (debug) console.error('Subscribe error for topic', topic.path, e);
                     }
-                } catch (e) {
-                    if (debug) console.error('Subscribe error for topic', topic, e);
                 }
             });
         }, (error: any) => {
             console.error('WebSocket connection error:', error);
             // Retry connection after 5 seconds
-            setTimeout(() => this.connect(userId, onMessageReceived, token, debug), 5000);
+            setTimeout(() => this.connect(userId, onMessageReceived, token, debug, onTypingReceived), 5000);
         });
     }
 
@@ -52,6 +60,12 @@ class ChatService {
             this.stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
         } else {
             console.error('Cannot send message: Not connected');
+        }
+    }
+
+    sendTyping(typing: { senderId: number, receiverId: number, isTyping: boolean }) {
+        if (this.stompClient && this.stompClient.connected) {
+            this.stompClient.send("/app/chat.typing", {}, JSON.stringify(typing));
         }
     }
 
