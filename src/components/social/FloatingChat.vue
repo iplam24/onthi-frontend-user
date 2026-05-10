@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-6 right-4 md:right-24 z-[110] font-jakarta">
+  <div class="fixed bottom-4 right-4 sm:bottom-6 md:right-24 z-[110] font-jakarta">
     <!-- Chat Button -->
     <button 
       @click="toggleChat"
@@ -13,7 +13,7 @@
 
     <!-- Chat Window -->
     <transition name="chat-slide">
-      <div v-if="isOpen" class="fixed sm:absolute left-1/2 -translate-x-1/2 sm:translate-x-0 bottom-20 right-0 sm:right-0 w-[92vw] sm:w-[380px] h-[80vh] sm:h-[520px] bg-white rounded-3xl shadow-2xl shadow-slate-200 border border-slate-100 flex flex-col overflow-hidden">
+      <div v-if="isOpen" class="fixed bottom-20 left-4 right-4 sm:left-auto sm:right-0 sm:translate-x-0 sm:w-[380px] w-[calc(100vw-2rem)] h-[80vh] max-h-[calc(100vh-7rem)] sm:h-[520px] bg-white rounded-3xl shadow-2xl shadow-slate-200 border border-slate-100 flex flex-col overflow-hidden">
         <!-- Header -->
         <div class="p-6 bg-indigo-600 text-white flex items-center justify-between">
           <div class="flex items-center gap-3">

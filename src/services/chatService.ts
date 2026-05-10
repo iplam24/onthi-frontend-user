@@ -3,14 +3,14 @@ import Stomp from 'stompjs';
 import apiClient from './api';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
-const WS_URL = API_BASE_URL.replace('/api', '/ws');
+const WS_URL = import.meta.env.VITE_WS_URL || API_BASE_URL.replace(/\/api\/?$/, '/ws');
 
 class ChatService {
     private stompClient: any = null;
     private subscriptions: Map<string, any> = new Map();
 
     connect(userId: number, onMessageReceived: (message: any) => void, token?: string, debug: boolean = false) {
-        const socket = new SockJS(WS_URL);
+        const socket = new SockJS(WS_URL, undefined, { withCredentials: true } as any);
         this.stompClient = Stomp.over(socket);
         this.stompClient.debug = debug ? console.log.bind(console) : () => {}; // optionally enable debug logs
 
