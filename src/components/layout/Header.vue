@@ -25,7 +25,7 @@
           />
         </div>
         <div>
-          <p :class="['m-0 text-xl font-black tracking-tighter transition-all duration-500', plan === 'promax' ? 'bg-gradient-to-r from-indigo-600 via-pink-600 to-amber-600 bg-clip-text text-transparent' : 'text-slate-900']">{{ appName }}</p>
+          <p :class="['m-0 text-2xl font-bold tracking-tight transition-all duration-500', plan === 'promax' ? 'bg-gradient-to-r from-indigo-600 via-pink-600 to-amber-600 bg-clip-text text-transparent' : 'text-slate-900']">{{ appName }}</p>
         </div>
       </router-link>
 
@@ -35,12 +35,12 @@
           v-for="item in navItems"
           :key="item.to"
           :to="item.to"
-          class="nav-link group relative inline-flex items-center gap-2.5 rounded-xl px-4 py-2 text-[12px] font-black transition-all duration-500"
+          class="nav-link group relative inline-flex items-center gap-2.5 rounded-xl px-4 py-2 text-[13px] font-bold transition-all duration-500"
           :class="plan === 'promax' ? 'text-slate-500 hover:text-slate-900' : 'text-slate-600 hover:text-indigo-600'"
         >
           <span :class="['absolute inset-0 rounded-xl transition-all duration-500', plan === 'promax' ? 'group-hover:bg-gradient-to-r group-hover:from-indigo-500/5 group-hover:to-pink-500/5 border border-transparent group-hover:border-indigo-500/10' : 'group-hover:bg-indigo-50']"></span>
           <i :class="['fa-solid text-[10px] relative z-10 transition-transform duration-500 group-hover:scale-125', item.icon, plan === 'promax' ? 'text-indigo-500 group-hover:text-pink-500' : 'text-indigo-400']" aria-hidden="true"></i>
-          <span class="relative z-10 uppercase tracking-widest">{{ item.label }}</span>
+          <span class="relative z-10 uppercase tracking-wider">{{ item.label }}</span>
         </router-link>
       </nav>
 
@@ -60,7 +60,7 @@
                 <span v-else class="text-xs font-black text-white uppercase">{{ auth.user.username?.[0] }}</span>
               </div>
               <div class="flex flex-col items-start -gap-1">
-                <span :class="['text-[13px] font-black transition-colors', plan === 'promax' ? 'text-slate-900' : 'text-slate-800']">{{ auth.user.username }}</span>
+                <span :class="['text-[14px] font-bold transition-colors', plan === 'promax' ? 'text-slate-900' : 'text-slate-800']">{{ auth.user.username }}</span>
                 <span v-if="auth.user?.planName" :class="[
                   'text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md shadow-sm',
                   getPlanBadgeClass(auth.user.planName)

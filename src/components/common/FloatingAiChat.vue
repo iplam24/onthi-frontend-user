@@ -66,9 +66,8 @@
           </div>
         </div>
 
-        <!-- Sessions List View -->
         <div v-if="view === 'sessions'" :class="['flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar', plan === 'ProMax' ? 'bg-slate-900/50' : 'bg-slate-50/50']">
-          <div v-if="sessions.length === 0" class="text-center py-10">
+          <div v-if="sessions.length === 0 && !loading" class="text-center py-10">
             <div :class="['w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-dashed', plan === 'ProMax' ? 'bg-slate-800 text-slate-600 border-slate-700' : 'bg-white text-slate-300 border-slate-200']">
               <i class="fa-solid fa-message text-xl"></i>
             </div>
@@ -86,10 +85,34 @@
           >
             <div class="flex justify-between items-start mb-1">
               <span :class="['text-sm font-black line-clamp-1 pr-4', plan === 'ProMax' ? 'text-slate-200' : 'text-slate-800']">{{ session.title }}</span>
-              <span class="text-[10px] font-bold text-slate-500 whitespace-nowrap">{{ formatDate(session.createdAt) }}</span>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold text-slate-500 whitespace-nowrap">{{ formatDate(session.createdAt) }}</span>
+                <button 
+                  @click.stop="confirmDelete(session)" 
+                  class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all"
+                  title="Xóa hội thoại"
+                >
+                  <i class="fa-solid fa-trash-can text-[10px]"></i>
+                </button>
+              </div>
             </div>
             <p class="text-[11px] text-slate-500 line-clamp-1 font-medium">Xem chi tiết cuộc hội thoại này...</p>
           </button>
+
+          <!-- Load More Button -->
+          <div v-if="hasMoreSessions" class="pt-2 text-center">
+            <button 
+              @click="loadMoreSessions" 
+              :disabled="loadingMore"
+              :class="[
+                'px-4 py-2 text-xs font-black uppercase tracking-widest rounded-xl transition-all',
+                plan === 'ProMax' ? 'bg-slate-800 text-indigo-400 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              ]"
+            >
+              <i v-if="loadingMore" class="fa-solid fa-circle-notch fa-spin mr-2"></i>
+              {{ loadingMore ? 'Đang tải...' : 'Xem thêm hội thoại' }}
+            </button>
+          </div>
         </div>
 
         <!-- Chat View -->
@@ -202,6 +225,12 @@ const messages = ref<any[]>([]);
 const currentSessionId = ref<number | null>(null);
 const currentSessionTitle = ref('');
 
+// Pagination state
+const currentPage = ref(0);
+const pageSize = 10;
+const hasMoreSessions = ref(false);
+const loadingMore = ref(false);
+
 const guideSteps = [
   'Đặt câu hỏi cụ thể để nhận câu trả lời chính xác nhất.',
   'Sử dụng AI để giải thích các khái niệm khó hiểu.',
@@ -232,13 +261,35 @@ const scrollToBottom = async () => {
   }
 };
 
-const fetchSessions = async () => {
+const fetchSessions = async (page: number = 0) => {
+  if (page === 0) {
+    loading.value = true;
+  } else {
+    loadingMore.value = true;
+  }
+
   try {
-    const res = await aiService.getSessions();
-    sessions.value = res.data || [];
+    const res = await aiService.getSessions(page, pageSize);
+    const data = res.data; // Page object from Spring
+    
+    if (page === 0) {
+      sessions.value = data.content || [];
+    } else {
+      sessions.value = [...sessions.value, ...(data.content || [])];
+    }
+    
+    currentPage.value = page;
+    hasMoreSessions.value = !data.last; // data.last is true if it's the last page
   } catch (err) {
     console.error('Failed to fetch sessions:', err);
+  } finally {
+    loading.value = false;
+    loadingMore.value = false;
   }
+};
+
+const loadMoreSessions = () => {
+  fetchSessions(currentPage.value + 1);
 };
 
 const selectSession = async (session: any) => {
@@ -257,6 +308,23 @@ const selectSession = async (session: any) => {
     console.error('Failed to fetch session messages:', err);
   } finally {
     loading.value = false;
+  }
+};
+
+const confirmDelete = async (session: any) => {
+  if (confirm(`Bạn có chắc chắn muốn xóa cuộc hội thoại "${session.title}" không?`)) {
+    try {
+      await aiService.deleteSession(session.id);
+      // Nếu đang mở đúng session này thì reset về chat mới
+      if (currentSessionId.value === session.id) {
+        startNewChat();
+      }
+      // Tải lại danh sách
+      fetchSessions(0);
+    } catch (err) {
+      console.error('Failed to delete session:', err);
+      alert('Không thể xóa hội thoại. Vui lòng thử lại sau.');
+    }
   }
 };
 
@@ -284,13 +352,17 @@ const sendMessage = async () => {
   loading.value = true;
   try {
     const res = await aiService.sendMessage(userMsg, currentSessionId.value);
+    const chatData = res.data; // AiChatResponse
     
-    // Nếu đây là tin nhắn đầu tiên của phiên mới, server sẽ tạo session và trả về có thể cần reload list
-    if (currentSessionId.value === null && auth.user?.planName === 'ProMax') {
-       fetchSessions();
+    // Nếu đây là tin nhắn đầu tiên của phiên mới, cập nhật sessionId
+    if (currentSessionId.value === null && chatData.sessionId) {
+       currentSessionId.value = chatData.sessionId;
+       if (auth.user?.planName === 'ProMax') {
+          fetchSessions(0);
+       }
     }
 
-    messages.value.push({ role: 'assistant', content: res.data });
+    messages.value.push({ role: 'assistant', content: chatData.content });
   } catch (err: any) {
     const errorMsg = err.response?.status === 403 
       ? 'Hic, tính năng này chỉ dành cho gói Pro và ProMax thui ạ. Bạn nâng cấp để cùng mình học bài nhé! ✨'
