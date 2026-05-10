@@ -40,6 +40,7 @@
                   <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Thời gian</th>
                   <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Mã giao dịch</th>
                   <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Loại</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Nội dung</th>
                   <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Số tiền</th>
                   <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Trạng thái</th>
                 </tr>
@@ -57,13 +58,18 @@
                   </td>
                   <td class="px-8 py-6">
                     <span class="text-xs font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
-                      <i :class="tx.type === 'DEPOSIT' ? 'fa-solid fa-arrow-down-to-bracket text-emerald-500' : 'fa-solid fa-arrow-up-from-bracket text-rose-500'"></i>
-                      {{ tx.type === 'DEPOSIT' ? 'Nạp tiền' : tx.type === 'PURCHASE' ? 'Thanh toán' : 'Trừ tiền' }}
+                      <i :class="tx.amount > 0 ? 'fa-solid fa-arrow-down-to-bracket text-emerald-500' : 'fa-solid fa-arrow-up-from-bracket text-rose-500'"></i>
+                      {{ tx.amount > 0 ? 'Tiền vào' : 'Tiền ra' }}
                     </span>
                   </td>
+                  <td class="px-8 py-6">
+                    <p class="m-0 text-sm font-medium text-slate-600 line-clamp-1 group-hover:line-clamp-none transition-all duration-300 max-w-[200px]">
+                      {{ tx.description || 'Giao dịch hệ thống' }}
+                    </p>
+                  </td>
                   <td class="px-8 py-6 text-right">
-                    <span :class="['text-base font-black tabular-nums', tx.type === 'DEPOSIT' ? 'text-emerald-600' : 'text-slate-900']">
-                      {{ tx.type === 'DEPOSIT' ? '+' : '-' }}{{ formatPrice(tx.amount) }}đ
+                    <span :class="['text-base font-black tabular-nums', tx.amount > 0 ? 'text-emerald-600' : 'text-slate-900']">
+                      {{ tx.amount > 0 ? '+' : '' }}{{ formatPrice(tx.amount) }}đ
                     </span>
                   </td>
                   <td class="px-8 py-6">
@@ -87,16 +93,17 @@
             <div v-for="tx in transactions" :key="`mob-${tx.id}`" class="p-5 flex flex-col gap-4 bg-white active:bg-slate-50 transition-colors">
               <div class="flex items-start justify-between gap-4">
                 <div class="flex items-center gap-3">
-                  <div :class="['h-10 w-10 flex items-center justify-center rounded-xl', tx.type === 'DEPOSIT' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600']">
-                    <i :class="tx.type === 'DEPOSIT' ? 'fa-solid fa-arrow-down-to-bracket' : 'fa-solid fa-arrow-up-from-bracket'"></i>
+                  <div :class="['h-10 w-10 flex items-center justify-center rounded-xl', tx.amount > 0 ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600']">
+                    <i :class="tx.amount > 0 ? 'fa-solid fa-arrow-down-to-bracket' : 'fa-solid fa-arrow-up-from-bracket'"></i>
                   </div>
                   <div>
                     <p class="m-0 text-sm font-black text-slate-900">{{ tx.type === 'DEPOSIT' ? 'Nạp tiền vào ví' : tx.type === 'PURCHASE' ? 'Thanh toán đề thi' : 'Mua gói cước' }}</p>
-                    <p class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">#{{ tx.orderCode || tx.id }}</p>
+                    <p class="m-0 text-[11px] font-medium text-slate-500 mt-1">{{ tx.description || 'Giao dịch hệ thống' }}</p>
+                    <p class="m-0 text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">#{{ tx.orderCode || tx.id }}</p>
                   </div>
                 </div>
-                <span :class="['text-lg font-black tabular-nums', tx.type === 'DEPOSIT' ? 'text-emerald-600' : 'text-slate-900']">
-                  {{ tx.type === 'DEPOSIT' ? '+' : '-' }}{{ formatPrice(tx.amount) }}
+                <span :class="['text-lg font-black tabular-nums', tx.amount > 0 ? 'text-emerald-600' : 'text-slate-900']">
+                  {{ tx.amount > 0 ? '+' : '' }}{{ formatPrice(tx.amount) }}
                 </span>
               </div>
               <div class="flex items-center justify-between">

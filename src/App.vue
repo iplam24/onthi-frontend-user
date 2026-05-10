@@ -32,6 +32,9 @@
     
     <!-- AI Study Buddy -->
     <FloatingAiChat v-if="auth.isAuthenticated" />
+    
+    <!-- Realtime Chat (Social) -->
+    <FloatingChat v-if="auth.isAuthenticated" />
   </div>
 </template>
 
@@ -42,6 +45,7 @@ import { useAuthStore } from '@/stores/auth';
 import Header from '@/components/layout/Header.vue';
 import Footer from '@/components/layout/Footer.vue';
 import FloatingAiChat from '@/components/common/FloatingAiChat.vue';
+import FloatingChat from '@/components/social/FloatingChat.vue';
 
 const route = useRoute();
 const auth = useAuthStore();

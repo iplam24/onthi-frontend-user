@@ -75,6 +75,12 @@ const router = createRouter({
       component: () => import('../views/ProfileView.vue'),
     },
     {
+      path: '/profile/:userId',
+      name: 'public-profile',
+      component: () => import('../views/ProfileView.vue'),
+      props: true,
+    },
+    {
       path: '/math-test',
       name: 'math-test',
       component: () => import('../views/MathTest.vue'),
@@ -103,6 +109,16 @@ const router = createRouter({
       path: '/checkout',
       name: 'checkout',
       component: () => import('../views/CheckoutView.vue'),
+    },
+    {
+      path: '/social',
+      name: 'social',
+      component: () => import('../views/SocialView.vue'),
+    },
+    {
+      path: '/messages',
+      name: 'messages',
+      component: () => import('../views/MessagesView.vue'),
     },
   ],
 });

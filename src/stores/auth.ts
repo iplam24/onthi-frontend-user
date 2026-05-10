@@ -11,6 +11,7 @@ type AuthUser = {
   activeToday?: boolean;
   currentStreak?: number;
   avatar?: string | null;
+  fullName?: string | null;
   planName?: string;
 };
 

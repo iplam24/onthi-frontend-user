@@ -173,28 +173,32 @@
       </div>
     </div>
 
-    <!-- ═══ FEATURES ═══ -->
-    <div class="grid gap-6 md:grid-cols-3">
-      <article
-        v-for="(feature, idx) in features"
-        :key="feature.title"
-        class="animate-slide-up-reveal group relative overflow-hidden rounded-[2rem] bg-white p-9 border border-slate-100/80 transition-all duration-500 hover:shadow-2xl hover:shadow-indigo-500/6 hover:-translate-y-2 hover:border-indigo-100"
-        :style="{ animationDelay: `${0.3 + Number(idx) * 0.1}s` }"
-      >
-        <div class="absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-0 transition-all duration-700 group-hover:opacity-100 group-hover:scale-[2.5]" :class="feature.glowBg"></div>
-
-        <div :class="['relative z-10 mb-7 inline-flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-500 group-hover:rotate-6 group-hover:scale-110 shadow-lg', feature.bgClass]">
-          <i :class="[feature.icon, 'text-xl', feature.textClass]"></i>
+    <!-- ═══ FEED & FEATURES ═══ -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <div class="grid gap-6 sm:grid-cols-2">
+          <article
+            v-for="(feature, idx) in features"
+            :key="feature.title"
+            class="animate-slide-up-reveal group relative overflow-hidden rounded-[2rem] bg-white p-9 border border-slate-100/80 transition-all duration-500 hover:shadow-2xl hover:shadow-indigo-500/6 hover:-translate-y-2 hover:border-indigo-100"
+            :style="{ animationDelay: `${0.3 + Number(idx) * 0.1}s` }"
+          >
+            <div class="absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-0 transition-all duration-700 group-hover:opacity-100 group-hover:scale-[2.5]" :class="feature.glowBg"></div>
+            <div :class="['relative z-10 mb-7 inline-flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-500 group-hover:rotate-6 group-hover:scale-110 shadow-lg', feature.bgClass]">
+              <i :class="[feature.icon, 'text-xl', feature.textClass]"></i>
+            </div>
+            <h3 class="m-0 text-lg font-extrabold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">{{ feature.title }}</h3>
+            <p class="mb-0 mt-3 text-sm font-medium leading-relaxed text-slate-500">{{ feature.description }}</p>
+          </article>
         </div>
-        <h3 class="m-0 text-lg font-extrabold tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">{{ feature.title }}</h3>
-        <p class="mb-0 mt-3 text-sm font-medium leading-relaxed text-slate-500">{{ feature.description }}</p>
+      </div>
 
-        <div class="mt-7 pt-6 border-t border-slate-50 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
-          <span class="text-xs font-extrabold uppercase tracking-widest text-indigo-600 inline-flex items-center gap-2">
-            Khám phá <i class="fa-solid fa-arrow-right text-[10px] transition-transform group-hover:translate-x-1"></i>
-          </span>
-        </div>
-      </article>
+      <div class="lg:col-span-1 space-y-6">
+        <ActivityFeed v-if="auth.isAuthenticated" :limit="5" title="Hoạt động mới nhất" />
+        <router-link v-if="auth.isAuthenticated" to="/social" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-indigo-50 text-indigo-600 text-sm font-bold hover:bg-indigo-100 transition-all border border-indigo-100">
+          Xem tất cả hoạt động <i class="fa-solid fa-arrow-right text-xs"></i>
+        </router-link>
+      </div>
     </div>
 
   </section>
@@ -202,6 +206,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import ActivityFeed from '@/components/social/ActivityFeed.vue';
 import { getDashboardStatistics, type DashboardStatistics } from '@/services/statisticsService';
 import { getCountdowns, type CountdownItem } from '@/services/countdownService';
 import { getUserProfile } from '@/services/userService';

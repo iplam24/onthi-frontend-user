@@ -47,6 +47,9 @@
       <!-- Desktop Auth -->
       <div class="hidden items-center gap-3 md:flex">
         <template v-if="auth.isAuthenticated">
+          <!-- Notification Bell -->
+          <NotificationBell />
+
           <div class="relative" ref="userMenuContainer">
             <button
               @click.stop="userMenuOpen = !userMenuOpen"
@@ -206,6 +209,11 @@
 
         <div class="mt-3 border-t border-slate-100 pt-3">
           <template v-if="auth.isAuthenticated">
+            <div class="flex items-center justify-between mb-4 px-2">
+              <h3 class="m-0 text-sm font-black text-slate-900">Trung tâm cá nhân</h3>
+              <NotificationBell />
+            </div>
+
             <div class="px-4 py-4 mb-3 bg-indigo-50/50 rounded-2xl border border-indigo-100">
               <p class="m-0 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Số dư tài khoản</p>
               <p class="m-0 mt-1 text-xl font-black text-slate-900 flex items-center gap-2">
@@ -284,6 +292,7 @@ import { APP_NAME } from '@/config';
 import { getUserStreak, getUserProfile } from '@/services/userService';
 import apiClient from '@/services/api';
 import AuthPopover from '@/components/auth/AuthPopover.vue';
+import NotificationBell from '@/components/social/NotificationBell.vue';
 
 const appName = APP_NAME;
 const auth = useAuthStore();
@@ -298,6 +307,7 @@ const userMenuContainer = ref(null);
 
 const navItems = [
   { to: '/', label: 'Trang chủ', icon: 'fa-house' },
+  { to: '/social', label: 'Cộng đồng', icon: 'fa-rss' },
   { to: '/exams', label: 'Bài thi', icon: 'fa-file-pen' },
   { to: '/learning', label: 'Học tập', icon: 'fa-book-open-reader' },
   { to: '/pricing', label: 'Nâng cấp', icon: 'fa-rocket' },

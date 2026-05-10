@@ -37,6 +37,10 @@ export const getUserProfile = () => {
   return api.get<{ data: UserProfileResponse }>('/users/me');
 };
 
+export const getUserProfileById = (id: number) => {
+  return api.get<{ data: UserProfileResponse }>(`/users/${id}`);
+};
+
 export const updateUserProfile = (payload: UserInformationRequest) => {
   return api.put<{ data: UserProfileResponse }>('/users/me/information', payload);
 };
@@ -47,4 +51,10 @@ export const getUserStreak = () => {
 
 export const checkInStreak = () => {
   return api.post<{ data: UserStreakResponse }>('/users/me/streak/check-in');
+};
+
+export const searchUsers = (query: string) => {
+  return api.get<{ data: UserProfileResponse[] }>('/users/search', {
+    params: { query }
+  });
 };
