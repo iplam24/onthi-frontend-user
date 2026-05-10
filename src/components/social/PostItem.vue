@@ -253,8 +253,8 @@ const likeCount = ref(0);
 const showLightbox = ref(false);
 const currentImageIndex = ref(0);
 
-const openLightbox = (index: number) => {
-  currentImageIndex.value = index;
+const openLightbox = (index: string | number) => {
+  currentImageIndex.value = Number(index);
   showLightbox.value = true;
   document.body.style.overflow = 'hidden';
 };

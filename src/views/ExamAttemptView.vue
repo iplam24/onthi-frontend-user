@@ -325,9 +325,9 @@ const attempt = ref<AttemptData | null>(null);
 const questions = ref<AttemptQuestion[]>([]);
 const result = ref<AttemptResult | null>(null);
 const timeRemainingSeconds = ref(0);
-const timerInterval = ref<ReturnType<typeof setInterval> | null>(null);
+const timerInterval = ref<number | null>(null);
 const redirectSeconds = ref<number | null>(null);
-const redirectInterval = ref<ReturnType<typeof setInterval> | null>(null);
+const redirectInterval = ref<number | null>(null);
 const tabSwitchCount = ref(0);
 const isCheating = ref(false); // New ref to track cheating status
 const streakCheckedIn = ref(false);
@@ -494,7 +494,7 @@ const clearDraft = () => {
 };
 
 const clearRedirectTimer = () => {
-  if (redirectInterval.value) {
+  if (redirectInterval.value != null) {
     window.clearInterval(redirectInterval.value);
     redirectInterval.value = null;
   }
@@ -522,11 +522,11 @@ const startRedirectCountdown = (seconds = 4) => {
     if (redirectSeconds.value <= 0) {
       goToExamsNow();
     }
-  }, 1000);
+  }, 1000) as unknown as number;
 };
 
 const stopTimer = () => {
-  if (timerInterval.value) {
+  if (timerInterval.value != null) {
     window.clearInterval(timerInterval.value);
     timerInterval.value = null;
   }
@@ -567,7 +567,7 @@ const startTimer = (startTime: string, durationMinutes: number) => {
   };
 
   updateTimer();
-  timerInterval.value = window.setInterval(updateTimer, 1000);
+  timerInterval.value = window.setInterval(updateTimer, 1000) as unknown as number;
 };
 
 const loadAttempt = async () => {

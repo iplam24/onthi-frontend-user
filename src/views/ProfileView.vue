@@ -66,7 +66,7 @@
                 <p class="text-base font-black text-white m-0">{{ stats.following }}</p>
               </div>
             </div>
-            <p v-else class="m-0 text-xs font-bold text-slate-400 uppercase tracking-widest">{{ profile?.email }}</p>
+            <p v-else class="m-0 text-xs font-bold text-slate-400 uppercase tracking-widest">{{ auth.user?.email || '' }}</p>
           </div>
           
           <div v-if="isPublicProfile" class="flex items-center gap-3 mt-6 justify-center">

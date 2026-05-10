@@ -103,7 +103,8 @@ const handleFileChange = (e: Event) => {
 };
 
 const removeImage = (index: number) => {
-  URL.revokeObjectURL(previews.value[index]);
+  const url = previews.value[index];
+  if (url) URL.revokeObjectURL(url);
   selectedFiles.value.splice(index, 1);
   previews.value.splice(index, 1);
 };

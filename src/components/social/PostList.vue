@@ -74,7 +74,7 @@ const loadPosts = async (page: number, silent = false) => {
     const newPosts = res.data?.content || [];
     if (page === 0) {
       // For silent updates (polling), only update if there are new posts to avoid flashing
-      if (silent && JSON.stringify(newPosts.map(p => p.id)) === JSON.stringify(posts.value.slice(0, 10).map(p => p.id))) {
+      if (silent && JSON.stringify(newPosts.map((p: any) => p.id)) === JSON.stringify(posts.value.slice(0, 10).map((p: any) => p.id))) {
         return;
       }
       posts.value = newPosts;

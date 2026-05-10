@@ -217,7 +217,7 @@ const attempt = ref<any>(null);
 const questions = ref<any[]>([]);
 const sections = ref<Array<{ title: string; questions: any[] }>>([]);
 const uiLayoutHint = ref<'STANDARD' | 'LITERATURE' | 'ESSAY' | 'MIXED'>('STANDARD');
-const pollingInterval = ref<ReturnType<typeof setInterval> | null>(null);
+const pollingInterval = ref<number | null>(null);
 
 const aiExplanations = ref<Record<number, string>>({});
 const aiExplainingIds = ref<Set<number>>(new Set());
@@ -361,31 +361,16 @@ const loadAttempt = async (isPolling = false) => {
 };
 
 const startPolling = () => {
-  if (pollingInterval.value) return;
-  console.log('[ExamReview] Starting polling for GRADING status...');
-  pollingInterval.value = setInterval(() => {
-    loadAttempt(true);
-  }, 3000);
+  if (pollingInterval.value != null) return;
+  pollingInterval.value = window.setInterval(() => loadAttempt(true), 3000) as unknown as number;
 };
 
 const stopPolling = () => {
-  if (pollingInterval.value) {
-    console.log('[ExamReview] Stopping polling.');
-    clearInterval(pollingInterval.value);
+  if (pollingInterval.value != null) {
+    window.clearInterval(pollingInterval.value);
     pollingInterval.value = null;
   }
 };
-
-const getOptionClass = (opt: any) => {
-  if (opt.isCorrect) {
-    return 'border-emerald-500 bg-emerald-50/50 shadow-lg shadow-emerald-500/10 ring-2 ring-emerald-500/20'; // Extra emphasis for correct answer
-  }
-  if (opt._isSelected && !opt.isCorrect) {
-    return 'border-rose-500 bg-rose-50/50 shadow-lg shadow-rose-500/10 ring-2 ring-rose-500/20'; // Extra emphasis for wrong selection
-  }
-  return 'border-slate-100 bg-white hover:border-blue-200 hover:shadow-md';
-};
-
 onMounted(() => {
   loadAttempt();
 });
