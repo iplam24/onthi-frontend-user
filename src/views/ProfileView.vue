@@ -238,6 +238,15 @@
       @close="showGiftModal = false"
       @success="fetchProfile"
     />
+
+    <!-- Hidden Avatar Upload Input -->
+    <input 
+      ref="avatarInput" 
+      type="file" 
+      accept="image/*" 
+      class="hidden" 
+      @change="handleAvatarChange" 
+    />
   </section>
 </template>
 
@@ -360,9 +369,7 @@ const openLargePreview = () => {
 };
 
 const triggerAvatarUpload = () => {
-  // Use the exposed input if available, or handle via ref
-  const input = document.querySelector('input[type="file"]') as HTMLInputElement;
-  input?.click();
+  avatarInput.value?.click();
   showAvatarMenu.value = false;
 };
 
