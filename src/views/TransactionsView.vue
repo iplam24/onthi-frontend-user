@@ -1,6 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-50 pt-24 pb-20">
-    <div class="max-w-5xl mx-auto px-4">
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 space-y-12 pb-20 animate-fade-in-up">
       <!-- Header -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div>
@@ -146,8 +145,7 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -221,11 +219,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.card-elevated {
-  background: white;
-  border-radius: 2rem;
-  box-shadow: 
-    0 10px 30px -10px rgba(0, 0, 0, 0.04),
-    0 4px 10px -5px rgba(0, 0, 0, 0.02);
-}
 </style>

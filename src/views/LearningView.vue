@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-10 max-w-7xl mx-auto px-4 pb-20 pt-6" style="animation: slide-up 600ms var(--ease-out-expo) both">
+  <section class="container-standard space-y-12 pb-20 animate-fade-in-up">
     <!-- Dynamic Hero Header -->
     <div v-if="!selectedTopic" class="premium-overlay relative overflow-hidden rounded-[2.5rem] bg-gradient-brand shadow-2xl shadow-indigo-500/12">
       <div class="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full bg-white/10 blur-[100px] animate-pulse"></div>

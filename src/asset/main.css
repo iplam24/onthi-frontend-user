@@ -1,9 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Be Vietnam Pro', system-ui, sans-serif;
-  --font-display: 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-serif: 'Lora', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* Global Color Tokens */
@@ -185,6 +186,24 @@
   animation: liquid-border 5s linear infinite !important;
 }
 
+/* Fix: Math/KaTeX formulas in ProMax headers shouldn't inherit transparent text fill */
+.plan-promax .katex,
+.plan-promax .math-content {
+  -webkit-text-fill-color: var(--text-primary) !important;
+  background: none !important;
+  background-clip: border-box !important;
+  color: var(--text-primary) !important;
+}
+
+.plan-promax h1 .katex,
+.plan-promax h2 .katex,
+.plan-promax h3 .katex,
+.plan-promax h1 .math-content,
+.plan-promax h2 .math-content,
+.plan-promax h3 .math-content {
+  -webkit-text-fill-color: #312e81 !important; /* Use the dark start color of the gradient for consistency */
+}
+
 /* ══════════════════════════════════════════════════════════════════
    TAILWIND UTILITIES (V4 Syntax)
    ══════════════════════════════════════════════════════════════════ */
@@ -211,6 +230,119 @@
     transform: translateY(-4px);
     border-color: #e2e8f0;
   }
+}
+
+@utility card-elevated {
+  background: white;
+  border-radius: 2rem;
+  border: 1px solid var(--border-light);
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.04),
+    0 4px 10px -5px rgba(0, 0, 0, 0.02);
+  transition: all 0.4s var(--ease-out-expo);
+}
+
+@utility card-premium {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+}
+
+@utility container-standard {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 80rem; /* 7xl */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  
+  @media (min-width: 640px) {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@utility container-narrow {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 56rem; /* 4xl */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  
+  @media (min-width: 640px) {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   AI CONTENT STYLING
+   ══════════════════════════════════════════════════════════════════ */
+.ai-markdown-content {
+  color: inherit;
+  font-family: inherit;
+}
+
+.ai-markdown-content p {
+  margin-bottom: 1rem;
+}
+
+.ai-markdown-content h1,
+.ai-markdown-content h2,
+.ai-markdown-content h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ai-markdown-content ul,
+.ai-markdown-content ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.ai-markdown-content li {
+  margin-bottom: 0.5rem;
+}
+
+.ai-markdown-content strong {
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.ai-markdown-content code {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.ai-markdown-content blockquote {
+  border-left: 4px solid var(--primary);
+  background: var(--primary-ultra-light);
+  padding: 1rem 1.5rem;
+  border-radius: 0 1rem 1rem 0;
+  margin: 1.5rem 0;
+  font-style: italic;
 }
 
 /* Base Styles */

@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-10 max-w-5xl mx-auto px-2 sm:px-4" style="animation: slide-up 650ms cubic-bezier(0.16,1,0.3,1) both">
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 space-y-12 pb-20 animate-fade-in-up">
     <!-- Header with illustration -->
     <div 
       class="relative overflow-hidden rounded-[2.5rem] p-8 sm:p-12 transition-all duration-500 shadow-2xl"

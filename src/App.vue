@@ -95,8 +95,8 @@ const appClass = computed(() => {
 
 const mainClass = computed(() =>
   isExamShellHiddenRoute.value
-    ? 'relative mx-auto w-full max-w-7xl flex-1 px-4 pb-12 pt-10 sm:px-6 lg:px-8'
-    : 'relative mx-auto w-full max-w-7xl flex-1 px-4 pb-14 pt-28 sm:px-6 lg:px-8',
+    ? 'relative flex-1 pb-12 pt-10'
+    : 'relative flex-1 pb-14 pt-28',
 );
 </script>
 

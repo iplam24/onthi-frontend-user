@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-8" style="animation: slide-up 600ms cubic-bezier(0.16,1,0.3,1) both">
+  <section class="container-standard space-y-12 pb-20 animate-fade-in-up">
     <div class="premium-overlay relative overflow-hidden rounded-[2.5rem] bg-gradient-brand px-8 py-8 sm:px-10 sm:py-10 text-white shadow-xl shadow-indigo-500/15">
       <div class="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-[80px] animate-pulse"></div>
       <div class="pointer-events-none absolute -left-10 -bottom-10 h-48 w-48 rounded-full bg-cyan-400/10 blur-[60px]"></div>

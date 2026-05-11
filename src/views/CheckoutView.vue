@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-slate-50 pt-24 pb-20 overflow-hidden relative">
+  <div class="pb-20 overflow-hidden relative">
     <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-100/40 rounded-full blur-3xl -mr-80 -mt-80"></div>
     <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-sky-100/40 rounded-full blur-3xl -ml-80 -mb-80"></div>
 
-    <div class="max-w-4xl mx-auto px-4 relative z-10">
+    <div class="container-narrow relative z-10">
       <div v-if="!paymentData" class="text-center py-20">
         <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
           <i class="fa-solid fa-circle-exclamation text-3xl"></i>
@@ -264,14 +264,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.card-checkout {
-  background: white;
-  border-radius: 2.5rem;
-  box-shadow: 
-    0 15px 35px -10px rgba(0, 0, 0, 0.05),
-    0 5px 15px -5px rgba(0, 0, 0, 0.02);
-}
-
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;

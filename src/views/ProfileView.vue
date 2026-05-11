@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-10 max-w-6xl mx-auto px-4 sm:px-6 pb-20 pt-6 animate-fade-in-up">
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 pb-20 animate-fade-in-up">
     
     <!-- Header Component -->
     <ProfileHeader

@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto w-full max-w-6xl space-y-8 px-3 sm:px-6" style="animation: slide-up 700ms cubic-bezier(0.16,1,0.3,1) both">
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 pb-20 animate-fade-in-up">
     <div v-if="!auth.isAuthenticated" class="relative overflow-hidden rounded-[2.5rem] bg-white border border-slate-100/80 p-8 sm:p-12 shadow-xl shadow-slate-200/20">
       <div class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-indigo-50/60 blur-3xl"></div>
       <div class="flex flex-col sm:flex-row items-center gap-8 sm:gap-12">

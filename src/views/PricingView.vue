@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-slate-50 pt-24 pb-20 overflow-hidden relative">
+  <div class="pb-20 overflow-hidden relative">
     <!-- Decorative background -->
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-indigo-50/50 to-transparent pointer-events-none"></div>
     <div class="absolute top-20 right-[10%] w-96 h-96 bg-indigo-200/20 rounded-full blur-[120px] animate-pulse"></div>
     <div class="absolute bottom-20 left-[10%] w-96 h-96 bg-sky-200/20 rounded-full blur-[120px] animate-pulse" style="animation-delay: 2s"></div>
 
-    <div class="max-w-7xl mx-auto px-4 relative z-10">
+    <div class="relative z-10">
       <div class="text-center mb-16">
         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-black uppercase tracking-widest mb-6 animate-fade-in">
           <i class="fa-solid fa-rocket"></i> Nâng cấp trải nghiệm học tập

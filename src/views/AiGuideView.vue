@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-slate-50 pt-24 pb-20">
-    <div class="max-w-4xl mx-auto px-4">
+  <div class="container-narrow pb-20">
+    <div>
       <!-- Hero Section -->
       <div class="text-center mb-16 animate-in fade-in slide-in-from-bottom-10 duration-700">
         <div class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-full text-xs font-black uppercase tracking-widest mb-6">

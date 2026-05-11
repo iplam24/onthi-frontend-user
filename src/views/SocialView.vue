@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto w-full max-w-6xl space-y-10 px-4 sm:px-6 pb-20 pt-6">
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 pb-20 animate-fade-in-up">
     <!-- Header Section -->
     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-10 sm:p-14 shadow-2xl">
       <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>

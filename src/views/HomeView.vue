@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto w-full max-w-6xl space-y-16 px-2 sm:px-4">
+  <section class="container-standard space-y-20 pb-20">
 
     <!-- ═══ UPDATE PROFILE WARNING ═══ -->
     <div v-if="auth.isAuthenticated && hasNoLevelId" class="animate-slide-down relative overflow-hidden rounded-2xl bg-amber-50 border border-amber-200 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">

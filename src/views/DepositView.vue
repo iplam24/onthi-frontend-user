@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-slate-50 pt-24 pb-20 overflow-hidden relative">
+  <div class="pb-20 overflow-hidden relative">
     <!-- Decorative background elements -->
     <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/50 rounded-full blur-3xl -mr-64 -mt-64"></div>
     <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-sky-100/50 rounded-full blur-3xl -ml-64 -mb-64"></div>
 
-    <div class="max-w-6xl mx-auto px-4 relative z-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         
         <!-- Left Side: Info & Hero -->
@@ -184,15 +184,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.card-premium {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px);
-  border-radius: 3rem;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-}
-
 .animate-bounce-slow {
   animation: bounce 2s infinite;
 }
