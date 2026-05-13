@@ -2,16 +2,16 @@
   <div id="app" :class="appClass">
     <!-- ProMax Pristine Background -->
     <div v-if="plan === 'promax'" class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-[-10%] left-[-10%] w-[80%] h-[80%] bg-pink-200/20 blur-[150px] animate-blob"></div>
-      <div class="absolute bottom-[-10%] right-[-10%] w-[70%] h-[70%] bg-blue-100/20 blur-[150px] animate-blob" style="animation-delay: 5s"></div>
-      <div class="absolute top-[30%] left-[20%] w-[50%] h-[50%] bg-amber-100/30 blur-[150px] animate-blob" style="animation-delay: 10s"></div>
+      <div class="absolute top-[-10%] left-[-10%] w-[80%] h-[80%] bg-pink-200/20 blur-[150px] animate-blob" style="will-change: transform; transform: translate3d(0,0,0)"></div>
+      <div class="absolute bottom-[-10%] right-[-10%] w-[70%] h-[70%] bg-blue-100/20 blur-[150px] animate-blob" style="animation-delay: 5s; will-change: transform; transform: translate3d(0,0,0)"></div>
+      <div class="absolute top-[30%] left-[20%] w-[50%] h-[50%] bg-amber-100/30 blur-[150px] animate-blob" style="animation-delay: 10s; will-change: transform; transform: translate3d(0,0,0)"></div>
       <!-- Soft pearlescent noise -->
       <div class="absolute inset-0 bg-white/20 backdrop-blur-[2px]"></div>
     </div>
 
     <!-- Loading Bar -->
     <div 
-      class="fixed top-0 left-0 z-[100] h-1 transition-all duration-300 ease-out"
+      class="fixed top-0 left-0 z-[100] h-1 rounded-r-full transition-all duration-500 ease-out"
       :class="plan === 'promax' ? 'bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 shadow-[0_0_10px_rgba(251,191,36,0.5)]' : 'bg-gradient-to-r from-indigo-500 via-cyan-400 to-indigo-600'"
       :style="{ width: loadingProgress + '%', opacity: loadingProgress > 0 && loadingProgress < 100 ? 1 : 0 }"
     ></div>
@@ -116,7 +116,7 @@ const mainClass = computed(() =>
 }
 
 .page-cross-fade-enter-active {
-  transition: opacity 400ms ease-out, transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 450ms ease-out, transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .page-cross-fade-leave-active {
@@ -143,6 +143,8 @@ const mainClass = computed(() =>
 
 .animate-blob {
   animation: animate-blob 10s infinite alternate ease-in-out;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 /* Ensure the container doesn't collapse during transition */

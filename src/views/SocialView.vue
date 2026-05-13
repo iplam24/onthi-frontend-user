@@ -1,8 +1,8 @@
 <template>
   <section class="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 pb-20 animate-fade-in-up">
     <!-- Header Section -->
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-10 sm:p-14 shadow-2xl">
-      <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+    <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-10 sm:p-14 shadow-2xl">
+      <div class="absolute inset-0 opacity-[0.04]" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px)"></div>
       <div class="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-500/20 blur-[100px]"></div>
       <div class="relative z-10 space-y-4 text-center">
         <h1 class="m-0 text-3xl font-extrabold text-white sm:text-5xl tracking-tight">

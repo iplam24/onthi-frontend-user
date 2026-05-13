@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-20 overflow-hidden relative">
+  <div class="pb-20 overflow-hidden relative container-standard">
     <!-- Decorative background -->
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-indigo-50/50 to-transparent pointer-events-none"></div>
     <div class="absolute top-20 right-[10%] w-96 h-96 bg-indigo-200/20 rounded-full blur-[120px] animate-pulse"></div>
@@ -10,8 +10,8 @@
         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-black uppercase tracking-widest mb-6 animate-fade-in">
           <i class="fa-solid fa-rocket"></i> Nâng cấp trải nghiệm học tập
         </div>
-        <h1 class="text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight animate-slide-up">
-          Nâng cấp sức mạnh <br/> <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">học tập cùng AI</span>
+        <h1 class="text-3xl sm:text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight animate-slide-up">
+          Nâng cấp sức mạnh <br class="hidden sm:block"/> <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">học tập cùng AI</span>
         </h1>
         <p class="text-lg text-slate-500 font-medium max-w-2xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
           Mở khóa toàn bộ sức mạnh của AI, không giới hạn câu hỏi và tiếp cận kho đề thi độc quyền dành riêng cho học viên cao cấp.
@@ -19,7 +19,7 @@
       </div>
 
       <!-- Plans Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-start max-w-6xl mx-auto">
         <div 
           v-for="(plan, index) in plans" 
           :key="plan.id"
@@ -275,11 +275,11 @@ const handleBuy = async () => {
     showConfirmModal.value = false;
     alert('Mua gói cước thành công! Hệ thống đã kích hoạt quyền lợi mới cho bạn.');
     fetchMyPlan();
-    // Update balance in store
-    if (auth.user && auth.user.balance !== undefined) {
-      auth.user.balance -= selectedPlan.value.price;
-      auth.user.planName = selectedPlan.value.name;
-    }
+    // Update state in store using setUser to ensure persistence
+    auth.setUser({
+      balance: (auth.user?.balance || 0) - selectedPlan.value.price,
+      planName: selectedPlan.value.name
+    });
   } catch (err: any) {
     alert(err.response?.data?.message || 'Có lỗi xảy ra khi mua gói.');
   } finally {

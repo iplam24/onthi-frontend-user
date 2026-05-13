@@ -7,7 +7,7 @@
       <div class="overflow-hidden rounded-[2rem] border border-slate-200/60 bg-white shadow-xl shadow-slate-200/30" style="animation: slide-up-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both">
 
         <!-- Main footer content -->
-        <div class="grid gap-10 px-8 py-12 lg:grid-cols-3 lg:gap-12">
+        <div class="grid gap-8 sm:gap-10 px-5 py-8 sm:px-8 sm:py-12 lg:grid-cols-3 lg:gap-12">
 
           <!-- Brand section -->
           <section class="space-y-6">
@@ -90,7 +90,7 @@
         </div>
 
         <!-- Bottom bar -->
-        <div class="flex flex-col items-start justify-between gap-3 border-t border-slate-100 bg-gradient-to-r from-slate-50 to-indigo-50/30 px-8 py-5 text-xs font-semibold text-slate-400 sm:flex-row sm:items-center">
+        <div class="flex flex-col items-start justify-between gap-3 border-t border-slate-100 bg-gradient-to-r from-slate-50 to-indigo-50/30 px-5 py-4 sm:px-8 sm:py-5 text-xs font-semibold text-slate-400 sm:flex-row sm:items-center">
           <p class="m-0">© {{ year }} V-Edu. All rights reserved.</p>
           <div class="flex items-center gap-1.5">
             <span>Made with</span>

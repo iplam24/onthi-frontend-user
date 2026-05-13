@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import HomeView from '../views/HomeView.vue';
 import ExamsView from '../views/ExamsView.vue';
 import ExamAttemptView from '../views/ExamAttemptView.vue';
@@ -11,6 +12,10 @@ import PaymentCancelView from '../views/PaymentCancelView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(_to, _from, savedPosition) {
+    if (savedPosition) return savedPosition;
+    return { top: 0, behavior: 'smooth' };
+  },
   routes: [
     {
       path: '/',
@@ -27,17 +32,20 @@ const router = createRouter({
       name: 'exam-attempt',
       component: ExamAttemptView,
       props: true,
+      meta: { requiresAuth: true },
     },
     {
       path: '/attempts/:id/review',
       name: 'exam-review',
       component: () => import('../views/ExamReviewView.vue'),
       props: true,
+      meta: { requiresAuth: true },
     },
     {
       path: '/attempts',
       name: 'attempts-history',
       component: AttemptsHistoryView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/learning',
@@ -58,6 +66,7 @@ const router = createRouter({
       path: '/evaluation',
       name: 'evaluation',
       component: () => import('../views/StudentEvaluationView.vue'),
+      meta: { requiresAuth: true },
     },
     {
       path: '/pricing',
@@ -73,6 +82,7 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: () => import('../views/ProfileView.vue'),
+      meta: { requiresAuth: true },
     },
     {
       path: '/profile/:userId',
@@ -89,6 +99,7 @@ const router = createRouter({
       path: '/payment/success',
       name: 'payment-success',
       component: PaymentSuccessView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/payment/cancel',
@@ -99,16 +110,19 @@ const router = createRouter({
       path: '/deposit',
       name: 'deposit',
       component: () => import('../views/DepositView.vue'),
+      meta: { requiresAuth: true },
     },
     {
       path: '/transactions',
       name: 'transactions',
       component: () => import('../views/TransactionsView.vue'),
+      meta: { requiresAuth: true },
     },
     {
       path: '/checkout',
       name: 'checkout',
       component: () => import('../views/CheckoutView.vue'),
+      meta: { requiresAuth: true },
     },
     {
       path: '/social',
@@ -119,8 +133,22 @@ const router = createRouter({
       path: '/messages',
       name: 'messages',
       component: () => import('../views/MessagesView.vue'),
+      meta: { requiresAuth: true },
     },
   ],
+});
+
+// Navigation guard — redirect unauthenticated users from protected routes
+router.beforeEach((to, _from, next) => {
+  if (to.meta.requiresAuth) {
+    const auth = useAuthStore();
+    if (!auth.isAuthenticated) {
+      // Redirect to home page — AuthPopover will handle login
+      next({ name: 'home' });
+      return;
+    }
+  }
+  next();
 });
 
 export default router;

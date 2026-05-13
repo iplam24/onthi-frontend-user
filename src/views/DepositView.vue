@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-20 overflow-hidden relative">
+  <div class="pb-20 overflow-hidden relative container-standard animate-fade-in-up">
     <!-- Decorative background elements -->
     <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/50 rounded-full blur-3xl -mr-64 -mt-64"></div>
     <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-sky-100/50 rounded-full blur-3xl -ml-64 -mb-64"></div>
@@ -12,7 +12,7 @@
           <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-black uppercase tracking-widest mb-6">
             <i class="fa-solid fa-shield-halved"></i> Thanh toán bảo mật PayOS
           </div>
-          <h1 class="text-5xl font-black text-slate-900 leading-[1.1] mb-6 tracking-tight">
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 leading-[1.1] mb-6 tracking-tight">
             Nạp tiền vào <br/> <span class="text-indigo-600">ví V-Edu</span> của bạn.
           </h1>
           <p class="text-lg text-slate-500 font-medium leading-relaxed mb-10">
@@ -45,7 +45,7 @@
         <div class="lg:col-span-7">
           <div class="card-premium p-8 md:p-12 border border-white">
             <div class="flex items-center justify-between mb-10">
-              <h2 class="text-2xl font-black text-slate-900">Chọn số tiền nạp</h2>
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900">Chọn số tiền nạp</h2>
               <div class="flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-lg">
                 <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Số dư hiện tại:</span>
                 <span class="text-sm font-black text-slate-900">{{ formatPrice(auth.user?.balance || 0) }}đ</span>

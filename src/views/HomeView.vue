@@ -94,7 +94,7 @@
             Next-Gen Education
           </span>
 
-          <h1 class="animate-slide-up-reveal stagger-1 m-0 text-3xl font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
+          <h1 class="animate-slide-up-reveal stagger-1 m-0 text-2xl font-extrabold leading-[1.08] tracking-tight text-slate-900 sm:text-5xl lg:text-6xl xl:text-7xl">
             Học thông minh,
             <br class="hidden sm:block" />
             <span class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">vươn tới tầm cao</span>

@@ -25,13 +25,34 @@ type LoginData = {
   planName?: string;
 };
 
+const COOKIE_OPTIONS: Cookies.CookieAttributes = {
+  expires: 7,
+  sameSite: 'Lax',
+  secure: window.location.protocol === 'https:',
+};
+
+/**
+ * Safely parse user data from localStorage.
+ * Returns null on any failure to prevent corrupted state.
+ */
+const loadUserFromStorage = (): AuthUser | null => {
+  try {
+    const raw = localStorage.getItem('v_edu_user');
+    if (!raw) return null;
+    return JSON.parse(raw) as AuthUser;
+  } catch {
+    localStorage.removeItem('v_edu_user');
+    return null;
+  }
+};
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: Cookies.get('token') || null,
-    user: JSON.parse(Cookies.get('user') || 'null') as AuthUser | null,
+    user: loadUserFromStorage(),
   }),
   getters: {
-    isAuthenticated: (state) => !!state.token,
+    isAuthenticated: (state) => !!state.token && !!state.user,
     isAdmin: (state) => state.user?.roles?.includes('ROLE_ADMIN'),
   },
   actions: {
@@ -45,20 +66,22 @@ export const useAuthStore = defineStore('auth', {
         balance: data.balance ?? 0,
         planName: data.planName || 'FREE'
       };
-      // Save to cookies with 7 days expiration
-      Cookies.set('token', data.token, { expires: 7 });
-      Cookies.set('user', JSON.stringify(this.user), { expires: 7 });
+      // Token in cookie (Secure + SameSite), user info in localStorage only
+      Cookies.set('token', data.token, COOKIE_OPTIONS);
+      localStorage.setItem('v_edu_user', JSON.stringify(this.user));
     },
     logout() {
       this.token = null;
       this.user = null;
       Cookies.remove('token');
+      localStorage.removeItem('v_edu_user');
+      // Clean up legacy cookie if present
       Cookies.remove('user');
     },
     setUser(user: Partial<AuthUser>) {
       if (this.user) {
         this.user = { ...this.user, ...user };
-        Cookies.set('user', JSON.stringify(this.user), { expires: 7 });
+        localStorage.setItem('v_edu_user', JSON.stringify(this.user));
       }
     },
   },

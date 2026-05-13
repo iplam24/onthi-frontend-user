@@ -265,7 +265,7 @@ const handleSendMessage = () => {
   
   const msg = {
     senderId: auth.user.id,
-    senderName: auth.user.fullName || auth.user.username,
+    senderName: auth.user?.fullName || auth.user?.username || 'Người dùng',
     receiverId: selectedContact.value.id,
     content: newMessage.value,
     timestamp: new Date().toISOString()

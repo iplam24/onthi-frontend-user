@@ -60,10 +60,10 @@
             >
               <div class="relative h-8 w-8 rounded-full flex items-center justify-center overflow-hidden border border-white/20">
                 <img v-if="auth.user?.avatar" :src="resolveImageUrl(auth.user.avatar)" class="h-full w-full object-cover" />
-                <span v-else class="text-xs font-black text-white uppercase">{{ auth.user.username?.[0] }}</span>
+                <span v-else class="text-xs font-black text-white uppercase">{{ auth.user?.username?.[0] }}</span>
               </div>
               <div class="flex flex-col items-start -gap-1">
-                <span :class="['text-[14px] font-bold transition-colors', plan === 'promax' ? 'text-slate-900' : 'text-slate-800']">{{ auth.user.username }}</span>
+                <span :class="['text-[14px] font-bold transition-colors', plan === 'promax' ? 'text-slate-900' : 'text-slate-800']">{{ auth.user?.username || 'Học viên' }}</span>
                 <span v-if="auth.user?.planName" :class="[
                   'text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md shadow-sm',
                   getPlanBadgeClass(auth.user.planName)
@@ -111,7 +111,7 @@
                       <i class="fa-solid fa-wallet text-xs"></i>
                     </div>
                     <p :class="['text-lg font-black tracking-tight', plan === 'promax' ? 'bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent' : 'text-slate-900']">
-                      {{ formatCurrency(auth.user.balance) }}
+                      {{ formatCurrency(auth.user?.balance) }}
                     </p>
                   </div>
                 </div>
@@ -227,11 +227,11 @@
             <div class="px-4 py-3 mb-3 flex items-center gap-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
               <div class="h-10 w-10 shrink-0 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-sm overflow-hidden">
                 <img v-if="auth.user?.avatar" :src="resolveImageUrl(auth.user.avatar)" class="h-full w-full object-cover" />
-                <span v-else class="text-sm font-bold text-white uppercase">{{ auth.user.username?.[0] }}</span>
+                <span v-else class="text-sm font-bold text-white uppercase">{{ auth.user?.username?.[0] }}</span>
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <p class="m-0 text-sm font-bold text-slate-900">{{ auth.user.username }}</p>
+                  <p class="m-0 text-sm font-bold text-slate-900">{{ auth.user?.username || 'Học viên' }}</p>
                   <span v-if="auth.user?.planName" :class="['px-1.5 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider shadow-sm', getPlanBadgeClass(auth.user.planName)]">
                     {{ auth.user.planName }}
                   </span>
