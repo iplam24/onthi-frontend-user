@@ -23,7 +23,10 @@
     >
       <div
         v-if="isOpen"
-        class="absolute right-0 mt-3 w-80 sm:w-96 overflow-hidden rounded-[2rem] bg-white border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-50"
+        class="absolute overflow-hidden rounded-[2rem] bg-white border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-50 w-80 sm:w-96"
+        :class="[
+          align === 'left-side' ? 'left-14 -bottom-4 right-auto mt-0 origin-left-bottom' : 'right-0 mt-3'
+        ]"
       >
         <div class="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
           <h3 class="m-0 text-sm font-black text-slate-900">Thông báo</h3>
@@ -80,6 +83,12 @@ import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import apiClient from '@/services/api';
 import { useRouter } from 'vue-router';
+
+const props = withDefaults(defineProps<{
+  align?: 'left' | 'right' | 'left-side';
+}>(), {
+  align: 'right'
+});
 
 const auth = useAuthStore();
 const router = useRouter();

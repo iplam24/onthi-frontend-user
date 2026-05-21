@@ -5,16 +5,17 @@
     :class="[
       uiLayoutHint === 'LITERATURE' 
         ? 'border-x border-amber-100/50 bg-[#fffcf5] font-serif shadow-[0_0_50px_rgba(0,0,0,0.02)] min-h-screen' 
-        : 'rounded-[2rem] border',
-      uiLayoutHint !== 'LITERATURE' && isReview 
+        : (paperMode ? 'bg-transparent border-0' : 'rounded-2xl border'),
+      uiLayoutHint !== 'LITERATURE' && !paperMode && isReview 
         ? (isCorrect ? 'border-emerald-100 bg-white hover:border-emerald-200 hover:shadow-emerald-500/5' : 'border-rose-100 bg-white hover:border-rose-200 hover:shadow-rose-500/5')
-        : (uiLayoutHint !== 'LITERATURE' ? 'border-slate-100/80 bg-white hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5' : '')
+        : (uiLayoutHint !== 'LITERATURE' && !paperMode ? 'border-slate-100/80 bg-white hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5' : '')
     ]"
     :style="animationStyle"
   >
     <!-- Header -->
     <div 
-      class="flex items-center justify-between gap-3 border-b px-4 py-3 sm:px-8 sm:py-5"
+      v-if="!paperMode"
+      class="flex items-center justify-between gap-3 border-b px-4 py-2.5 sm:px-6 sm:py-3.5"
       :class="uiLayoutHint === 'LITERATURE' ? 'border-amber-100/30 bg-amber-50/20' : 'border-slate-50 bg-slate-50/50'"
     >
       <div class="flex items-center gap-4">
@@ -44,15 +45,19 @@
     </div>
 
     <!-- Content Area -->
-    <div class="px-5 py-6 sm:px-8 sm:py-10 flex flex-col grow">
+    <div 
+      class="flex flex-col grow"
+      :class="paperMode ? 'px-0 py-4 sm:py-6' : 'px-4 py-4 sm:px-6 sm:py-6'"
+    >
       <h2 
         class="m-0 leading-relaxed transition-colors"
         :class="[
           uiLayoutHint === 'LITERATURE' 
             ? 'text-xl sm:text-2xl font-medium text-slate-900 italic' 
-            : 'text-lg sm:text-xl font-bold text-slate-800 group-hover:text-indigo-700'
+            : 'text-sm sm:text-base font-bold text-slate-800 group-hover:text-indigo-700'
         ]"
       >
+        <span v-if="paperMode" class="text-indigo-600 font-black mr-2 select-none">Câu {{ index }}:</span>
         <MathContent :content="content || ''" :format="contentFormat" />
       </h2>
 
@@ -74,24 +79,31 @@
       </div>
 
       <!-- Options (Multiple Choice) -->
-      <div v-if="options && options.length" class="mt-8 space-y-4 grow">
+      <div 
+        v-if="options && options.length" 
+        class="grow mt-3"
+        :class="paperMode ? 'flex flex-wrap gap-2.5 sm:gap-4' : 'space-y-2'"
+      >
         <div
           v-for="(option, oi) in options"
           :key="option.id || oi"
           @click="!isReview && $emit('select', option.value)"
-          class="flex items-center gap-3 sm:gap-4 rounded-xl sm:rounded-2xl border-2 px-4 py-3 sm:px-5 sm:py-3.5 transition-all duration-300 relative overflow-hidden"
+          class="flex items-center gap-2 sm:gap-2.5 rounded-xl transition-all duration-200 relative overflow-hidden shrink-0"
           :class="[
             isReview ? getReviewOptionClass(option) : getAttemptOptionClass(option),
-            !isReview ? 'cursor-pointer' : ''
+            !isReview ? 'cursor-pointer' : '',
+            paperMode 
+              ? 'px-3 py-1.5 sm:px-4 sm:py-2 border w-fit min-w-[90px] sm:min-w-[125px] justify-start' 
+              : 'px-3 py-2 sm:px-4 sm:py-2.5 border-2 w-full'
           ]"
         >
           <span
-            class="relative z-10 flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg sm:rounded-xl text-xs sm:text-sm font-black shadow-sm transition-all duration-300"
+            class="relative z-10 flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-md sm:rounded-lg text-[10px] sm:text-xs font-black shadow-sm transition-all duration-300"
             :class="getOptionBadgeClass(option)"
           >
             {{ String.fromCharCode(65 + oi) }}
           </span>
-          <span class="relative z-10 text-sm sm:text-base font-bold leading-relaxed grow transition-colors" :class="getOptionTextClass(option)">
+          <span class="relative z-10 text-xs sm:text-sm font-semibold leading-relaxed grow transition-colors" :class="getOptionTextClass(option)">
             <MathContent :content="option.label || option.content || ''" :format="contentFormat" />
           </span>
           
@@ -106,7 +118,7 @@
       </div>
 
       <!-- Essay Input/Display -->
-      <div v-else class="mt-8 grow">
+      <div v-else class="mt-4 grow">
         <template v-if="!isReview">
           <div 
             class="relative group/essay"
@@ -264,6 +276,7 @@ const props = defineProps<{
   animationDelay?: number;
   aiExplanation?: string;
   aiExplaining?: boolean;
+  paperMode?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -273,6 +286,14 @@ const emit = defineEmits<{
   'focus': [];
   'askAi': [id: number];
 }>();
+
+const optionsColsClass = computed(() => {
+  if (!props.options || !props.options.length) return 'grid-cols-1';
+  const maxLen = Math.max(...props.options.map(o => (o.label || o.content || '').length));
+  if (maxLen < 15) return 'grid-cols-2 sm:grid-cols-4';
+  if (maxLen < 35) return 'grid-cols-1 sm:grid-cols-2';
+  return 'grid-cols-1';
+});
 
 const animationStyle = {
   animationDelay: `${props.animationDelay || 0}ms`

@@ -60,8 +60,27 @@
         <p class="text-base font-medium text-slate-500 m-0">Hiện chưa có đề thi nào khả dụng.</p>
       </div>
 
-      <template v-else>
-        <div v-if="!selectedSubject" class="space-y-12">
+    <template v-else>
+      <!-- Random Exam Banner -->
+      <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-950 p-8 sm:p-10 shadow-2xl shadow-indigo-950/20 text-white flex flex-col md:flex-row items-center justify-between gap-6 border border-white/5">
+        <div class="absolute -right-10 -bottom-10 h-48 w-48 rounded-full bg-violet-600/20 blur-3xl"></div>
+        <div class="absolute left-1/3 top-[-20%] h-32 w-32 rounded-full bg-indigo-500/20 blur-3xl animate-pulse"></div>
+        <div class="space-y-2 text-center md:text-left z-10">
+          <h2 class="m-0 text-xl sm:text-2xl font-black tracking-tight">Tự thiết kế đề thi thử ngẫu nhiên!</h2>
+          <p class="m-0 text-xs sm:text-sm font-medium text-indigo-200 max-w-lg leading-relaxed">
+            Bạn muốn thử thách bản thân? Hãy cấu hình nhanh môn học, chủ đề, mức độ khó để hệ thống tự động thiết kế một đề thi dành riêng cho bạn!
+          </p>
+        </div>
+        <router-link
+          to="/exams/random"
+          class="shrink-0 group inline-flex items-center gap-3 rounded-2xl bg-white px-6 py-3.5 text-xs font-black uppercase tracking-widest text-indigo-950 transition-all hover:bg-indigo-50 active:scale-95 shadow-xl shadow-white/5 z-10"
+        >
+          <i class="fa-solid fa-shuffle text-indigo-600 transition-transform group-hover:rotate-45"></i>
+          Bắt đầu tạo đề
+        </router-link>
+      </div>
+
+      <div v-if="!selectedSubject" class="space-y-12">
           <div class="animate-slide-up-reveal stagger-1">
             <ExamsSubjectToolbar v-model="selectedLevel" :level-options="levelOptions" />
           </div>

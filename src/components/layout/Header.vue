@@ -1,7 +1,16 @@
 <template>
-  <header class="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 transition-all duration-500" :class="{ 'pt-2': scrolled }">
+  <!-- 1. HORIZONTAL TOP HEADER (Visible always on mobile, and on desktop only when NOT scrolled) -->
+  <header
+    class="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 transition-all duration-500 transform"
+    :class="[
+      { 'pt-2': scrolled },
+      scrolled 
+        ? 'md:opacity-0 md:pointer-events-none md:-translate-y-10' 
+        : 'md:opacity-100 md:translate-y-0'
+    ]"
+  >
     <div
-      class="relative mx-auto flex w-full max-w-7xl items-center justify-between gap-3 rounded-[2rem] px-6 py-2 transition-all duration-700"
+      class="relative mx-auto flex w-full max-w-7xl items-center justify-between gap-3 rounded-[2rem] px-6 py-2 transition-all duration-500"
       :class="[
         scrolled 
           ? (plan === 'promax' ? 'bg-white/70 backdrop-blur-3xl border border-white shadow-[0_10px_30px_rgba(0,0,0,0.04)] mt-2' : 'bg-white/80 backdrop-blur-2xl border-white/60 shadow-lg shadow-indigo-500/5') 
@@ -9,7 +18,7 @@
       ]"
     >
       <!-- Aurora Glow behind Header for ProMax -->
-      <div v-if="plan === 'promax'" class="absolute -inset-2 bg-gradient-to-r from-indigo-500/10 via-pink-500/10 to-amber-500/10 blur-2xl opacity-40 -z-10 animate-pulse"></div>
+      <div v-if="plan === 'promax'" class="absolute -inset-2 bg-gradient-to-r from-indigo-500/10 via-pink-500/10 to-amber-500/10 blur-2xl opacity-40 -z-10 animate-pulse rounded-[2rem]"></div>
 
       <!-- Logo -->
       <router-link to="/" class="flex items-center gap-3 group">
@@ -25,7 +34,7 @@
           />
         </div>
         <div>
-          <p :class="['m-0 text-2xl font-bold tracking-tight transition-all duration-500', plan === 'promax' ? 'bg-gradient-to-r from-indigo-600 via-pink-600 to-amber-600 bg-clip-text text-transparent' : 'text-slate-900']">{{ appName }}</p>
+          <p :class="['m-0 text-xl font-bold tracking-tight transition-all duration-500', plan === 'promax' ? 'bg-gradient-to-r from-indigo-600 via-pink-600 to-amber-600 bg-clip-text text-transparent' : 'text-slate-900']">{{ appName }}</p>
         </div>
       </router-link>
 
@@ -98,7 +107,7 @@
             >
               <div
                 v-if="userMenuOpen"
-                class="absolute right-0 mt-3 w-72 overflow-hidden rounded-[2rem] p-1.5 transition-all duration-500 shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-50"
+                class="absolute right-0 mt-3 w-72 overflow-hidden rounded-[2rem] p-1.5 transition-all duration-500 shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-50 bg-white border border-slate-100"
                 :class="plan === 'promax' ? 'bg-white/80 backdrop-blur-3xl border border-white' : 'bg-white border border-slate-100'"
               >
                 <!-- Liquid Border for ProMax Menu -->
@@ -279,9 +288,192 @@
         </div>
       </div>
     </transition>
-
-    <AuthPopover v-if="showAuthPopover" @close="showAuthPopover = false" />
   </header>
+
+  <!-- 2. VERTICAL FLOATING SIDEBAR DOCK (Visible ONLY on desktop when scrolled) -->
+  <aside
+    class="hidden md:flex fixed left-4 top-1/2 -translate-y-1/2 z-50 w-20 h-[calc(100vh-6rem)] max-h-[680px] transition-all duration-500 transform"
+    :class="[
+      scrolled 
+        ? 'opacity-100 translate-x-0 pointer-events-auto' 
+        : 'opacity-0 -translate-x-10 pointer-events-none'
+    ]"
+  >
+    <!-- Dock Content -->
+    <div
+      class="relative flex flex-col h-full w-full py-6 px-3 justify-between items-center rounded-[2.5rem] border transition-all duration-500 shadow-xl"
+      :class="[
+        plan === 'promax' ? 'bg-white/70 backdrop-blur-3xl border border-white shadow-[0_10px_30px_rgba(0,0,0,0.04)]' : 'bg-white/80 backdrop-blur-2xl border-white/60 shadow-lg shadow-indigo-500/5'
+      ]"
+    >
+      <!-- Aurora Glow behind Dock for ProMax -->
+      <div v-if="plan === 'promax'" class="absolute -inset-2 bg-gradient-to-r from-indigo-500/10 via-pink-500/10 to-amber-500/10 blur-2xl opacity-40 -z-10 animate-pulse rounded-[2.5rem]"></div>
+
+      <!-- Dock Logo -->
+      <router-link to="/" class="flex flex-col gap-1.5 w-full items-center justify-center group relative">
+        <div class="relative">
+          <div :class="[
+            'absolute -inset-2 rounded-full blur-xl transition-all duration-700 opacity-0 group-hover:opacity-100',
+            plan === 'promax' ? 'bg-gradient-to-tr from-indigo-400 via-pink-400 to-amber-400 animate-spin-slow' : 'bg-indigo-500/20'
+          ]"></div>
+          <img
+            src="@/asset/logo.png"
+            alt="Logo"
+            class="relative h-9 w-9 rounded-xl shadow-md transition-all duration-500 group-hover:scale-110 group-hover:rotate-[5deg]"
+          />
+        </div>
+        <!-- Logo Tooltip -->
+        <div class="absolute left-14 z-50 whitespace-nowrap opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pl-4">
+          <div class="bg-slate-900/95 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-wider px-3.5 py-2 rounded-xl shadow-xl border border-white/10">
+            {{ appName }}
+          </div>
+        </div>
+      </router-link>
+
+      <!-- Dock Nav Links -->
+      <nav class="flex flex-col w-full gap-2 items-center">
+        <router-link
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          class="nav-link group relative inline-flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-500"
+          :class="plan === 'promax' ? 'text-slate-500 hover:text-slate-900' : 'text-slate-600 hover:text-indigo-600'"
+        >
+          <span :class="['absolute inset-0 rounded-2xl transition-all duration-500', plan === 'promax' ? 'group-hover:bg-gradient-to-r group-hover:from-indigo-500/5 group-hover:to-pink-500/5 border border-transparent group-hover:border-indigo-500/10' : 'group-hover:bg-indigo-50']"></span>
+          <i :class="['fa-solid text-[16px] relative z-10 transition-transform duration-500 group-hover:scale-125', item.icon, plan === 'promax' ? 'text-indigo-500 group-hover:text-pink-500' : 'text-indigo-400']" aria-hidden="true"></i>
+          
+          <!-- Tooltip on hover -->
+          <div class="absolute left-14 z-50 whitespace-nowrap opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pl-4">
+            <div class="bg-slate-900/95 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-wider px-3.5 py-2 rounded-xl shadow-xl border border-white/10 flex items-center gap-2">
+              <i :class="['fa-solid text-[9px] text-indigo-400', item.icon]"></i>
+              {{ item.label }}
+            </div>
+          </div>
+        </router-link>
+      </nav>
+
+      <!-- Dock Auth Section -->
+      <div class="flex flex-col w-full gap-3 items-center">
+        <template v-if="auth.isAuthenticated">
+          <!-- Notification Bell in Dock -->
+          <NotificationBell align="left-side" />
+
+          <div class="relative w-full flex justify-center" ref="userMenuContainer">
+            <button
+              @click.stop="userMenuOpen = !userMenuOpen"
+              class="group/profile flex items-center justify-center w-12 h-12 p-0 rounded-2xl transition-all duration-500 relative"
+              :class="plan === 'promax' 
+                ? 'bg-white/80 backdrop-blur-xl border border-indigo-200 text-slate-800 shadow-xl hover:scale-105' 
+                : 'border-indigo-100 bg-indigo-50/50 hover:border-indigo-200 hover:bg-indigo-50'"
+            >
+              <div class="relative h-8 w-8 rounded-full flex items-center justify-center overflow-hidden border border-white/20 shrink-0">
+                <img v-if="auth.user?.avatar" :src="resolveImageUrl(auth.user.avatar)" class="h-full w-full object-cover" />
+                <span v-else class="text-xs font-black text-white uppercase">{{ auth.user?.username?.[0] }}</span>
+              </div>
+
+              <!-- Profile Tooltip when scrolled -->
+              <div 
+                v-if="!userMenuOpen"
+                class="absolute left-14 z-50 whitespace-nowrap opacity-0 -translate-x-2 pointer-events-none group-hover/profile:opacity-100 group-hover/profile:translate-x-0 transition-all duration-300 pl-4"
+              >
+                <div class="bg-slate-900/95 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-wider px-3.5 py-2 rounded-xl shadow-xl border border-white/10 flex flex-col items-start gap-0.5">
+                  <span>{{ auth.user?.username || 'Học viên' }}</span>
+                  <span v-if="auth.user?.planName" class="text-[8px] font-black text-indigo-300 tracking-widest">{{ auth.user.planName }}</span>
+                </div>
+              </div>
+            </button>
+
+            <!-- User Dropdown Menu -->
+            <transition
+              enter-active-class="transition ease-out duration-300"
+              enter-from-class="transform opacity-0 scale-95 -translate-y-2"
+              enter-to-class="transform opacity-100 scale-100 translate-y-0"
+              leave-active-class="transition ease-in duration-200"
+              leave-from-class="transform opacity-100 scale-100 translate-y-0"
+              leave-to-class="transform opacity-0 scale-95 -translate-y-2"
+            >
+              <div
+                v-if="userMenuOpen"
+                class="absolute overflow-hidden rounded-[2rem] p-1.5 transition-all duration-500 shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-50 w-72 left-[calc(100%+0.5rem)] bottom-0 origin-left-bottom"
+                :class="plan === 'promax' ? 'bg-white/80 backdrop-blur-3xl border border-white' : 'bg-white border border-slate-100'"
+              >
+                <!-- Liquid Border for ProMax Menu -->
+                <div v-if="plan === 'promax'" class="absolute inset-0 rounded-[2rem] p-[1.5px] -z-10 bg-gradient-to-r from-indigo-500 via-pink-500 to-amber-500 animate-gradient-shift opacity-30"></div>
+
+                <div class="px-5 py-4 border-b border-slate-100/50">
+                  <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Số dư tài khoản</p>
+                  <div class="flex items-center gap-2">
+                    <div :class="['p-1.5 rounded-lg', plan === 'promax' ? 'bg-indigo-500/10 text-indigo-600' : 'bg-slate-100 text-slate-600']">
+                      <i class="fa-solid fa-wallet text-xs"></i>
+                    </div>
+                    <p :class="['text-lg font-black tracking-tight', plan === 'promax' ? 'bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent' : 'text-slate-900']">
+                      {{ formatCurrency(auth.user?.balance) }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="p-2 space-y-1">
+                  <router-link
+                    v-for="item in dropdownLinks"
+                    :key="item.to"
+                    :to="item.to"
+                    @click="userMenuOpen = false"
+                    class="group relative flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-300"
+                    :class="plan === 'promax' ? 'hover:bg-white/50' : 'hover:bg-indigo-50/50'"
+                  >
+                    <!-- Hover Sweep for ProMax -->
+                    <div v-if="plan === 'promax'" class="absolute inset-0 overflow-hidden rounded-2xl opacity-0 group-hover:opacity-100">
+                      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[150%] skew-x-[-25deg] group-hover:translate-x-[150%] transition-transform duration-700"></div>
+                    </div>
+
+                    <div :class="[
+                      'h-9 w-9 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 shadow-sm',
+                      plan === 'promax' ? 'bg-white border border-slate-100 group-hover:border-indigo-200' : 'bg-slate-50'
+                    ]">
+                      <i :class="['fa-solid', item.icon, 'text-sm transition-colors', plan === 'promax' ? 'text-indigo-500 group-hover:text-pink-500' : 'text-slate-500 group-hover:text-indigo-600']"></i>
+                    </div>
+                    <span :class="['text-[13px] font-bold transition-colors', plan === 'promax' ? 'text-slate-600 group-hover:text-slate-900' : 'text-slate-600 group-hover:text-indigo-600']">
+                      {{ item.label }}
+                    </span>
+                  </router-link>
+                </div>
+
+                <div class="p-2 mt-1 pt-1 border-t border-slate-100/50">
+                  <button
+                    @click="logout"
+                    class="group w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-300 hover:bg-rose-50"
+                  >
+                    <div class="h-9 w-9 rounded-xl bg-rose-50 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-rose-100">
+                      <i class="fa-solid fa-right-from-bracket text-sm text-rose-500"></i>
+                    </div>
+                    <span class="text-[13px] font-bold text-rose-500">Đăng xuất hệ thống</span>
+                  </button>
+                </div>
+              </div>
+            </transition>
+          </div>
+        </template>
+        <template v-else>
+          <button
+            @click="showAuthPopover = true"
+            class="group relative inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-lg shadow-indigo-500/25 transition-all duration-500 hover:shadow-xl hover:scale-[1.05] active:scale-95 shrink-0"
+          >
+            <span class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full skew-x-12"></span>
+            <i class="fa-solid fa-right-to-bracket text-xs relative z-10" aria-hidden="true"></i>
+
+            <!-- Login Tooltip -->
+            <div class="absolute left-14 z-50 whitespace-nowrap opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pl-4">
+              <div class="bg-slate-900/95 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-wider px-3.5 py-2 rounded-xl shadow-xl border border-white/10">
+                Đăng nhập
+              </div>
+            </div>
+          </button>
+        </template>
+      </div>
+    </div>
+  </aside>
+
+  <AuthPopover v-if="showAuthPopover" @close="showAuthPopover = false" />
 </template>
 
 <script setup>
@@ -309,15 +501,15 @@ const navItems = [
   { to: '/', label: 'Trang chủ', icon: 'fa-house' },
   { to: '/social', label: 'Cộng đồng', icon: 'fa-rss' },
   { to: '/exams', label: 'Bài thi', icon: 'fa-file-pen' },
-  { to: '/learning', label: 'Học tập', icon: 'fa-book-open-reader' },
-  { to: '/pricing', label: 'Nâng cấp', icon: 'fa-rocket' },
-  { to: '/contact', label: 'Liên hệ', icon: 'fa-envelope' },
+  { to: '/attempts', label: 'Lịch sử làm bài', icon: 'fa-clock-rotate-left' },
+  { to: '/pricing', label: 'Các gói nâng cấp', icon: 'fa-rocket' },
 ];
 
 const userMenuOpen = ref(false);
 
 const dropdownLinks = [
   { to: '/profile', label: 'Thông tin cá nhân', icon: 'fa-user-gear', bg: 'bg-indigo-50', color: 'text-indigo-600' },
+  { to: '/exams/random', label: 'Tạo đề ngẫu nhiên', icon: 'fa-shuffle', bg: 'bg-violet-50', color: 'text-violet-600' },
   { to: '/pricing', label: 'Nâng cấp tài khoản', icon: 'fa-rocket', bg: 'bg-rose-50', color: 'text-rose-600' },
   { to: '/deposit', label: 'Nạp tiền vào ví', icon: 'fa-wallet', bg: 'bg-emerald-50', color: 'text-emerald-600' },
   { to: '/transactions', label: 'Lịch sử giao dịch', icon: 'fa-receipt', bg: 'bg-amber-50', color: 'text-amber-600' },

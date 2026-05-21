@@ -63,7 +63,7 @@
     </transition>
   </teleport>
 
-<div class="text-slate-900 pb-12 pt-[160px] sm:pt-[150px] max-w-7xl mx-auto px-2 sm:px-4">
+<div class="text-slate-900 pb-12 pt-[105px] sm:pt-[95px] max-w-7xl mx-auto px-2 sm:px-4">
     <!-- Fixed Header -->
     <div class="fixed top-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-2xl border-b border-white/50 shadow-lg shadow-indigo-500/5">
       <div class="max-w-7xl mx-auto w-full flex flex-col">
@@ -83,7 +83,7 @@
             </div>
 
             <div class="flex items-center gap-2 sm:gap-3 rounded-2xl bg-indigo-50 px-3 py-2 sm:px-5 sm:py-2.5 shadow-inner">
-              <i class="fa-regular fa-clock text-indigo-500 text-sm sm:text-lg animate-pulse"></i>
+               <i class="fa-regular fa-clock text-indigo-500 text-sm sm:text-lg animate-pulse"></i>
               <span class="text-base sm:text-xl font-black text-indigo-700 tabular-nums">{{ timeLabel }}</span>
             </div>
           </div>
@@ -104,35 +104,10 @@
             </button>
           </div>
         </div>
-
-        <!-- Question Navigation row -->
-        <div class="border-t border-slate-100 bg-slate-50/50 px-4 py-3 sm:px-10 overflow-x-auto custom-scrollbar">
-          <div class="flex items-center gap-3">
-            <p class="m-0 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mr-2 sm:mr-4 whitespace-nowrap">Câu:</p>
-            <div class="flex gap-1.5 sm:gap-2">
-              <button
-                v-for="(question, index) in questions"
-                :key="`nav-${question.id}`"
-                type="button"
-                @click="scrollToQuestion(question.id)"
-                :class="[
-                  'h-8 w-8 sm:h-10 sm:w-10 shrink-0 rounded-lg sm:rounded-xl border text-[10px] sm:text-xs font-black transition-all duration-200 hover:scale-110 active:scale-90',
-                  currentQuestionId === question.id
-                    ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-500/40'
-                    : answers[question.id]
-                      ? 'border-emerald-200 bg-emerald-50 text-emerald-600'
-                      : 'border-slate-200 bg-white text-slate-400 hover:border-indigo-200 hover:text-indigo-500',
-                ]"
-              >
-                {{ Number(index) + 1 }}
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
-    <section style="animation: slide-up 600ms cubic-bezier(0.16,1,0.3,1) both">
+    <section>
 
     <div
       v-if="!auth.isAuthenticated"
@@ -193,46 +168,211 @@
       </div>
     </div>
 
-    <form v-else-if="attempt" class="space-y-12 mt-8" @submit.prevent="handleSubmit">
-      <div v-for="(section, sIndex) in sections" :key="sIndex" class="space-y-6">
-        <div v-if="section.title" class="flex items-center gap-4">
-          <div class="h-px grow bg-slate-100"></div>
-          <h3 class="m-0 text-sm font-black uppercase tracking-[0.3em] text-indigo-500 bg-white px-4">
-            {{ section.title }}
-          </h3>
-          <div class="h-px grow bg-slate-100"></div>
-        </div>
+    <div v-else-if="attempt" class="relative mt-8 lg:pr-[360px]">
+      <!-- Left Side: Questions list -->
+      <form class="space-y-12 w-full" @submit.prevent="handleSubmit">
+        <div v-for="(section, sIndex) in sections" :key="sIndex" class="space-y-6">
+          <div v-if="section.title" class="flex items-center gap-4">
+            <div class="h-px grow bg-slate-100"></div>
+            <h3 class="m-0 text-sm font-black uppercase tracking-[0.3em] text-indigo-500 bg-white px-4">
+              {{ section.title }}
+            </h3>
+            <div class="h-px grow bg-slate-100"></div>
+          </div>
 
-        <div 
-          class="grid gap-6 items-stretch"
-          :class="[
-            uiLayoutHint === 'LITERATURE' || uiLayoutHint === 'ESSAY' 
-              ? 'grid-cols-1 max-w-5xl mx-auto px-4 sm:px-8' 
-              : 'grid-cols-1 md:grid-cols-2'
-          ]"
-        >
-          <QuestionCard
-            v-for="(question, index) in section.questions"
-            :key="question.id"
-            :id="question.id"
-            :index="questions.findIndex(q => q.id === question.id) + 1"
-            :content="question.content"
-            :content-format="question.contentFormat"
-            :image-url="question.imageUrl"
-            :options="question.options"
-            v-model="answers[question.id]"
-            :ui-layout-hint="uiLayoutHint"
-            :animation-delay="Number(index) * 40"
-            @select="answers[question.id] = $event"
-            @zoom="zoomImageUrl = $event"
-            @focus="currentQuestionId = question.id"
-          />
+          <!-- Single Continuous White Paper Sheet (Standard / Mixed Exams) -->
+          <div 
+            v-if="uiLayoutHint !== 'LITERATURE' && uiLayoutHint !== 'ESSAY'"
+            class="bg-white rounded-3xl border border-slate-100/80 shadow-xl shadow-slate-200/40 p-6 sm:p-10 divide-y divide-slate-100 max-w-4xl mx-auto"
+          >
+            <QuestionCard
+              v-for="(question, index) in section.questions"
+              :key="question.id"
+              :id="question.id"
+              :index="questions.findIndex(q => q.id === question.id) + 1"
+              :content="question.content"
+              :content-format="question.contentFormat"
+              :image-url="question.imageUrl"
+              :options="question.options"
+              v-model="answers[question.id]"
+              :ui-layout-hint="uiLayoutHint"
+              :animation-delay="Number(index) * 40"
+              :paper-mode="true"
+              @select="answers[question.id] = $event"
+              @zoom="zoomImageUrl = $event"
+              @focus="currentQuestionId = question.id"
+            />
+          </div>
+
+          <!-- Special Literature & Essay Views (Separate pages) -->
+          <div 
+            v-else
+            class="grid gap-6 items-stretch grid-cols-1 max-w-5xl mx-auto px-4 sm:px-8"
+          >
+            <QuestionCard
+              v-for="(question, index) in section.questions"
+              :key="question.id"
+              :id="question.id"
+              :index="questions.findIndex(q => q.id === question.id) + 1"
+              :content="question.content"
+              :content-format="question.contentFormat"
+              :image-url="question.imageUrl"
+              :options="question.options"
+              v-model="answers[question.id]"
+              :ui-layout-hint="uiLayoutHint"
+              :animation-delay="Number(index) * 40"
+              @select="answers[question.id] = $event"
+              @zoom="zoomImageUrl = $event"
+              @focus="currentQuestionId = question.id"
+            />
+          </div>
+        </div>
+      </form>
+
+      <!-- Right Side: Fixed Matrix Card (Desktop only) -->
+      <div class="hidden lg:block fixed-sidebar-matrix">
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl border border-slate-100 p-5 shadow-xl shadow-indigo-500/5">
+          <div class="flex items-center justify-between mb-4">
+            <p class="m-0 text-xs font-black uppercase tracking-widest text-slate-400">Tiến độ bài làm</p>
+            <span class="text-xs font-black bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-lg">
+              {{ answeredCount }}/{{ questions.length }}
+            </span>
+          </div>
+
+          <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden mb-6">
+            <div 
+              class="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full transition-all duration-500"
+              :style="{ width: (answeredCount / (questions.length || 1)) * 100 + '%' }"
+            ></div>
+          </div>
+
+          <div class="max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
+            <div class="grid grid-cols-5 gap-2">
+              <button
+                v-for="(question, index) in questions"
+                :key="`matrix-${question.id}`"
+                type="button"
+                @click="scrollToQuestion(question.id)"
+                :class="[
+                  'h-10 w-full rounded-xl border text-xs font-black transition-all duration-200 hover:scale-110 active:scale-90 flex items-center justify-center',
+                  currentQuestionId === question.id
+                    ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                    : answers[question.id]
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                      : 'border-slate-100 bg-slate-50 text-slate-400 hover:bg-slate-100 hover:border-slate-200',
+                ]"
+              >
+                {{ Number(index) + 1 }}
+              </button>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-50 mt-5 pt-4 flex flex-wrap gap-x-4 gap-y-2 text-[10px] font-black uppercase tracking-wider text-slate-400">
+            <div class="flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+              <span>Đã làm</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-slate-200"></span>
+              <span>Chưa làm</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+              <span>Đang chọn</span>
+            </div>
+          </div>
         </div>
       </div>
-    </form>
+    </div>
   </section>
   </div>
 
+  <!-- Mobile Floating Matrix Trigger -->
+  <div v-if="attempt" class="lg:hidden fixed bottom-6 right-6 z-50">
+    <button
+      type="button"
+      @click="showMobileMatrix = true"
+      class="relative flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-2xl shadow-indigo-500/40 hover:bg-indigo-700 transition active:scale-95"
+    >
+      <i class="fa-solid fa-list-ol text-lg"></i>
+      <!-- Badge with count -->
+      <span class="absolute -top-1 -right-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-black text-white border-2 border-white">
+        {{ answeredCount }}
+      </span>
+    </button>
+  </div>
+
+  <!-- Mobile Matrix Drawer -->
+  <teleport to="body">
+    <transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0 translate-y-full"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-full"
+    >
+      <div v-if="showMobileMatrix" class="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm flex items-end justify-center p-4 lg:hidden h-full" @click="showMobileMatrix = false">
+        <div class="w-full max-w-md bg-white rounded-t-[2.5rem] rounded-b-none p-6 shadow-2xl animate-slide-up-reveal" @click.stop>
+          <!-- Drawer handle bar -->
+          <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+          
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h4 class="m-0 text-lg font-black text-slate-900">Danh sách câu hỏi</h4>
+              <p class="m-0 text-[10px] font-black uppercase tracking-wider text-slate-400 mt-1">Đã làm: {{ answeredCount }}/{{ questions.length }} câu</p>
+            </div>
+            <button 
+              type="button"
+              @click="showMobileMatrix = false"
+              class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-slate-600 transition"
+            >
+              <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+          </div>
+
+          <!-- Grid Matrix -->
+          <div class="max-h-[300px] overflow-y-auto pr-1 custom-scrollbar mb-6">
+            <div class="grid grid-cols-5 gap-2.5">
+              <button
+                v-for="(question, index) in questions"
+                :key="`matrix-mobile-${question.id}`"
+                type="button"
+                @click="scrollToQuestion(question.id); showMobileMatrix = false"
+                :class="[
+                  'h-11 w-full rounded-xl border text-xs font-black transition active:scale-95 flex items-center justify-center',
+                  currentQuestionId === question.id
+                    ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                    : answers[question.id]
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-600'
+                      : 'border-slate-100 bg-slate-50 text-slate-400',
+                ]"
+              >
+                {{ Number(index) + 1 }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Legends -->
+          <div class="flex gap-4 text-[10px] font-black uppercase tracking-wider text-slate-400 justify-center">
+            <div class="flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+              <span>Đã làm</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-slate-200"></span>
+              <span>Chưa làm</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+              <span>Đang chọn</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+  </teleport>
 </template>
 
 <script setup lang="ts">
@@ -335,6 +475,7 @@ const uiLayoutHint = ref<'STANDARD' | 'LITERATURE' | 'ESSAY' | 'MIXED'>('STANDAR
 const sections = ref<Array<{ title: string; questions: AttemptQuestion[] }>>([]);
 const answers = reactive<Record<number, string>>({});
 const zoomImageUrl = ref<string | null>(null);
+const showMobileMatrix = ref(false);
 let initPromise: Promise<void> | null = null;
 
 // Admin Edit Logic (Removed)
@@ -503,7 +644,7 @@ const clearRedirectTimer = () => {
 const goToExamsNow = () => {
   clearRedirectTimer();
   if (result.value?.id) {
-    router.push(`/attempts/${result.value.id}/review`);
+    router.push(`/attempts/${result.value.id}/performance`);
   } else {
     router.push('/exams');
   }
@@ -758,7 +899,15 @@ const handleVisibilityChange = () => {
 const scrollToQuestion = (questionId: number) => {
   currentQuestionId.value = questionId;
   const element = document.getElementById(`q-${questionId}`);
-  element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (element) {
+    const rect = element.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const targetY = rect.top + scrollTop - 92;
+    window.scrollTo({
+      top: targetY,
+      behavior: 'smooth'
+    });
+  }
 };
 
 const handleSubmit = async () => {
@@ -896,3 +1045,18 @@ onBeforeUnmount(() => {
   clearRedirectTimer();
 });
 </script>
+
+<style scoped>
+.fixed-sidebar-matrix {
+  position: fixed;
+  top: 92px;
+  width: 320px;
+  right: 24px;
+  z-index: 40;
+}
+@media (min-width: 1328px) {
+  .fixed-sidebar-matrix {
+    right: calc((100vw - 1280px) / 2 + 24px);
+  }
+}
+</style>

@@ -255,16 +255,25 @@
                   <span :class="['text-lg font-black', plan === 'promax' ? 'text-rose-500' : 'text-rose-600']">{{ attempt.wrongCount ?? 0 }}</span>
                 </div>
               </div>
-              <router-link
-                :to="`/attempts/${attempt.id}/review`"
-                class="group/btn relative overflow-hidden inline-flex items-center gap-4 rounded-2xl px-8 py-4 text-[11px] font-black transition-all duration-500"
-                :class="plan === 'promax' ? 'bg-gradient-to-r from-indigo-600 to-pink-500 text-white hover:px-10 shadow-xl' : 'bg-slate-900 text-white hover:bg-indigo-600'"
-              >
-                <span class="relative z-20 uppercase tracking-[0.2em]">Phân tích kết quả</span>
-                <i class="fa-solid fa-arrow-right-long text-[10px] relative z-20 transition-transform duration-500 group-hover/btn:translate-x-2"></i>
-                <!-- Button Glow for ProMax -->
-                <div v-if="plan === 'promax'" class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-pink-500 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
-              </router-link>
+              <div class="flex gap-2">
+                <router-link
+                  :to="`/attempts/${attempt.id}/review`"
+                  class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+                >
+                  <i class="fa-solid fa-eye text-[10px]"></i>
+                  Xem bài làm
+                </router-link>
+                <router-link
+                  :to="`/attempts/${attempt.id}/performance`"
+                  class="group/btn relative overflow-hidden inline-flex items-center gap-3 rounded-xl px-5 py-2.5 text-xs font-black transition-all duration-500"
+                  :class="plan === 'promax' ? 'bg-gradient-to-r from-indigo-600 to-pink-500 text-white shadow-md' : 'bg-indigo-600 text-white hover:bg-indigo-700'"
+                >
+                  <span class="relative z-20 uppercase tracking-[0.1em]">Đánh giá</span>
+                  <i class="fa-solid fa-chart-line text-[10px] relative z-20 transition-transform duration-500 group-hover/btn:translate-x-1"></i>
+                  <!-- Button Glow for ProMax -->
+                  <div v-if="plan === 'promax'" class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-pink-500 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></div>
+                </router-link>
+              </div>
             </div>
           </div>
         </div>

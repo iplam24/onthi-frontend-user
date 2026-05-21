@@ -69,6 +69,18 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/exams/random',
+      name: 'random-exam',
+      component: () => import('../views/RandomExamView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/attempts/:attemptId/performance',
+      name: 'attempt-performance',
+      component: () => import('../views/PerformanceView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/pricing',
       name: 'pricing',
       component: () => import('../views/PricingView.vue'),

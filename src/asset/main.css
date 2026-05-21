@@ -43,19 +43,37 @@
 }
 
 .plan-promax {
-  --primary: #6366f1;
-  --primary-glow: rgba(99, 102, 241, 0.5);
-  --accent-gold: #fbbf24;
-  --surface: #ffffff;
-  --text-primary: #334155;
+  --primary: #6366f1; /* Indigo hoàng gia */
+  --primary-hover: #4f46e5;
+  --primary-light: #eef2ff;
+  --primary-ultra-light: rgba(99, 102, 241, 0.03);
+  --primary-glow: rgba(99, 102, 241, 0.35);
+  
+  --accent-gold: #fbbf24; /* Vàng hổ phách */
+  --accent-pink: #ec4899; /* Hồng ngoại */
+  
+  --surface: rgba(255, 255, 255, 0.85);
+  --surface-secondary: rgba(248, 250, 252, 0.75);
+  --surface-tertiary: rgba(241, 245, 249, 0.65);
+  
+  --text-primary: #0f172a; /* Slate 900 - Đọc rõ nét */
+  --text-secondary: #334155;
+  --text-tertiary: #64748b;
+  
+  --border-light: rgba(226, 232, 240, 0.6);
+  --border-subtle: rgba(241, 245, 249, 0.4);
   --border-liquid: linear-gradient(90deg, #6366f1, #ec4899, #fbbf24, #6366f1);
 }
 
-.plan-promax body {
-  background: #f8fafc !important;
+/* Nền toàn trang mượt mà cho ProMax */
+#app.plan-promax {
+  min-height: 100vh;
+  background-color: #f8fafc;
   background-image:
-    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 20%),
-    radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 20%) !important;
+    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.02) 0%, transparent 50%);
+  background-attachment: fixed;
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -128,65 +146,91 @@
 /* ══════════════════════════════════════════════════════════════════
    PROMAX COMPONENT STYLES
    ══════════════════════════════════════════════════════════════════ */
+/* Sửa triệt để lỗi padding: 1px và overflow: hidden */
 .plan-promax .card,
 .plan-promax .card-elevated,
 .plan-promax .card-interactive {
   position: relative;
-  background: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(20px) saturate(180%);
-  border: none !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.4) !important; /* Thay thế viền thô kệch */
   border-radius: 1.5rem;
-  padding: 1px;
   z-index: 1;
-  overflow: hidden;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08) !important;
-  transition: all 0.5s var(--ease-out-expo);
+  /* Giữ nguyên padding gốc của phần tử */
+  /* overflow: hidden; -> Đã loại bỏ để hỗ trợ dropdown, tooltip */
+  box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.05), 0 1px 3px rgba(0, 0, 0, 0.01) !important;
+  transition: transform 0.5s var(--ease-out-expo), box-shadow 0.5s var(--ease-out-expo), border-color 0.5s var(--ease-out-expo);
 }
 
-.plan-promax .card::before {
+.plan-promax .card::before,
+.plan-promax .card-elevated::before,
+.plan-promax .card-interactive::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -1px; /* Bo khít mép ngoài */
   padding: 1.5px;
-  border-radius: 1.5rem;
+  border-radius: inherit; /* Tự động bo góc theo cha */
   background: var(--border-liquid);
   background-size: 300% 300%;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  animation: liquid-border 6s linear infinite;
-  opacity: 0.2;
-  transition: opacity 0.4s;
+  opacity: 0.15; /* Tĩnh dịu nhẹ khi không hoạt động */
+  transition: opacity 0.4s var(--ease-smooth);
+  will-change: opacity, background-position;
 }
 
-.plan-promax .card:hover::before {
-  opacity: 0.8;
+/* Tối ưu hiệu năng: chỉ chạy animation khi hover */
+.plan-promax .card:hover::before,
+.plan-promax .card-elevated:hover::before,
+.plan-promax .card-interactive:hover::before {
+  opacity: 0.85;
   animation: liquid-border 3s linear infinite;
 }
 
-.plan-promax .card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 25px 50px -15px rgba(99, 102, 241, 0.15) !important;
+.plan-promax .card:hover,
+.plan-promax .card-elevated:hover,
+.plan-promax .card-interactive:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.15) !important;
+  border-color: transparent !important;
 }
 
 @utility bg-gradient-brand {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%);
 }
 
-.plan-promax h1,
-.plan-promax h2,
-.plan-promax h3 {
-  font-weight: 800;
+/* Nâng cấp Typography tinh tế, khôi phục h3 rõ ràng */
+.plan-promax h1 {
+  font-weight: 900;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #312e81 0%, #4338ca 50%, #db2777 100%);
+  background: linear-gradient(135deg, #3730a3 0%, #6366f1 50%, #db2777 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: liquid-border 5s linear infinite !important;
+  animation: liquid-border 8s linear infinite !important;
 }
 
-/* Fix: Math/KaTeX formulas in ProMax headers shouldn't inherit transparent text fill */
+.plan-promax h2 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 70%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.plan-promax h3 {
+  color: var(--text-primary);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
+  animation: none !important;
+}
+
+/* Sửa lỗi hiển thị công thức Math/KaTeX trong ProMax */
 .plan-promax .katex,
 .plan-promax .math-content {
   -webkit-text-fill-color: var(--text-primary) !important;
@@ -197,11 +241,9 @@
 
 .plan-promax h1 .katex,
 .plan-promax h2 .katex,
-.plan-promax h3 .katex,
 .plan-promax h1 .math-content,
-.plan-promax h2 .math-content,
-.plan-promax h3 .math-content {
-  -webkit-text-fill-color: #312e81 !important; /* Use the dark start color of the gradient for consistency */
+.plan-promax h2 .math-content {
+  -webkit-text-fill-color: #3730a3 !important; /* Dùng màu đậm của gradient để đảm bảo tính đồng màu */
 }
 
 /* ══════════════════════════════════════════════════════════════════

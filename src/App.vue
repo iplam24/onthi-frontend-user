@@ -79,7 +79,6 @@ watch(() => route.path, () => {
 
 const isExamShellHiddenRoute = computed(() => {
   if (route.name === 'exam-attempt' || route.name === 'exam-review') return true;
-  if (route.name === 'exams' && auth.isAuthenticated) return true;
   return false;
 });
 
