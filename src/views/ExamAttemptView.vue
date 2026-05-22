@@ -195,10 +195,11 @@
               :image-url="question.imageUrl"
               :options="question.options"
               v-model="answers[question.id]"
+              :is-multiple="question.isMultiple"
               :ui-layout-hint="uiLayoutHint"
               :animation-delay="Number(index) * 40"
               :paper-mode="true"
-              @select="answers[question.id] = $event"
+              @select="handleSelect(question, $event)"
               @zoom="zoomImageUrl = $event"
               @focus="currentQuestionId = question.id"
             />
@@ -219,9 +220,10 @@
               :image-url="question.imageUrl"
               :options="question.options"
               v-model="answers[question.id]"
+              :is-multiple="question.isMultiple"
               :ui-layout-hint="uiLayoutHint"
               :animation-delay="Number(index) * 40"
-              @select="answers[question.id] = $event"
+              @select="handleSelect(question, $event)"
               @zoom="zoomImageUrl = $event"
               @focus="currentQuestionId = question.id"
             />
@@ -257,7 +259,7 @@
                   'h-10 w-full rounded-xl border text-xs font-black transition-all duration-200 hover:scale-110 active:scale-90 flex items-center justify-center',
                   currentQuestionId === question.id
                     ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                    : answers[question.id]
+                    : isQuestionAnswered(question.id)
                       ? 'border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
                       : 'border-slate-100 bg-slate-50 text-slate-400 hover:bg-slate-100 hover:border-slate-200',
                 ]"
@@ -344,7 +346,7 @@
                   'h-11 w-full rounded-xl border text-xs font-black transition active:scale-95 flex items-center justify-center',
                   currentQuestionId === question.id
                     ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                    : answers[question.id]
+                    : isQuestionAnswered(question.id)
                       ? 'border-emerald-200 bg-emerald-50 text-emerald-600'
                       : 'border-slate-100 bg-slate-50 text-slate-400',
                 ]"
@@ -392,7 +394,8 @@ type AttemptQuestion = {
   content: string;
   contentFormat?: 'PLAIN_TEXT' | 'LATEX';
   imageUrl?: string;
-  options: Array<{ label: string; value: string; optionId: number | null }>;
+  options: Array<{ label: string; value: string; optionId: number | null; isCorrect?: boolean }>;
+  isMultiple?: boolean;
 };
 
 type AttemptData = {
@@ -443,13 +446,14 @@ type ExamDetails = {
 
 type StoredDraft = {
   attempt: AttemptData;
-  answers: Record<number, string>;
+  answers: Record<number, string | string[]>;
   tabSwitchCount: number;
 };
 
 type SubmitAnswerPayload = {
   questionId: number;
   selectedOptionId: number | null;
+  selectedOptionIds: number[] | null;
   essayAnswer: string | null;
 };
 
@@ -473,7 +477,7 @@ const isCheating = ref(false); // New ref to track cheating status
 const streakCheckedIn = ref(false);
 const uiLayoutHint = ref<'STANDARD' | 'LITERATURE' | 'ESSAY' | 'MIXED'>('STANDARD');
 const sections = ref<Array<{ title: string; questions: AttemptQuestion[] }>>([]);
-const answers = reactive<Record<number, string>>({});
+const answers = reactive<Record<number, string | string[]>>({});
 const zoomImageUrl = ref<string | null>(null);
 const showMobileMatrix = ref(false);
 let initPromise: Promise<void> | null = null;
@@ -486,8 +490,16 @@ const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
 
 const draftKey = computed(() => `v-edu-exam-draft:${examId.value}`);
 
+const isQuestionAnswered = (questionId: number): boolean => {
+  const ans = answers[questionId];
+  if (Array.isArray(ans)) {
+    return ans.length > 0;
+  }
+  return Boolean(ans && String(ans).trim());
+};
+
 const answeredCount = computed(() =>
-  questions.value.filter((question) => Boolean(answers[question.id]?.trim())).length,
+  questions.value.filter((question) => isQuestionAnswered(question.id)).length,
 );
 
 const remainingCount = computed(() => Math.max(questions.value.length - answeredCount.value, 0));
@@ -548,11 +560,15 @@ const normalizeQuestions = (items: ExamQuestion[] = []): AttemptQuestion[] =>
     const options = Array.isArray(rawOptions) ? rawOptions : [];
     const questionContent = item.questionContent ?? item.contentSnapshot ?? item.content ?? '';
 
+    const correctCount = options.filter((o: any) => o.isCorrect === true || o.correct === true).length;
+    const isMultiple = correctCount > 1;
+
     return {
       id: Number(item.questionId ?? item.id),
       content: String(questionContent),
       contentFormat: item.contentFormat,
       imageUrl: resolveAssetUrl(item.url),
+      isMultiple,
       options: options.map((option, index) => {
         const parsedOptionId = Number(option.id);
         const value = option.value ?? option.content ?? option.id ?? String(index + 1);
@@ -560,6 +576,7 @@ const normalizeQuestions = (items: ExamQuestion[] = []): AttemptQuestion[] =>
           label: String(option.content ?? option.label ?? `Đáp án ${index + 1}`),
           value: String(value),
           optionId: Number.isFinite(parsedOptionId) && parsedOptionId > 0 ? parsedOptionId : null,
+          isCorrect: option.isCorrect ?? option.correct ?? false,
         };
       }),
     };
@@ -628,6 +645,25 @@ const saveDraft = () => {
   };
 
   sessionStorage.setItem(draftKey.value, JSON.stringify(payload));
+};
+
+const handleSelect = (question: AttemptQuestion, optionValue: string) => {
+  if (question.isMultiple) {
+    const currentAnswers = Array.isArray(answers[question.id])
+      ? [...(answers[question.id] as string[])]
+      : [];
+    const index = currentAnswers.indexOf(optionValue);
+    if (index >= 0) {
+      currentAnswers.splice(index, 1);
+    } else {
+      currentAnswers.push(optionValue);
+    }
+    answers[question.id] = currentAnswers;
+  } else {
+    answers[question.id] = optionValue;
+  }
+  
+  saveDraft();
 };
 
 const clearDraft = () => {
@@ -729,6 +765,7 @@ const loadAttempt = async () => {
   error.value = null;
 
   initPromise = (async () => {
+    let ongoingAttempt: any = null;
     const draft = readDraft();
 
     if (draft) {
@@ -738,7 +775,7 @@ const loadAttempt = async () => {
     } else {
       // Step 1: Check if there's an ongoing (DOING) attempt for this exam
       console.log('[loadAttempt:checkExisting] Checking for ongoing attempts...');
-      let ongoingAttempt = null;
+      ongoingAttempt = null;
       
       try {
         const existingAttemptsResponse = await getMyAttempts({ 
@@ -804,16 +841,6 @@ const loadAttempt = async () => {
         startTime: attemptPayload.startTime ?? attemptPayload.startedAt ?? new Date().toISOString(),
       };
 
-      // (Optional) If the backend returns answers in the ongoing attempt, restore them
-      if (ongoingAttempt?.answers && Array.isArray(ongoingAttempt.answers)) {
-        ongoingAttempt.answers.forEach((ans: any) => {
-          if (ans.questionId) {
-            const val = ans.selectedOptionId ? String(ans.selectedOptionId) : (ans.essayAnswer || '');
-            if (val) answers[ans.questionId] = val;
-          }
-        });
-      }
-
       clearDraft();
       saveDraft();
     }
@@ -831,6 +858,28 @@ const loadAttempt = async () => {
     uiLayoutHint.value = examPayload.uiLayoutHint ?? 'STANDARD';
     const allQuestions = normalizeQuestions(examPayload.questions ?? []);
     questions.value = allQuestions;
+
+    // Restore answers from ongoingAttempt if present and not loaded from draft
+    if (!draft && ongoingAttempt?.answers && Array.isArray(ongoingAttempt.answers)) {
+      ongoingAttempt.answers.forEach((ans: any) => {
+        if (ans.questionId) {
+          const q = allQuestions.find(curr => curr.id === ans.questionId);
+          if (q && q.isMultiple) {
+            if (ans.selectedOptionIds && Array.isArray(ans.selectedOptionIds)) {
+              answers[ans.questionId] = ans.selectedOptionIds.map(String);
+            } else if (ans.selectedOptionId) {
+              answers[ans.questionId] = [String(ans.selectedOptionId)];
+            } else {
+              answers[ans.questionId] = [];
+            }
+          } else {
+            const val = ans.selectedOptionId ? String(ans.selectedOptionId) : (ans.essayAnswer || '');
+            if (val) answers[ans.questionId] = val;
+          }
+        }
+      });
+      saveDraft();
+    }
 
     if (examPayload.sections && examPayload.sections.length > 0) {
       sections.value = examPayload.sections.map(s => {
@@ -922,33 +971,49 @@ const handleSubmit = async () => {
     }
 
     const payloadAnswers = questions.value.reduce<SubmitAnswerPayload[]>((accumulator, question) => {
-      // Ensure we have a string to trim
       const rawVal = answers[question.id];
-      const answerValue = (typeof rawVal === 'string' ? rawVal : String(rawVal ?? '')).trim();
-      
-      if (!answerValue) {
-        return accumulator;
-      }
 
       if (question.options && question.options.length > 0) {
-        const matchedOption = question.options.find((option) => option.value === answerValue);
-        const selectedOptionId = matchedOption?.optionId ?? null;
+        if (question.isMultiple && Array.isArray(rawVal)) {
+          const selectedOptionIds = rawVal.map((val) => {
+            const matchedOption = question.options.find((option) => option.value === val);
+            return matchedOption?.optionId ?? null;
+          }).filter((id): id is number => id !== null);
 
-        if (!selectedOptionId) {
-          return accumulator;
+          if (selectedOptionIds.length > 0) {
+            accumulator.push({
+              questionId: question.id,
+              selectedOptionId: selectedOptionIds[0] ?? null, // fallback for legacy backend
+              selectedOptionIds,
+              essayAnswer: null,
+            });
+          }
+        } else {
+          const answerValue = (typeof rawVal === 'string' ? rawVal : '').trim();
+          if (answerValue) {
+            const matchedOption = question.options.find((option) => option.value === answerValue);
+            const selectedOptionId = matchedOption?.optionId ?? null;
+
+            if (selectedOptionId) {
+              accumulator.push({
+                questionId: question.id,
+                selectedOptionId,
+                selectedOptionIds: [selectedOptionId],
+                essayAnswer: null,
+              });
+            }
+          }
         }
-
-        accumulator.push({
-          questionId: question.id,
-          selectedOptionId,
-          essayAnswer: null,
-        });
       } else {
-        accumulator.push({
-          questionId: question.id,
-          selectedOptionId: null,
-          essayAnswer: answerValue,
-        });
+        const answerValue = (typeof rawVal === 'string' ? rawVal : String(rawVal ?? '')).trim();
+        if (answerValue) {
+          accumulator.push({
+            questionId: question.id,
+            selectedOptionId: null,
+            selectedOptionIds: null,
+            essayAnswer: answerValue,
+          });
+        }
       }
 
       return accumulator;

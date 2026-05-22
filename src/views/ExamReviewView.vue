@@ -142,7 +142,7 @@
                   : 'grid-cols-1 md:grid-cols-2'
               ]"
             >
-              <QuestionCard
+               <QuestionCard
                 v-for="(q, index) in section.questions"
                 :key="q.questionId || index"
                 :id="q.questionId"
@@ -153,6 +153,7 @@
                 :options="q._options"
                 :score="q.score"
                 :is-review="true"
+                :is-multiple="q.isMultiple"
                 :is-correct="q._isCorrect"
                 :essay-answer="q._essayAnswer"
                 :explanation="q.explanation"
@@ -306,11 +307,19 @@ const loadAttempt = async (isPolling = false) => {
             const options = Array.isArray(rawOptions) ? rawOptions : [];
             
             const selectedOptionId = userAnswer?.selectedOptionId ?? userAnswer?.optionId;
-            const correctOption = options.find((o: any) => o.isCorrect);
+            const selectedOptionIds = userAnswer?.selectedOptionIds || [];
+            const correctOptions = options.filter((o: any) => o.isCorrect || o.correct);
+            const isMultiple = correctOptions.length > 1;
 
             const isCorrect = userAnswer && userAnswer.isCorrect !== undefined 
                 ? userAnswer.isCorrect 
-                : (selectedOptionId ? String(correctOption?.id) === String(selectedOptionId) : false);
+                : (Array.isArray(selectedOptionIds) && selectedOptionIds.length > 0
+                    ? (() => {
+                        const correctIds = correctOptions.map((o: any) => o.id);
+                        return correctIds.length === selectedOptionIds.length && 
+                               correctIds.every((id: any) => selectedOptionIds.includes(id));
+                      })()
+                    : (selectedOptionId ? String(correctOptions[0]?.id) === String(selectedOptionId) : false));
 
             return {
               ...q,
@@ -320,10 +329,16 @@ const loadAttempt = async (isPolling = false) => {
               url: q.url || q.imageUrl,
               explanation: q.explanation || userAnswer?.explanation || null,
               sampleAnswer: q.sampleAnswer || userAnswer?.sampleAnswer || null,
-              _options: options.map((opt: any) => ({
-                ...opt,
-                _isSelected: String(opt.id) === String(selectedOptionId),
-              })),
+              isMultiple,
+              _options: options.map((opt: any) => {
+                const isSel = Array.isArray(selectedOptionIds) && selectedOptionIds.length > 0
+                  ? selectedOptionIds.includes(opt.id)
+                  : String(opt.id) === String(selectedOptionId);
+                return {
+                  ...opt,
+                  _isSelected: isSel,
+                };
+              }),
               _isCorrect: isCorrect,
               _essayAnswer: userAnswer?.essayAnswer ?? null,
               _feedback: userAnswer?.feedback ?? userAnswer?.aiFeedback ?? null,

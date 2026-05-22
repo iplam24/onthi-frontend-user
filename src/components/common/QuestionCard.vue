@@ -107,6 +107,11 @@
             <MathContent :content="option.label || option.content || ''" :format="contentFormat" />
           </span>
           
+          <template v-if="!isReview && isMultiple">
+            <i v-if="isOptionSelected(option)" class="relative z-10 fa-solid fa-square-check text-indigo-600 text-lg shrink-0 animate-scale-in"></i>
+            <i v-else class="relative z-10 fa-regular fa-square text-slate-300 text-lg shrink-0"></i>
+          </template>
+
           <template v-if="isReview">
             <div v-if="option._isSelected" class="absolute left-1/2 -top-2 -translate-x-1/2 bg-slate-900 text-[8px] font-black text-white px-2 py-0.5 rounded-full z-20 shadow-sm border border-white/20 whitespace-nowrap">
               BẠN CHỌN
@@ -263,7 +268,8 @@ const props = defineProps<{
   options?: Option[];
   score?: number;
   // Attempt props
-  modelValue?: string;
+  modelValue?: string | string[];
+  isMultiple?: boolean;
   // Review props
   isReview?: boolean;
   isCorrect?: boolean;
@@ -280,7 +286,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string];
+  'update:modelValue': [value: string | string[]];
   'select': [value: string];
   'zoom': [url: string];
   'focus': [];
@@ -299,8 +305,18 @@ const animationStyle = {
   animationDelay: `${props.animationDelay || 0}ms`
 };
 
+const isOptionSelected = (option: Option) => {
+  if (props.isReview) {
+    return !!option._isSelected;
+  }
+  if (props.isMultiple && Array.isArray(props.modelValue)) {
+    return props.modelValue.includes(option.value);
+  }
+  return props.modelValue === option.value;
+};
+
 const getAttemptOptionClass = (option: Option) => {
-  if (props.modelValue === option.value) {
+  if (isOptionSelected(option)) {
     return 'border-indigo-400 bg-indigo-50/40 shadow-md shadow-indigo-500/5';
   }
   return 'border-slate-100 bg-slate-50/20 hover:border-indigo-200 hover:bg-white hover:shadow-sm';
@@ -322,7 +338,7 @@ const getOptionBadgeClass = (option: Option) => {
     if (option._isSelected) return 'bg-rose-500 text-white';
     return 'bg-white text-slate-600 border border-slate-100';
   }
-  if (props.modelValue === option.value) return 'bg-indigo-600 text-white scale-105';
+  if (isOptionSelected(option)) return 'bg-indigo-600 text-white scale-105';
   return 'bg-white text-slate-400 border border-slate-100';
 };
 
@@ -379,7 +395,7 @@ const getOptionTextClass = (option: Option) => {
     if (option._isSelected) return 'text-rose-900';
     return 'text-slate-600';
   }
-  if (props.modelValue === option.value) return 'text-indigo-900';
+  if (isOptionSelected(option)) return 'text-indigo-900';
   return 'text-slate-600';
 };
 </script>
