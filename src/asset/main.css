@@ -622,3 +622,101 @@
     height: auto;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   LUXURY AESTHETIC UPGRADES FOR CLIENT SYSTEM
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Rotating Aurora Glow Border Utility */
+@keyframes rotate-aurora {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@utility border-aurora {
+  position: relative;
+  z-index: 1;
+  background-color: var(--surface) !important;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -2.5px;
+    border-radius: inherit;
+    background: conic-gradient(from 0deg at 50% 50%, #6366f1, #06b6d4, #f59e0b, #ec4899, #6366f1);
+    z-index: -1;
+    animation: rotate-aurora 10s linear infinite;
+    opacity: 0.55;
+    transition: opacity 0.3s ease;
+  }
+  
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: inherit;
+    z-index: -1;
+  }
+
+  &:hover::before {
+    opacity: 0.95;
+    filter: blur(2px);
+  }
+}
+
+/* Soundwave Activity Indicators for AI */
+@keyframes soundwave-bar {
+  0%, 100% { height: 4px; }
+  50% { height: 26px; }
+}
+
+@utility animate-soundwave-1 {
+  animation: soundwave-bar 1.2s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+
+@utility animate-soundwave-2 {
+  animation: soundwave-bar 1.2s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+@utility animate-soundwave-3 {
+  animation: soundwave-bar 1.2s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+/* Cursor tracking spotlight card overlay */
+.client-spotlight-card {
+  position: relative;
+}
+
+.client-spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    350px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
+    rgba(99, 102, 241, 0.08),
+    transparent 80%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 2;
+}
+
+.client-spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* Spark particle anim for premium badge highlights */
+@keyframes spark-glim {
+  0%, 100% { opacity: 0.2; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
+}
+
+@utility animate-spark-glim {
+  animation: spark-glim 2.5s ease-in-out infinite;
+}

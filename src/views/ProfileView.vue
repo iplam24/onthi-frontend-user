@@ -258,6 +258,7 @@ import { uploadFile } from '@/services/fileService';
 import { socialService } from '@/services/socialService';
 import { getLevels, type LevelItem } from '@/services/learningService';
 import { getUserProfile, getUserProfileById, updateUserProfile, type UserProfileResponse, type UserInformationRequest } from '@/services/userService';
+import { useToastStore } from '@/stores/toast';
 
 // Shared Components
 import GiftModal from '@/components/social/GiftModal.vue';
@@ -279,6 +280,7 @@ const props = defineProps<{
 const route = useRoute();
 const router = useRouter();
 const auth = useAuthStore();
+const toast = useToastStore();
 
 const tabs = computed(() => {
   const base = [
@@ -378,7 +380,7 @@ const handleAvatarChange = (e: Event) => {
   if (!file) return;
 
   if (file.size > 10 * 1024 * 1024) {
-    alert('Kích thước ảnh không được vượt quá 10MB');
+    toast.warning('Kích thước ảnh không được vượt quá 10MB.');
     return;
   }
 
@@ -416,12 +418,11 @@ const handleAvatarSave = async () => {
       isNewAvatar.value = false;
       showLargePreview.value = false;
       
-      updateSuccess.value = true;
-      setTimeout(() => { updateSuccess.value = false; }, 3000);
+      toast.success('Lưu ảnh đại diện mới thành công!');
     }
   } catch (err: any) {
     console.error(err);
-    alert(err.response?.data?.message || 'Có lỗi xảy ra khi lưu ảnh.');
+    toast.error(err.response?.data?.message || 'Có lỗi xảy ra khi lưu ảnh.');
   } finally {
     updatingAvatar.value = false;
   }
@@ -611,11 +612,10 @@ const handleUpdate = async () => {
     
     selectedFile.value = null;
     previewUrl.value = null;
-    updateSuccess.value = true;
-    setTimeout(() => { updateSuccess.value = false; }, 3000);
+    toast.success('Cập nhật hồ sơ thành công!');
   } catch (err: any) {
     console.error(err);
-    alert(err.response?.data?.message || 'Có lỗi xảy ra khi cập nhật hồ sơ.');
+    toast.error(err.response?.data?.message || 'Có lỗi xảy ra khi cập nhật hồ sơ.');
   } finally {
     updating.value = false;
   }

@@ -200,9 +200,6 @@ const handleLogin = async () => {
     if (response.data.status === 200) {
       auth.login(response.data.data);
       emit('close');
-      router.push('/').then(() => {
-        window.location.reload();
-      });
     } else {
       loginForm.error = response.data.message;
     }

@@ -126,8 +126,11 @@ import { createPayment } from '@/services/paymentService';
 import { useAuthStore } from '@/stores/auth';
 import { getUserProfile } from '@/services/userService';
 
+import { useToastStore } from '@/stores/toast';
+
 const router = useRouter();
 const auth = useAuthStore();
+const toast = useToastStore();
 const depositAmount = ref(50000);
 const creating = ref(false);
 
@@ -143,7 +146,10 @@ const formatPrice = (value: number) => {
 };
 
 const handleDeposit = async () => {
-  if (depositAmount.value < 2000) return;
+  if (depositAmount.value < 2000) {
+    toast.warning('Số tiền nạp tối thiểu là 2.000đ.');
+    return;
+  }
   creating.value = true;
   try {
     const res = await createPayment(depositAmount.value);
@@ -159,7 +165,7 @@ const handleDeposit = async () => {
     }
   } catch (err: any) {
     console.error(err);
-    alert(err.response?.data?.message || 'Không thể khởi tạo thanh toán.');
+    toast.error(err.response?.data?.message || 'Không thể khởi tạo thanh toán.');
   } finally {
     creating.value = false;
   }

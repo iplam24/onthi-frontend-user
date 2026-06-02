@@ -6,9 +6,9 @@
         v-if="isOpen" 
         :class="[
           'mb-4 w-[400px] h-[600px] max-sm:w-[calc(100vw-2rem)] max-sm:h-[calc(100vh-140px)] max-sm:right-4 max-sm:bottom-20 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-300 z-50 transition-all border',
-          plan === 'ProMax' ? 'bg-slate-950 border-indigo-500/30 rounded-[2.5rem] shadow-[0_0_50px_-12px_rgba(99,102,241,0.3)]' :
-          plan === 'Pro' ? 'bg-white border-slate-100 rounded-[2rem] shadow-2xl shadow-indigo-500/20' :
-          'bg-white border-slate-200 rounded-2xl shadow-xl'
+          plan === 'ProMax' ? 'bg-slate-950/75 border-indigo-500/30 rounded-[2.5rem] backdrop-blur-2xl shadow-[0_0_50px_-12px_rgba(99,102,241,0.4)]' :
+          plan === 'Pro' ? 'bg-white/80 border-indigo-100/30 rounded-[2rem] backdrop-blur-xl shadow-2xl shadow-indigo-500/15' :
+          'bg-white/90 border-slate-200/50 rounded-2xl backdrop-blur-md shadow-xl'
         ]"
       >
         <!-- Header -->
@@ -122,10 +122,10 @@
             <div v-for="(msg, index) in messages" :key="index" :class="['flex', msg.role === 'user' ? 'justify-end' : 'justify-start']">
               <div 
                 :class="[
-                  'max-w-[85%] px-4 py-3 rounded-2xl text-sm font-medium leading-relaxed shadow-sm',
+                  'max-w-[85%] px-4 py-3 rounded-2xl text-sm font-medium leading-relaxed shadow-sm transition-all',
                   msg.role === 'user' 
-                    ? (plan === 'ProMax' ? 'bg-indigo-600 text-white rounded-tr-none shadow-indigo-500/20' : plan === 'Pro' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-600 text-white rounded-tr-none')
-                    : (plan === 'ProMax' ? 'bg-slate-800/80 text-slate-200 rounded-tl-none border border-white/5 backdrop-blur-md' : 'bg-slate-50 text-slate-700 rounded-tl-none border border-slate-100')
+                    ? (plan === 'ProMax' ? 'bg-indigo-600/40 backdrop-blur-xl border border-indigo-500/30 text-white rounded-tr-none shadow-[0_8px_32px_rgba(99,102,241,0.15)]' : plan === 'Pro' ? 'bg-indigo-600/80 backdrop-blur-md border border-indigo-500/20 text-white rounded-tr-none' : 'bg-slate-700/80 backdrop-blur-sm border border-slate-600/20 text-white rounded-tr-none')
+                    : (plan === 'ProMax' ? 'bg-slate-900/40 border border-white/10 backdrop-blur-xl text-slate-100 rounded-tl-none shadow-[0_8px_32px_rgba(0,0,0,0.2)]' : plan === 'Pro' ? 'bg-white/60 border border-indigo-100/30 backdrop-blur-md text-slate-800 rounded-tl-none shadow-sm' : 'bg-slate-50/70 border border-slate-100 backdrop-blur-sm text-slate-800 rounded-tl-none')
                 ]"
               >
                 {{ msg.content }}
@@ -147,10 +147,20 @@
               </div>
             </div>
             <div v-if="loading" class="flex justify-start">
-              <div :class="['px-4 py-3 rounded-2xl rounded-tl-none border flex gap-1', plan === 'ProMax' ? 'bg-slate-800/50 border-white/5' : 'bg-slate-50 border-slate-100']">
-                <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce"></div>
-                <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+              <div 
+                :class="[
+                  'px-5 py-3 rounded-2xl rounded-tl-none border flex items-center gap-2.5 min-h-[50px] shadow-sm',
+                  plan === 'ProMax' ? 'bg-slate-900/60 border-indigo-500/20 backdrop-blur-md text-indigo-400' : 'bg-slate-50/80 border-indigo-100 backdrop-blur-sm text-indigo-500'
+                ]"
+              >
+                <div class="flex items-end gap-1 h-6 px-1">
+                  <div class="w-1 bg-indigo-400 rounded-full animate-soundwave-1 shadow-[0_0_10px_rgba(99,102,241,0.4)]"></div>
+                  <div class="w-1 bg-indigo-400 rounded-full animate-soundwave-2 shadow-[0_0_10px_rgba(99,102,241,0.4)]" style="animation-delay: 0.2s"></div>
+                  <div class="w-1 bg-indigo-500 rounded-full animate-soundwave-3 shadow-[0_0_10px_rgba(99,102,241,0.4)]" style="animation-delay: 0.4s"></div>
+                  <div class="w-1 bg-indigo-400 rounded-full animate-soundwave-2 shadow-[0_0_10px_rgba(99,102,241,0.4)]" style="animation-delay: 0.6s"></div>
+                  <div class="w-1 bg-indigo-400 rounded-full animate-soundwave-1 shadow-[0_0_10px_rgba(99,102,241,0.4)]" style="animation-delay: 0.8s"></div>
+                </div>
+                <span class="text-[10px] font-bold tracking-wider uppercase opacity-75">AI Study Buddy đang nghĩ...</span>
               </div>
             </div>
           </div>
@@ -210,8 +220,10 @@
 import { ref, onMounted, nextTick, watch, computed } from 'vue';
 import { aiService } from '@/services/aiService';
 import { useAuthStore } from '@/stores/auth';
+import { useToastStore } from '@/stores/toast';
 
 const auth = useAuthStore();
+const toast = useToastStore();
 const plan = computed(() => auth.user?.planName || 'Free');
 
 const isOpen = ref(false);
@@ -319,11 +331,12 @@ const confirmDelete = async (session: any) => {
       if (currentSessionId.value === session.id) {
         startNewChat();
       }
+      toast.success('Đã xóa cuộc hội thoại.');
       // Tải lại danh sách
       fetchSessions(0);
     } catch (err) {
       console.error('Failed to delete session:', err);
-      alert('Không thể xóa hội thoại. Vui lòng thử lại sau.');
+      toast.error('Không thể xóa hội thoại. Vui lòng thử lại sau.');
     }
   }
 };

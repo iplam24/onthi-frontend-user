@@ -35,6 +35,9 @@
     
     <!-- Realtime Chat (Social) -->
     <FloatingChat v-if="auth.isAuthenticated" />
+
+    <!-- Global Floating Glassmorphic Toasts -->
+    <ToastList />
   </div>
 </template>
 
@@ -46,6 +49,7 @@ import Header from '@/components/layout/Header.vue';
 import Footer from '@/components/layout/Footer.vue';
 import FloatingAiChat from '@/components/common/FloatingAiChat.vue';
 import FloatingChat from '@/components/social/FloatingChat.vue';
+import ToastList from '@/components/common/ToastList.vue';
 
 const route = useRoute();
 const auth = useAuthStore();

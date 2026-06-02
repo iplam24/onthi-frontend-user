@@ -609,6 +609,15 @@ watch(
   },
 );
 
+watch(
+  () => auth.isAuthenticated,
+  (newVal) => {
+    if (newVal) {
+      fetchUserData();
+    }
+  }
+);
+
 const openAuthOnMobile = () => {
   mobileOpen.value = false;
   showAuthPopover.value = true;

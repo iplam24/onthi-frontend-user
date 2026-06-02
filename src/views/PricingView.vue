@@ -178,6 +178,7 @@ import { ref, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 import apiClient from '@/services/api';
+import { useToastStore } from '@/stores/toast';
 
 interface Plan {
   id: number;
@@ -195,6 +196,7 @@ interface Plan {
 
 const auth = useAuthStore();
 const router = useRouter();
+const toast = useToastStore();
 const plans = ref<Plan[]>([]);
 const buying = ref<number | null>(null);
 const currentPlanId = ref<number | null>(null);
@@ -273,7 +275,7 @@ const handleBuy = async () => {
   try {
     await apiClient.post(`/plans/buy/${selectedPlan.value.id}`);
     showConfirmModal.value = false;
-    alert('Mua gói cước thành công! Hệ thống đã kích hoạt quyền lợi mới cho bạn.');
+    toast.success('Mua gói cước thành công! Quyền lợi mới đã được kích hoạt.');
     fetchMyPlan();
     // Update state in store using setUser to ensure persistence
     auth.setUser({
@@ -281,7 +283,7 @@ const handleBuy = async () => {
       planName: selectedPlan.value.name
     });
   } catch (err: any) {
-    alert(err.response?.data?.message || 'Có lỗi xảy ra khi mua gói.');
+    toast.error(err.response?.data?.message || 'Có lỗi xảy ra khi mua gói.');
   } finally {
     buying.value = null;
   }

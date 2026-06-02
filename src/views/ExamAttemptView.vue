@@ -63,6 +63,175 @@
     </transition>
   </teleport>
 
+  <!-- Focus Mode View overlay -->
+  <teleport to="body">
+    <transition
+      enter-active-class="transition duration-500 ease-out"
+      enter-from-class="opacity-0 scale-105"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition duration-450 ease-in"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-105"
+    >
+      <div 
+        v-if="isFocusMode && attempt && !isCheating && !result" 
+        class="fixed inset-0 z-[70] bg-slate-950 text-slate-100 flex flex-col overflow-y-auto"
+      >
+        <!-- Background glow particles -->
+        <div class="pointer-events-none absolute inset-0 -z-10 bg-slate-950">
+          <div class="absolute -right-40 -top-40 h-[600px] w-[600px] rounded-full bg-indigo-500/10 blur-[130px] animate-pulse"></div>
+          <div class="absolute -left-40 -bottom-40 h-[600px] w-[600px] rounded-full bg-cyan-500/10 blur-[130px] animate-pulse"></div>
+        </div>
+
+        <!-- Focus Mode Top Header -->
+        <div class="sticky top-0 z-50 bg-slate-900/60 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex items-center justify-between shadow-2xl">
+          <div class="flex items-center gap-4">
+            <button 
+              @click="toggleFocusMode" 
+              class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white transition active:scale-95 shadow-sm"
+              title="Thoát chế độ tập trung"
+            >
+              <i class="fa-solid fa-compress"></i>
+            </button>
+            <div class="min-w-0">
+              <h2 class="text-[9px] font-black uppercase tracking-widest text-indigo-400">CHẾ ĐỘ TẬP TRUNG</h2>
+              <h1 class="text-sm font-black truncate max-w-[200px] sm:max-w-md mt-0.5 text-white bg-none" style="-webkit-text-fill-color: initial !important">{{ examTitle }}</h1>
+            </div>
+          </div>
+
+          <!-- Glowing SVG circular timer inside Focus Mode -->
+          <div class="flex items-center gap-4 shrink-0">
+            <div 
+              class="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-2xl shadow-inner"
+              :class="{ 'animate-shake border-red-500/30 bg-red-950/20 text-red-400': timeRemainingSeconds < 60 }"
+            >
+              <div class="relative h-7 w-7 flex items-center justify-center shrink-0">
+                <!-- SVG circular progress for timer -->
+                <svg class="absolute inset-0 h-full w-full -rotate-90">
+                  <circle cx="14" cy="14" r="11" fill="transparent" stroke="rgba(255,255,255,0.05)" stroke-width="2.5" />
+                  <circle 
+                    cx="14" 
+                    cy="14" 
+                    r="11" 
+                    fill="transparent" 
+                    :stroke="timeRemainingSeconds < 60 ? '#ef4444' : timeRemainingSeconds < 300 ? '#f59e0b' : '#06b6d4'" 
+                    stroke-width="2.5"
+                    :stroke-dasharray="69.1"
+                    :stroke-dashoffset="69.1 - (timePercentRemaining / 100) * 69.1"
+                    class="transition-all duration-1000"
+                  />
+                </svg>
+                <i class="fa-regular fa-clock text-[10px]" :class="timeRemainingSeconds < 60 ? 'text-red-400 animate-ping' : 'text-cyan-400'"></i>
+              </div>
+              <span class="text-base font-black tabular-nums tracking-wide" :class="timeRemainingSeconds < 60 ? 'text-red-400 animate-pulse' : 'text-slate-100'">
+                {{ timeLabel }}
+              </span>
+            </div>
+            
+            <button 
+              @click="handleSubmit" 
+              class="rounded-xl bg-indigo-600 px-6 py-2.5 text-xs font-black uppercase tracking-wider text-white shadow-lg hover:bg-indigo-500 transition active:scale-95 shrink-0"
+            >
+              Nộp bài
+            </button>
+          </div>
+        </div>
+
+        <!-- Focus Mode Content -->
+        <div class="flex-1 flex flex-col justify-center items-center p-6 max-w-4xl mx-auto w-full my-auto z-10">
+          <!-- Active Question Panel -->
+          <div 
+            v-if="questions[focusQuestionIndex]" 
+            class="w-full bg-slate-900/60 backdrop-blur-2xl rounded-3xl border border-white/5 shadow-2xl p-6 sm:p-10 relative overflow-hidden"
+          >
+            <div class="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-indigo-500/5 blur-2xl"></div>
+
+            <!-- Question matrix progress and indicator -->
+            <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
+              <span class="flex h-8 px-4 items-center justify-center rounded-xl bg-indigo-600 text-white text-xs font-black shadow-md shadow-indigo-500/20">
+                Câu {{ focusQuestionIndex + 1 }} / {{ questions.length }}
+              </span>
+              <span class="inline-flex items-center rounded-md bg-white/5 px-2 py-0.5 text-[9px] font-black text-slate-400 tracking-widest uppercase">
+                {{ questions[focusQuestionIndex].isMultiple ? 'Nhiều lựa chọn' : 'Một lựa chọn' }}
+              </span>
+            </div>
+
+            <!-- Dark Mode Question Card inside Focus Mode -->
+            <div class="plan-promax dark text-slate-100">
+              <QuestionCard
+                :id="questions[focusQuestionIndex].id"
+                :index="focusQuestionIndex + 1"
+                :content="questions[focusQuestionIndex].content"
+                :content-format="questions[focusQuestionIndex].contentFormat"
+                :image-url="questions[focusQuestionIndex].imageUrl"
+                :options="questions[focusQuestionIndex].options"
+                v-model="answers[questions[focusQuestionIndex].id]"
+                :is-multiple="questions[focusQuestionIndex].isMultiple"
+                :ui-layout-hint="uiLayoutHint"
+                :paper-mode="true"
+                @select="handleSelect(questions[focusQuestionIndex], $event)"
+                @zoom="zoomImageUrl = $event"
+              />
+            </div>
+
+            <!-- Slide controls -->
+            <div class="flex items-center justify-between border-t border-white/5 pt-6 mt-8">
+              <button 
+                type="button"
+                :disabled="focusQuestionIndex === 0"
+                @click="focusQuestionIndex--"
+                class="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-5 py-2.5 text-xs font-black uppercase text-slate-300 hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition active:scale-95"
+              >
+                <i class="fa-solid fa-arrow-left"></i> Câu Trước
+              </button>
+              
+              <button 
+                type="button"
+                v-if="focusQuestionIndex < questions.length - 1"
+                @click="focusQuestionIndex++"
+                class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-xs font-black uppercase text-white hover:bg-indigo-500 transition active:scale-95"
+              >
+                Câu Tiếp <i class="fa-solid fa-arrow-right"></i>
+              </button>
+              
+              <button 
+                type="button"
+                v-else
+                @click="handleSubmit"
+                class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-xs font-black uppercase text-white hover:bg-emerald-500 transition active:scale-95 animate-pulse"
+              >
+                Hoàn thành <i class="fa-solid fa-check"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Question Grid Matrix below in Focus Mode -->
+          <div class="w-full mt-10">
+            <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-3 text-center">Bảng tiến độ nhanh</p>
+            <div class="flex flex-wrap gap-2 justify-center max-w-2xl mx-auto">
+              <button
+                v-for="(question, index) in questions"
+                :key="`focus-matrix-${question.id}`"
+                type="button"
+                @click="focusQuestionIndex = index"
+                :class="[
+                  'h-9 w-9 rounded-xl border text-[11px] font-black transition-all duration-200 hover:scale-110 active:scale-90 flex items-center justify-center',
+                  focusQuestionIndex === index
+                    ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                    : isQuestionAnswered(question.id)
+                      ? 'border-emerald-500/30 bg-emerald-950/20 text-emerald-400'
+                      : 'border-white/5 bg-white/5 text-slate-400 hover:bg-white/10',
+                ]"
+              >
+                {{ Number(index) + 1 }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+  </teleport>
+
 <div class="text-slate-900 pb-12 pt-[105px] sm:pt-[95px] max-w-7xl mx-auto px-2 sm:px-4">
     <!-- Fixed Header -->
     <div class="fixed top-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-2xl border-b border-white/50 shadow-lg shadow-indigo-500/5">
@@ -88,11 +257,23 @@
             </div>
           </div>
 
-          <div class="flex items-center gap-6">
-            <div class="hidden lg:flex items-center gap-4 text-xs font-black uppercase tracking-widest">
+          <div class="flex items-center gap-3 sm:gap-4">
+            <div class="hidden lg:flex items-center gap-4 text-xs font-black uppercase tracking-widest mr-2">
               <p class="m-0 text-slate-500"><span class="text-indigo-600 text-base">{{ answeredCount }}</span> Đã làm</p>
               <p class="m-0 text-slate-400"><span class="text-slate-300 text-base">{{ remainingCount }}</span> Còn lại</p>
             </div>
+            
+            <!-- Focus Mode Button toggle -->
+            <button
+              v-if="attempt"
+              type="button"
+              @click="toggleFocusMode"
+              class="hidden sm:inline-flex items-center gap-2 rounded-xl sm:rounded-2xl border border-indigo-200 dark:border-indigo-900 bg-indigo-50 dark:bg-indigo-950/40 px-4 py-2.5 sm:px-6 sm:py-3.5 text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 shadow-sm transition hover:bg-indigo-100 hover:border-indigo-300 active:scale-95 shrink-0"
+            >
+              <i class="fa-solid fa-expand text-xs"></i>
+              <span>Tập trung</span>
+            </button>
+
             <button
               type="button"
               @click="handleSubmit"
@@ -481,6 +662,30 @@ const answers = reactive<Record<number, string | string[]>>({});
 const zoomImageUrl = ref<string | null>(null);
 const showMobileMatrix = ref(false);
 let initPromise: Promise<void> | null = null;
+
+// Premium Focus Mode States
+const isFocusMode = ref(false);
+const focusQuestionIndex = ref(0);
+
+const toggleFocusMode = () => {
+  isFocusMode.value = !isFocusMode.value;
+  // Automatically request/exit fullscreen for immersive experience
+  if (isFocusMode.value) {
+    if (!document.fullscreenElement) {
+      void document.documentElement.requestFullscreen().catch(() => {});
+    }
+  } else {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen().catch(() => {});
+    }
+  }
+};
+
+const timePercentRemaining = computed(() => {
+  if (!attempt.value || !attempt.value.durationMinutes) return 100;
+  const total = attempt.value.durationMinutes * 60;
+  return (timeRemainingSeconds.value / total) * 100;
+});
 
 // Admin Edit Logic (Removed)
 

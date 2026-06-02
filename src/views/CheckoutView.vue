@@ -150,6 +150,39 @@
         </div>
       </div>
     </transition>
+
+    <!-- Custom Cancel Confirm Modal -->
+    <transition
+      enter-active-class="transition duration-400 ease-out"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+    >
+      <div v-if="showCancelConfirm" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4">
+        <div class="card-premium p-8 max-w-sm text-center bg-white border border-slate-100 rounded-3xl animate-scale-in">
+          <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-circle-question text-2xl"></i>
+          </div>
+          <h3 class="text-lg font-black text-slate-900 mb-2">Hủy giao dịch?</h3>
+          <p class="text-sm text-slate-500 font-medium mb-8 leading-relaxed">
+            Bạn có chắc chắn muốn hủy yêu cầu thanh toán này không? Phiên giao dịch này sẽ bị hủy bỏ.
+          </p>
+          <div class="flex gap-4">
+            <button 
+              @click="showCancelConfirm = false" 
+              class="flex-1 py-3 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 active:scale-95 rounded-2xl transition-all"
+            >
+              Quay lại
+            </button>
+            <button 
+              @click="confirmCancelPayment" 
+              class="flex-1 py-3 text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 active:scale-95 rounded-2xl transition-all shadow-lg shadow-rose-500/20"
+            >
+              Hủy bỏ
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -157,13 +190,16 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { getPaymentStatus } from '@/services/paymentService';
+import { useToastStore } from '@/stores/toast';
 
 const router = useRouter();
+const toast = useToastStore();
 const paymentData = ref<any>(null);
 const paid = ref(false);
 const timeLeft = ref('15:00');
 const timerInterval = ref<any>(null);
 const pollingInterval = ref<any>(null);
+const showCancelConfirm = ref(false);
 
 const getBankInfo = (bin: string) => {
   const banks: any = {
@@ -186,7 +222,7 @@ const formatPrice = (value: number) => {
 
 const copyText = (text: string) => {
   navigator.clipboard.writeText(text);
-  // Optional: Add a toast notification here
+  toast.success('Đã sao chép vào bộ nhớ tạm!');
 };
 
 const startTimer = () => {
@@ -200,7 +236,7 @@ const startTimer = () => {
     if (diff <= 0) {
       timeLeft.value = '00:00';
       clearInterval(timerInterval.value);
-      alert('Giao dịch đã hết hạn.');
+      toast.error('Yêu cầu thanh toán đã hết hạn.');
       router.push('/deposit');
       return;
     }
@@ -221,6 +257,7 @@ const startPolling = () => {
       const status = res.data?.data?.status;
       if (status === 'PAID') {
         paid.value = true;
+        toast.success('Thanh toán thành công! Ví của bạn đã được nạp tiền.');
         clearInterval(pollingInterval.value);
         clearInterval(timerInterval.value);
       }
@@ -231,9 +268,13 @@ const startPolling = () => {
 };
 
 const cancelPayment = () => {
-  if (confirm('Bạn có chắc chắn muốn hủy giao dịch này?')) {
-    router.push('/deposit');
-  }
+  showCancelConfirm.value = true;
+};
+
+const confirmCancelPayment = () => {
+  showCancelConfirm.value = false;
+  toast.info('Giao dịch đã được hủy bỏ.');
+  router.push('/deposit');
 };
 
 onMounted(() => {
