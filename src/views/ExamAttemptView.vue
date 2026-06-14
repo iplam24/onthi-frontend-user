@@ -1,4 +1,5 @@
 <template>
+  <div class="exam-attempt-wrapper">
   <!-- Cheating overlay -->
   <teleport to="body">
     <transition
@@ -556,6 +557,7 @@
       </div>
     </transition>
   </teleport>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -914,10 +916,33 @@ const stopTimer = () => {
   }
 };
 
-const startTimer = (startTime: string, durationMinutes: number) => {
+const startTimer = (startTime: string | number[], durationMinutes: number) => {
   stopTimer();
 
-  const startedAt = new Date(startTime).getTime();
+  let startedAt: number;
+  
+  if (Array.isArray(startTime)) {
+    const y = startTime[0] ?? 0;
+    const m = startTime[1] ?? 1;
+    const d = startTime[2] ?? 1;
+    const h = startTime[3] ?? 0;
+    const min = startTime[4] ?? 0;
+    const s = startTime[5] ?? 0;
+    startedAt = new Date(Date.UTC(y, m - 1, d, h, min, s)).getTime();
+  } else if (typeof startTime === 'string') {
+    // If string lacks timezone, assume UTC (appending Z) to avoid local timezone skew
+    // which causes the timer to evaluate to negative immediately.
+    const timeStr = startTime.endsWith('Z') || startTime.includes('+') ? startTime : startTime + 'Z';
+    startedAt = new Date(timeStr).getTime();
+  } else {
+    startedAt = Date.now();
+  }
+
+  // If time parsing is completely invalid, fallback to Date.now()
+  if (isNaN(startedAt)) {
+    startedAt = Date.now();
+  }
+
   const endTime = startedAt + durationMinutes * 60 * 1000;
   
   // Flag to prevent immediate submission on first tick due to clock skew
@@ -931,13 +956,23 @@ const startTimer = (startTime: string, durationMinutes: number) => {
     if (remaining <= 0) {
       stopTimer();
       
-      // If it's the very first tick and the attempt is "new" (started < 30s ago), 
-      // don't auto-submit. This handles server-client clock skew.
-      const isVeryRecent = (now - startedAt) < 30000;
-      if (isFirstTick && isVeryRecent) {
-        console.warn('Timer started at <= 0 but attempt is very recent. Ignoring auto-submit to allow for clock skew.');
-        timeRemainingSeconds.value = 1; // Give it at least 1s
+      // If it's the very first tick, the start time is heavily skewed (e.g., timezone mismatch).
+      // Give them the full duration locally instead of auto-submitting.
+      if (isFirstTick) {
+        console.warn('Timer started at <= 0. Adjusting for severe timezone skew.');
+        const adjustedEndTime = now + durationMinutes * 60 * 1000;
+        timeRemainingSeconds.value = durationMinutes * 60;
         isFirstTick = false;
+        
+        timerInterval.value = window.setInterval(() => {
+          const currentNow = Date.now();
+          const currentRemaining = Math.max(0, Math.floor((adjustedEndTime - currentNow) / 1000));
+          timeRemainingSeconds.value = currentRemaining;
+          if (currentRemaining <= 0) {
+            stopTimer();
+            if (attempt.value && !submitting.value && !result.value) void handleSubmit();
+          }
+        }, 1000) as unknown as number;
         return;
       }
 
@@ -949,7 +984,10 @@ const startTimer = (startTime: string, durationMinutes: number) => {
   };
 
   updateTimer();
-  timerInterval.value = window.setInterval(updateTimer, 1000) as unknown as number;
+  // Only start the regular interval if we didn't just spawn a fallback interval inside updateTimer
+  if (timerInterval.value === null && timeRemainingSeconds.value > 0) {
+    timerInterval.value = window.setInterval(updateTimer, 1000) as unknown as number;
+  }
 };
 
 const loadAttempt = async () => {
