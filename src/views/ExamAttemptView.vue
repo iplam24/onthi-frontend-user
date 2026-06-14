@@ -152,24 +152,24 @@
                 Câu {{ focusQuestionIndex + 1 }} / {{ questions.length }}
               </span>
               <span class="inline-flex items-center rounded-md bg-white/5 px-2 py-0.5 text-[9px] font-black text-slate-400 tracking-widest uppercase">
-                {{ questions[focusQuestionIndex].isMultiple ? 'Nhiều lựa chọn' : 'Một lựa chọn' }}
+                {{ questions[focusQuestionIndex]!.isMultiple ? 'Nhiều lựa chọn' : 'Một lựa chọn' }}
               </span>
             </div>
 
             <!-- Dark Mode Question Card inside Focus Mode -->
             <div class="plan-promax dark text-slate-100">
               <QuestionCard
-                :id="questions[focusQuestionIndex].id"
+                :id="questions[focusQuestionIndex]!.id"
                 :index="focusQuestionIndex + 1"
-                :content="questions[focusQuestionIndex].content"
-                :content-format="questions[focusQuestionIndex].contentFormat"
-                :image-url="questions[focusQuestionIndex].imageUrl"
-                :options="questions[focusQuestionIndex].options"
-                v-model="answers[questions[focusQuestionIndex].id]"
-                :is-multiple="questions[focusQuestionIndex].isMultiple"
+                :content="questions[focusQuestionIndex]!.content"
+                :content-format="questions[focusQuestionIndex]!.contentFormat"
+                :image-url="questions[focusQuestionIndex]!.imageUrl"
+                :options="questions[focusQuestionIndex]!.options"
+                v-model="answers[questions[focusQuestionIndex]!.id]"
+                :is-multiple="questions[focusQuestionIndex]!.isMultiple"
                 :ui-layout-hint="uiLayoutHint"
                 :paper-mode="true"
-                @select="handleSelect(questions[focusQuestionIndex], $event)"
+                @select="handleSelect(questions[focusQuestionIndex]!, $event)"
                 @zoom="zoomImageUrl = $event"
               />
             </div>
