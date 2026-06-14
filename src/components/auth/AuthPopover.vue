@@ -16,7 +16,7 @@
         <!-- Sliding indicator -->
         <div 
           class="absolute bottom-0 h-[3px] bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full transition-all duration-500 ease-out"
-          :style="{ left: formType === 'login' ? '0%' : '50%', width: '50%' }"
+          :style="{ left: formType === 'login' ? '0%' : '50%', width: formType === 'forgot' ? '0%' : '50%', opacity: formType === 'forgot' ? 0 : 1 }"
         ></div>
         <button
           :class="[
@@ -84,6 +84,9 @@
               />
             </div>
           </div>
+          <div class="flex justify-end">
+            <button type="button" @click="formType = 'forgot'" class="text-xs font-bold text-indigo-500 hover:text-indigo-600 transition-colors">Quên mật khẩu?</button>
+          </div>
           <p v-if="loginForm.error" class="animate-shake rounded-xl bg-rose-50 border border-rose-100 px-4 py-3 text-center text-xs font-bold text-rose-600">
             <i class="fa-solid fa-circle-exclamation mr-1.5"></i>{{ loginForm.error }}
           </p>
@@ -97,6 +100,50 @@
               <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
             </span>
           </button>
+        </form>
+
+        <!-- Forgot Password form -->
+        <form v-if="formType === 'forgot'" class="space-y-5" @submit.prevent="handleForgot">
+          <div class="text-center space-y-2 mb-2">
+            <h3 class="text-lg font-bold text-slate-800">Khôi phục mật khẩu</h3>
+            <p class="text-xs text-slate-500 font-medium">Nhập email của bạn để nhận liên kết đặt lại mật khẩu</p>
+          </div>
+          <div class="space-y-2">
+            <label for="forgot-email" class="text-sm font-bold text-slate-700">Email</label>
+            <div class="relative">
+              <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-300"></i>
+              <input
+                id="forgot-email"
+                v-model="forgotForm.email"
+                type="email"
+                placeholder="Nhập email của bạn"
+                required
+                class="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-3.5 text-sm font-medium text-slate-900 outline-none transition-all duration-300 focus:border-indigo-400 focus:bg-white focus:shadow-lg focus:shadow-indigo-500/10 focus:ring-2 focus:ring-indigo-500/10"
+              />
+            </div>
+          </div>
+          <p v-if="forgotForm.error" class="animate-shake rounded-xl bg-rose-50 border border-rose-100 px-4 py-3 text-center text-xs font-bold text-rose-600">
+            <i class="fa-solid fa-circle-exclamation mr-1.5"></i>{{ forgotForm.error }}
+          </p>
+          <p v-if="forgotForm.success" class="animate-scale-in rounded-xl bg-emerald-50 border border-emerald-100 px-4 py-3 text-center text-xs font-bold text-emerald-600">
+            <i class="fa-solid fa-circle-check mr-1.5"></i>{{ forgotForm.success }}
+          </p>
+          <button
+            type="submit"
+            class="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.01] active:scale-[0.98]"
+          >
+            <span class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 group-hover:translate-x-full skew-x-12"></span>
+            <span class="relative z-10 flex items-center justify-center gap-2">
+              Gửi liên kết khôi phục
+              <i class="fa-solid fa-paper-plane text-xs transition-transform group-hover:-translate-y-1 group-hover:translate-x-1"></i>
+            </span>
+          </button>
+          
+          <div class="text-center mt-4">
+            <button type="button" @click="formType = 'login'" class="text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors">
+              <i class="fa-solid fa-arrow-left mr-1"></i> Quay lại đăng nhập
+            </button>
+          </div>
         </form>
 
         <!-- Register form -->
@@ -189,10 +236,25 @@ import { login, loginWithGoogle, register } from '@/services/authService';
 const emit = defineEmits(['close']);
 const auth = useAuthStore();
 const router = useRouter();
-const formType = ref('login');
+const formType = ref('login'); // login, register, forgot
 
 const loginForm = reactive({ username: '', password: '', error: null });
 const registerForm = reactive({ username: '', email: '', password: '', error: null, success: null });
+const forgotForm = reactive({ email: '', error: null, success: null });
+
+const handleForgot = async () => {
+  // Mock logic since no backend is required
+  forgotForm.error = null;
+  forgotForm.success = null;
+  if (!forgotForm.email) {
+    forgotForm.error = 'Vui lòng nhập email.';
+    return;
+  }
+  // Simulate network request
+  setTimeout(() => {
+    forgotForm.success = 'Link khôi phục đã được gửi đến email của bạn.';
+  }, 1000);
+};
 
 const handleLogin = async () => {
   try {
