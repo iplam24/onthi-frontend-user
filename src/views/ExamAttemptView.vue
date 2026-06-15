@@ -159,20 +159,48 @@
 
             <!-- Dark Mode Question Card inside Focus Mode -->
             <div class="plan-promax dark text-slate-100">
-              <QuestionCard
-                :id="questions[focusQuestionIndex]!.id"
-                :index="focusQuestionIndex + 1"
-                :content="questions[focusQuestionIndex]!.content"
-                :content-format="questions[focusQuestionIndex]!.contentFormat"
-                :image-url="questions[focusQuestionIndex]!.imageUrl"
-                :options="questions[focusQuestionIndex]!.options"
-                v-model="answers[questions[focusQuestionIndex]!.id]"
-                :is-multiple="questions[focusQuestionIndex]!.isMultiple"
-                :ui-layout-hint="uiLayoutHint"
-                :paper-mode="true"
-                @select="handleSelect(questions[focusQuestionIndex]!, $event)"
-                @zoom="zoomImageUrl = $event"
-              />
+              <div v-if="questions[focusQuestionIndex]!.groupId" class="flex flex-col lg:flex-row gap-8 w-full">
+                <div class="lg:w-1/2 border-b lg:border-b-0 lg:border-r border-white/10 pr-0 lg:pr-8 pb-6 lg:pb-0 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                  <h4 class="text-xl font-bold text-white mb-4">{{ questions[focusQuestionIndex]!.groupTitle }}</h4>
+                  <div class="prose prose-sm sm:prose-base prose-invert max-w-none text-slate-300" v-html="questions[focusQuestionIndex]!.groupContent"></div>
+                </div>
+                <div class="lg:w-1/2 flex items-center justify-center">
+                  <div class="bg-white rounded-[2.5rem] p-6 sm:p-10 shadow-2xl w-full text-slate-900">
+                    <QuestionCard
+                      :id="questions[focusQuestionIndex]!.id"
+                      :index="focusQuestionIndex + 1"
+                      :content="questions[focusQuestionIndex]!.content"
+                      :content-format="questions[focusQuestionIndex]!.contentFormat"
+                      :image-url="questions[focusQuestionIndex]!.imageUrl"
+                      :options="questions[focusQuestionIndex]!.options"
+                      v-model="answers[questions[focusQuestionIndex]!.id]"
+                      :is-multiple="questions[focusQuestionIndex]!.isMultiple"
+                      :ui-layout-hint="uiLayoutHint"
+                      :paper-mode="true"
+                      @select="handleSelect(questions[focusQuestionIndex]!, $event)"
+                      @zoom="zoomImageUrl = $event"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div v-else class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-[2.5rem] p-6 sm:p-10 shadow-2xl w-full text-slate-900">
+                  <QuestionCard
+                    :id="questions[focusQuestionIndex]!.id"
+                    :index="focusQuestionIndex + 1"
+                    :content="questions[focusQuestionIndex]!.content"
+                    :content-format="questions[focusQuestionIndex]!.contentFormat"
+                    :image-url="questions[focusQuestionIndex]!.imageUrl"
+                    :options="questions[focusQuestionIndex]!.options"
+                    v-model="answers[questions[focusQuestionIndex]!.id]"
+                    :is-multiple="questions[focusQuestionIndex]!.isMultiple"
+                    :ui-layout-hint="uiLayoutHint"
+                    :paper-mode="true"
+                    @select="handleSelect(questions[focusQuestionIndex]!, $event)"
+                    @zoom="zoomImageUrl = $event"
+                  />
+                </div>
+              </div>
             </div>
 
             <!-- Slide controls -->
@@ -233,28 +261,28 @@
     </transition>
   </teleport>
 
-<div class="text-slate-900 pb-12 pt-[105px] sm:pt-[95px] max-w-7xl mx-auto px-2 sm:px-4">
+<div class="text-slate-900 pb-12 pt-[75px] sm:pt-[70px] w-full mx-auto px-4 sm:px-8">
     <!-- Fixed Header -->
     <div class="fixed top-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-2xl border-b border-white/50 shadow-lg shadow-indigo-500/5">
-      <div class="max-w-7xl mx-auto w-full flex flex-col">
+      <div class="w-full mx-auto flex flex-col">
         <!-- Header row -->
-        <div class="flex items-center justify-between gap-3 px-4 py-3 sm:px-10 sm:py-4">
+        <div class="flex items-center justify-between gap-3 px-4 py-2 sm:px-8 sm:py-2.5">
           <div class="flex items-center gap-6">
             <router-link
               to="/exams"
-              class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-400 shadow-sm transition-all duration-300 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200"
+              class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-400 shadow-sm transition-all duration-300 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200"
               aria-label="Quay lại"
             >
               <i class="fa-solid fa-arrow-left text-sm" aria-hidden="true"></i>
             </router-link>
 
             <div class="min-w-0 flex-1">
-              <p class="m-0 text-lg font-black tracking-tight text-slate-900 sm:text-3xl truncate">{{ examTitle || 'Làm bài thi' }}</p>
+              <p class="m-0 text-base font-black tracking-tight text-slate-900 sm:text-xl truncate">{{ examTitle || 'Làm bài thi' }}</p>
             </div>
 
-            <div class="flex items-center gap-2 sm:gap-3 rounded-2xl bg-indigo-50 px-3 py-2 sm:px-5 sm:py-2.5 shadow-inner">
-               <i class="fa-regular fa-clock text-indigo-500 text-sm sm:text-lg animate-pulse"></i>
-              <span class="text-base sm:text-xl font-black text-indigo-700 tabular-nums">{{ timeLabel }}</span>
+            <div class="flex items-center gap-2 sm:gap-3 rounded-2xl bg-indigo-50 px-2.5 py-1.5 sm:px-4 sm:py-2 shadow-inner">
+               <i class="fa-regular fa-clock text-indigo-500 text-sm sm:text-base animate-pulse"></i>
+              <span class="text-sm sm:text-base font-black text-indigo-700 tabular-nums">{{ timeLabel }}</span>
             </div>
           </div>
 
@@ -350,10 +378,10 @@
       </div>
     </div>
 
-    <div v-else-if="attempt" class="relative mt-8 lg:pr-[360px]">
+    <div v-else-if="attempt" class="relative mt-4 lg:pr-[330px]">
       <!-- Left Side: Questions list -->
-      <form class="space-y-12 w-full" @submit.prevent="handleSubmit">
-        <div v-for="(section, sIndex) in sections" :key="sIndex" class="space-y-6">
+      <form class="space-y-6 w-full" @submit.prevent="handleSubmit">
+        <div v-for="(section, sIndex) in sections" :key="sIndex" class="space-y-4">
           <div v-if="section.title" class="flex items-center gap-4">
             <div class="h-px grow bg-slate-100"></div>
             <h3 class="m-0 text-sm font-black uppercase tracking-[0.3em] text-indigo-500 bg-white px-4">
@@ -362,60 +390,100 @@
             <div class="h-px grow bg-slate-100"></div>
           </div>
 
-          <!-- Single Continuous White Paper Sheet (Standard / Mixed Exams) -->
-          <div 
-            v-if="uiLayoutHint !== 'LITERATURE' && uiLayoutHint !== 'ESSAY'"
-            class="bg-white rounded-3xl border border-slate-100/80 shadow-xl shadow-slate-200/40 p-6 sm:p-10 divide-y divide-slate-100 max-w-4xl mx-auto"
-          >
-            <QuestionCard
-              v-for="(question, index) in section.questions"
-              :key="question.id"
-              :id="question.id"
-              :index="questions.findIndex(q => q.id === question.id) + 1"
-              :content="question.content"
-              :content-format="question.contentFormat"
-              :image-url="question.imageUrl"
-              :options="question.options"
-              v-model="answers[question.id]"
-              :is-multiple="question.isMultiple"
-              :ui-layout-hint="uiLayoutHint"
-              :animation-delay="Number(index) * 40"
-              :paper-mode="true"
-              @select="handleSelect(question, $event)"
-              @zoom="zoomImageUrl = $event"
-              @focus="currentQuestionId = question.id"
-            />
-          </div>
+          <!-- Grouped rendering -->
+          <div v-for="(chunk, cIndex) in groupQuestions(section.questions)" :key="cIndex" class="space-y-4">
+            
+            <!-- Question Group Layout -->
+            <div 
+              v-if="chunk.isGroup" 
+              class="bg-white rounded-3xl border border-slate-100/80 shadow-xl shadow-slate-200/40 p-4 sm:p-6 w-full mx-auto flex flex-col lg:flex-row gap-8"
+            >
+              <!-- Left side: Group content -->
+              <div class="lg:w-1/2 border-b lg:border-b-0 lg:border-r border-slate-100 pr-0 lg:pr-8 pb-6 lg:pb-0">
+                <h4 class="text-xl font-bold text-slate-800 mb-4">{{ chunk.title }}</h4>
+                <div class="prose prose-sm sm:prose-base max-w-none text-slate-700" v-html="chunk.content"></div>
+              </div>
+              <!-- Right side: Questions -->
+              <div class="lg:w-1/2 divide-y divide-slate-100 h-full max-h-[80vh] overflow-y-auto pr-2 custom-scrollbar">
+                <QuestionCard
+                  v-for="(question, index) in chunk.questions"
+                  :key="question.id"
+                  :id="question.id"
+                  :index="questions.findIndex(q => q.id === question.id) + 1"
+                  :content="question.content"
+                  :content-format="question.contentFormat"
+                  :image-url="question.imageUrl"
+                  :options="question.options"
+                  v-model="answers[question.id]"
+                  :is-multiple="question.isMultiple"
+                  :ui-layout-hint="uiLayoutHint"
+                  :animation-delay="Number(index) * 40"
+                  :paper-mode="true"
+                  @select="handleSelect(question, $event)"
+                  @zoom="zoomImageUrl = $event"
+                  :is-focused="currentQuestionId === question.id"
+                />
+              </div>
+            </div>
 
-          <!-- Special Literature & Essay Views (Separate pages) -->
-          <div 
-            v-else
-            class="grid gap-6 items-stretch grid-cols-1 max-w-5xl mx-auto px-4 sm:px-8"
-          >
-            <QuestionCard
-              v-for="(question, index) in section.questions"
-              :key="question.id"
-              :id="question.id"
-              :index="questions.findIndex(q => q.id === question.id) + 1"
-              :content="question.content"
-              :content-format="question.contentFormat"
-              :image-url="question.imageUrl"
-              :options="question.options"
-              v-model="answers[question.id]"
-              :is-multiple="question.isMultiple"
-              :ui-layout-hint="uiLayoutHint"
-              :animation-delay="Number(index) * 40"
-              @select="handleSelect(question, $event)"
-              @zoom="zoomImageUrl = $event"
-              @focus="currentQuestionId = question.id"
-            />
+            <!-- Standard Single Questions Layout -->
+            <div 
+              v-else-if="uiLayoutHint !== 'LITERATURE' && uiLayoutHint !== 'ESSAY'"
+              class="bg-white rounded-3xl border border-slate-100/80 shadow-xl shadow-slate-200/40 p-4 sm:p-6 w-full mx-auto"
+            >
+              <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-8">
+                <QuestionCard
+                  v-for="(question, index) in chunk.questions"
+                  :key="question.id"
+                  :id="question.id"
+                  :index="questions.findIndex(q => q.id === question.id) + 1"
+                  :content="question.content"
+                  :content-format="question.contentFormat"
+                  :image-url="question.imageUrl"
+                  :options="question.options"
+                  v-model="answers[question.id]"
+                  :is-multiple="question.isMultiple"
+                  :ui-layout-hint="uiLayoutHint"
+                  :animation-delay="Number(index) * 40"
+                  :paper-mode="true"
+                  @select="handleSelect(question, $event)"
+                  @zoom="zoomImageUrl = $event"
+                  :is-focused="currentQuestionId === question.id"
+                />
+              </div>
+            </div>
+
+            <!-- Special Literature & Essay Views -->
+            <div 
+              v-else
+              class="grid gap-6 items-stretch grid-cols-1 w-full mx-auto px-4 sm:px-8"
+            >
+              <QuestionCard
+                v-for="(question, index) in chunk.questions"
+                :key="question.id"
+                :id="question.id"
+                :index="questions.findIndex(q => q.id === question.id) + 1"
+                :content="question.content"
+                :content-format="question.contentFormat"
+                :image-url="question.imageUrl"
+                :options="question.options"
+                v-model="answers[question.id]"
+                :is-multiple="question.isMultiple"
+                :ui-layout-hint="uiLayoutHint"
+                :animation-delay="Number(index) * 40"
+                @select="handleSelect(question, $event)"
+                @zoom="zoomImageUrl = $event"
+                :is-focused="currentQuestionId === question.id"
+              />
+            </div>
+            
           </div>
         </div>
       </form>
 
       <!-- Right Side: Fixed Matrix Card (Desktop only) -->
       <div class="hidden lg:block fixed-sidebar-matrix">
-        <div class="bg-white/95 backdrop-blur-md rounded-3xl border border-slate-100 p-5 shadow-xl shadow-indigo-500/5">
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl border border-slate-100 p-4 shadow-xl shadow-indigo-500/5">
           <div class="flex items-center justify-between mb-4">
             <p class="m-0 text-xs font-black uppercase tracking-widest text-slate-400">Tiến độ bài làm</p>
             <span class="text-xs font-black bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-lg">
@@ -430,15 +498,15 @@
             ></div>
           </div>
 
-          <div class="max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
-            <div class="grid grid-cols-5 gap-2">
+          <div class="max-h-[calc(100vh-300px)] min-h-[150px] overflow-y-auto pr-1 custom-scrollbar">
+            <div class="grid grid-cols-6 gap-2">
               <button
                 v-for="(question, index) in questions"
                 :key="`matrix-${question.id}`"
                 type="button"
                 @click="scrollToQuestion(question.id)"
                 :class="[
-                  'h-10 w-full rounded-xl border text-xs font-black transition-all duration-200 hover:scale-110 active:scale-90 flex items-center justify-center',
+                  'h-8 w-full rounded-xl border text-xs font-black transition-all duration-200 hover:scale-110 active:scale-90 flex items-center justify-center',
                   currentQuestionId === question.id
                     ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
                     : isQuestionAnswered(question.id)
@@ -517,7 +585,7 @@
           </div>
 
           <!-- Grid Matrix -->
-          <div class="max-h-[300px] overflow-y-auto pr-1 custom-scrollbar mb-6">
+          <div class="max-h-[50vh] overflow-y-auto pr-1 custom-scrollbar mb-6">
             <div class="grid grid-cols-5 gap-2.5">
               <button
                 v-for="(question, index) in questions"
@@ -579,6 +647,9 @@ type AttemptQuestion = {
   imageUrl?: string;
   options: Array<{ label: string; value: string; optionId: number | null; isCorrect?: boolean }>;
   isMultiple?: boolean;
+  groupId?: number | null;
+  groupTitle?: string | null;
+  groupContent?: string | null;
 };
 
 type AttemptData = {
@@ -616,6 +687,12 @@ type ExamQuestion = {
     value?: string;
     label?: string;
   }>;
+  questionGroupId?: number;
+  questionGroupTitle?: string;
+  questionGroupContent?: string;
+  groupId?: number;
+  groupTitle?: string;
+  groupContent?: string;
 };
 
 type ExamDetails = {
@@ -664,6 +741,44 @@ const answers = reactive<Record<number, string | string[]>>({});
 const zoomImageUrl = ref<string | null>(null);
 const showMobileMatrix = ref(false);
 let initPromise: Promise<void> | null = null;
+
+const groupQuestions = (questionList: AttemptQuestion[]) => {
+  const result: any[] = [];
+  let currentGroup: any = null;
+  let currentSingles: any[] = [];
+
+  for (const q of questionList) {
+    if (q.groupId) {
+      if (currentSingles.length > 0) {
+        result.push({ isGroup: false, questions: currentSingles });
+        currentSingles = [];
+      }
+      if (currentGroup && currentGroup.id === q.groupId) {
+        currentGroup.questions.push(q);
+      } else {
+        currentGroup = { 
+          isGroup: true, 
+          id: q.groupId, 
+          title: q.groupTitle, 
+          content: q.groupContent, 
+          questions: [q] 
+        };
+        result.push(currentGroup);
+      }
+    } else {
+      if (currentGroup) {
+        currentGroup = null;
+      }
+      currentSingles.push(q);
+    }
+  }
+  
+  if (currentSingles.length > 0) {
+    result.push({ isGroup: false, questions: currentSingles });
+  }
+  
+  return result;
+};
 
 // Premium Focus Mode States
 const isFocusMode = ref(false);
@@ -776,6 +891,9 @@ const normalizeQuestions = (items: ExamQuestion[] = []): AttemptQuestion[] =>
       contentFormat: item.contentFormat,
       imageUrl: resolveAssetUrl(item.url),
       isMultiple,
+      groupId: Number(item.questionGroupId ?? item.groupId) || null,
+      groupTitle: String(item.questionGroupTitle ?? item.groupTitle ?? ''),
+      groupContent: String(item.questionGroupContent ?? item.groupContent ?? ''),
       options: options.map((option, index) => {
         const parsedOptionId = Number(option.id);
         const value = option.value ?? option.content ?? option.id ?? String(index + 1);
@@ -930,10 +1048,7 @@ const startTimer = (startTime: string | number[], durationMinutes: number) => {
     const s = startTime[5] ?? 0;
     startedAt = new Date(Date.UTC(y, m - 1, d, h, min, s)).getTime();
   } else if (typeof startTime === 'string') {
-    // If string lacks timezone, assume UTC (appending Z) to avoid local timezone skew
-    // which causes the timer to evaluate to negative immediately.
-    const timeStr = startTime.endsWith('Z') || startTime.includes('+') ? startTime : startTime + 'Z';
-    startedAt = new Date(timeStr).getTime();
+    startedAt = new Date(startTime).getTime();
   } else {
     startedAt = Date.now();
   }
@@ -1187,9 +1302,21 @@ const handleVisibilityChange = () => {
     }
   }
 };
- 
+let highlightTimeout: number | null = null;
+
 const scrollToQuestion = (questionId: number) => {
   currentQuestionId.value = questionId;
+  
+  if (highlightTimeout !== null) {
+    clearTimeout(highlightTimeout);
+  }
+  
+  highlightTimeout = window.setTimeout(() => {
+    if (currentQuestionId.value === questionId) {
+      currentQuestionId.value = null;
+    }
+  }, 1200);
+
   const element = document.getElementById(`q-${questionId}`);
   if (element) {
     const rect = element.getBoundingClientRect();
@@ -1357,14 +1484,9 @@ onBeforeUnmount(() => {
 <style scoped>
 .fixed-sidebar-matrix {
   position: fixed;
-  top: 92px;
-  width: 320px;
-  right: 24px;
+  top: 70px;
+  width: 300px;
+  right: 12px;
   z-index: 40;
-}
-@media (min-width: 1328px) {
-  .fixed-sidebar-matrix {
-    right: calc((100vw - 1280px) / 2 + 24px);
-  }
 }
 </style>

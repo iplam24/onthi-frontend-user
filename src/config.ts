@@ -1,1 +1,1 @@
-export const APP_NAME = 'V-Edu';
+export const APP_NAME = 'HOC24H.TECH';

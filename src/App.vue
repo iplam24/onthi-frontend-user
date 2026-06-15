@@ -31,10 +31,10 @@
     <Footer v-if="!isExamShellHiddenRoute" />
     
     <!-- AI Study Buddy -->
-    <FloatingAiChat v-if="auth.isAuthenticated" />
+    <FloatingAiChat v-if="auth.isAuthenticated && !isExamShellHiddenRoute" />
     
     <!-- Realtime Chat (Social) -->
-    <FloatingChat v-if="auth.isAuthenticated" />
+    <FloatingChat v-if="auth.isAuthenticated && !isExamShellHiddenRoute" />
 
     <!-- Global Floating Glassmorphic Toasts -->
     <ToastList />
@@ -115,7 +115,6 @@ const mainClass = computed(() =>
 .route-view-item {
   grid-area: 1 / 1 / 2 / 2;
   width: 100%;
-  will-change: opacity, transform;
 }
 
 .page-cross-fade-enter-active {

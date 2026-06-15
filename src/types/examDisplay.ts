@@ -13,5 +13,6 @@ export type ExamDisplayItem = {
   duration: number;
   maxAttempts?: number;
   isActive: boolean;
+  type?: string;
 };
 

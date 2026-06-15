@@ -5,10 +5,10 @@
     :class="[
       uiLayoutHint === 'LITERATURE' 
         ? 'border-x border-amber-100/50 bg-[#fffcf5] font-serif shadow-[0_0_50px_rgba(0,0,0,0.02)] min-h-screen' 
-        : (paperMode ? 'bg-transparent border-0' : 'rounded-2xl border'),
+        : (paperMode ? (isFocused ? 'border-2 border-indigo-500 bg-indigo-50/20 shadow-lg shadow-indigo-500/10 rounded-2xl' : 'bg-transparent border-2 border-transparent') : (isFocused ? 'rounded-2xl border-2 border-indigo-500 shadow-xl shadow-indigo-500/20' : 'rounded-2xl border')),
       uiLayoutHint !== 'LITERATURE' && !paperMode && isReview 
         ? (isCorrect ? 'border-emerald-100 bg-white hover:border-emerald-200 hover:shadow-emerald-500/5' : 'border-rose-100 bg-white hover:border-rose-200 hover:shadow-rose-500/5')
-        : (uiLayoutHint !== 'LITERATURE' && !paperMode ? 'border-slate-100/80 bg-white hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5' : '')
+        : (uiLayoutHint !== 'LITERATURE' && !paperMode ? (isFocused ? 'bg-white' : 'border-slate-100/80 bg-white hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5') : '')
     ]"
     :style="animationStyle"
   >
@@ -283,6 +283,7 @@ const props = defineProps<{
   aiExplanation?: string;
   aiExplaining?: boolean;
   paperMode?: boolean;
+  isFocused?: boolean;
 }>();
 
 const emit = defineEmits<{

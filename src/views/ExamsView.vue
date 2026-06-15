@@ -262,7 +262,7 @@ const loadExams = async () => {
       // If no subject is selected or the selected subject is no longer available,
       // default to the first subject in the list of available subjects.
       if (!currentSelectedSubject || (currentSelectedSubject && !availableSubjects.has(currentSelectedSubject))) {
-        selectedSubject.value = exams.value[0]?.subjectName?.trim() || 'Khác';
+        selectedSubject.value = '';
       }
     } else {
       selectedSubject.value = '';

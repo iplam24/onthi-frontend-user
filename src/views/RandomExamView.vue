@@ -169,11 +169,27 @@
       </div>
 
       <!-- Options -->
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label class="flex items-center gap-3 rounded-xl border border-slate-200 p-4 cursor-pointer hover:border-indigo-300 transition-colors">
           <input v-model="form.avoidDuplicates" type="checkbox" class="h-4 w-4 rounded text-indigo-600 border-slate-300" />
-          <span class="text-sm font-semibold text-slate-600">Tránh trùng lặp câu</span>
+          <span class="text-sm font-semibold text-slate-600">Tránh trùng lặp câu (nếu có thể)</span>
         </label>
+        <label class="flex items-center gap-3 rounded-xl border border-slate-200 p-4 cursor-pointer hover:border-indigo-300 transition-colors">
+          <input v-model="form.includeQuestionGroups" type="checkbox" class="h-4 w-4 rounded text-indigo-600 border-slate-300" />
+          <span class="text-sm font-semibold text-slate-600">Cho phép lấy câu hỏi theo đoạn văn/nhóm</span>
+        </label>
+        
+        <div class="space-y-2">
+          <label class="text-xs font-black uppercase tracking-widest text-slate-500">Giới hạn % trùng lặp tối đa với đề cũ</label>
+          <select v-model="form.maxDuplicatePercentage" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all">
+            <option :value="0">0% (Hoàn toàn mới)</option>
+            <option :value="30">30%</option>
+            <option :value="50">50%</option>
+            <option :value="70">70%</option>
+            <option :value="100">100% (Cho phép trùng)</option>
+          </select>
+        </div>
+
         <div class="space-y-2">
           <label class="text-xs font-black uppercase tracking-widest text-slate-500">Số lần làm tối đa</label>
           <input v-model.number="form.maxAttempts" type="number" min="0" placeholder="0 = Không giới hạn" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
@@ -196,13 +212,37 @@
         {{ submitting ? 'Đang tạo đề...' : 'Tạo đề thi ngẫu nhiên' }}
       </button>
     </div>
+
+    <!-- Auto Exams List -->
+    <div v-if="myAutoExams.length > 0" class="card-elevated p-6 sm:p-8 space-y-6 animate-fade-in-up">
+      <div class="flex items-center justify-between">
+        <h2 class="m-0 text-xl font-extrabold text-slate-900">Các đề thi tự động đã tạo của bạn</h2>
+        <span class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold text-indigo-600">{{ myAutoExams.length }} đề</span>
+      </div>
+      <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+        <div v-for="exam in myAutoExams" :key="exam.id" class="rounded-xl border border-slate-100 p-4 hover:border-indigo-200 hover:shadow-md transition-all flex items-center justify-between bg-white group cursor-pointer" @click="router.push(`/exams/${exam.id}/attempt`)">
+          <div>
+            <h3 class="m-0 text-base font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">{{ exam.title }}</h3>
+            <p class="m-0 mt-1 text-sm text-slate-500">{{ exam.duration }} phút</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <div v-if="result && result.overlapPercentages && result.overlapPercentages[exam.id] !== undefined" class="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-100">
+              Trùng: {{ Math.round(result.overlapPercentages[exam.id] || 0) }}%
+            </div>
+            <div class="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-indigo-50 transition-colors shrink-0">
+              <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-indigo-600 transition-colors"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { generateRandomExam, type RandomExamRequest, type RandomExamResponse } from '@/services/examService';
+import { generateRandomExam, getAllExams, type RandomExamRequest, type RandomExamResponse } from '@/services/examService';
 import { getSubjects, getTopics, type SubjectItem, type TopicItem } from '@/services/learningService';
 
 const router = useRouter();
@@ -213,6 +253,7 @@ const allTopics = ref<TopicItem[]>([]);
 const submitting = ref(false);
 const error = ref<string | null>(null);
 const result = ref<RandomExamResponse | null>(null);
+const myAutoExams = ref<any[]>([]);
 
 const useDifficultyConfig = ref(true);
 const useDetailedTopicConfig = ref(false);
@@ -225,6 +266,8 @@ const form = ref<{
   difficultyConfigs: Array<{ difficulty: string; count: number }>;
   topicDetailedConfigs: Array<{ topicId: number; easyCount: number; mediumCount: number; hardCount: number }>;
   avoidDuplicates: boolean;
+  includeQuestionGroups: boolean;
+  maxDuplicatePercentage: number | null;
   maxAttempts: number | null;
 }>({
   title: '',
@@ -238,6 +281,8 @@ const form = ref<{
   ],
   topicDetailedConfigs: [],
   avoidDuplicates: true,
+  includeQuestionGroups: true,
+  maxDuplicatePercentage: 100,
   maxAttempts: null,
 });
 
@@ -264,6 +309,21 @@ const onSubjectChange = () => {
   topics.value = allTopics.value.filter(t => t.subjectId === form.value.subjectId);
   if (useDetailedTopicConfig.value) {
     form.value.topicDetailedConfigs = topics.value.map(t => ({ topicId: t.id, easyCount: 0, mediumCount: 0, hardCount: 0 }));
+  }
+  fetchAutoExams();
+};
+
+const fetchAutoExams = async () => {
+  if (!form.value.subjectId) {
+    myAutoExams.value = [];
+    return;
+  }
+  try {
+    const res = await getAllExams({ subjectId: form.value.subjectId, size: 100 });
+    const all = Array.isArray(res.data?.data?.content) ? res.data.data.content : (Array.isArray(res.data?.data) ? res.data.data : []);
+    myAutoExams.value = all.filter((e: any) => e.type === 'AUTO');
+  } catch (err) {
+    console.error('Failed to fetch auto exams', err);
   }
 };
 
@@ -295,6 +355,8 @@ const handleGenerate = async () => {
       totalQuestions: form.value.totalQuestions,
       duration: form.value.duration,
       avoidDuplicates: form.value.avoidDuplicates,
+      includeQuestionGroups: form.value.includeQuestionGroups,
+      maxDuplicatePercentage: form.value.maxDuplicatePercentage === 100 ? null : form.value.maxDuplicatePercentage,
       maxAttempts: form.value.maxAttempts || undefined,
       title: form.value.title.trim() || undefined,
     };
@@ -307,6 +369,7 @@ const handleGenerate = async () => {
 
     const res = await generateRandomExam(payload);
     result.value = res.data?.data;
+    fetchAutoExams();
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Tạo đề thi thất bại. Vui lòng thử lại.';
   } finally {

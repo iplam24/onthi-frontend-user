@@ -1,15 +1,15 @@
 <template>
-  <section class="space-y-8 px-3 sm:px-6 max-w-5xl mx-auto pb-12 pt-[140px] sm:pt-[130px]" style="animation: slide-up 700ms cubic-bezier(0.16,1,0.3,1) both">
+<section class="space-y-8 px-4 sm:px-8 w-full mx-auto pb-12 pt-[90px] sm:pt-[85px]" style="animation: slide-up 700ms cubic-bezier(0.16,1,0.3,1) both">
     <!-- Header -->
     <div class="fixed top-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-2xl border-b border-white/50 shadow-lg shadow-indigo-500/5">
-      <div class="max-w-5xl mx-auto px-6 py-5 sm:px-10 flex flex-wrap gap-4 items-center justify-between">
+      <div class="w-full mx-auto px-4 py-3 sm:px-8 flex flex-wrap gap-4 items-center justify-between">
         <div class="flex items-center gap-5">
-          <div class="relative h-14 w-14 flex items-center justify-center rounded-2xl bg-indigo-50">
+          <div class="relative h-10 w-10 flex items-center justify-center rounded-2xl bg-indigo-50">
             <div class="absolute inset-0 rounded-2xl bg-indigo-400/20 blur-lg animate-pulse"></div>
-            <i class="fa-solid fa-file-signature text-indigo-600 text-2xl relative z-10"></i>
+            <i class="fa-solid fa-file-signature text-indigo-600 text-lg relative z-10"></i>
           </div>
           <div>
-            <h1 class="m-0 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Xem lại kết quả</h1>
+            <h1 class="m-0 text-lg font-black tracking-tight text-slate-900 sm:text-xl">Xem lại kết quả</h1>
             <p class="mb-0 mt-1 text-xs font-black uppercase tracking-[0.2em] text-indigo-500">
               Chi tiết bài làm & giải thích
             </p>
@@ -17,7 +17,7 @@
         </div>
         <router-link
           to="/attempts"
-          class="group inline-flex items-center gap-3 rounded-2xl bg-slate-900 px-6 py-3.5 text-xs font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95 shadow-xl shadow-slate-900/10"
+          class="group inline-flex items-center gap-3 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-600 active:scale-95 shadow-xl shadow-slate-900/10"
         >
           <i class="fa-solid fa-arrow-left-long text-xs transition-transform group-hover:-translate-x-1"></i>
           {{ attempt?.status === 'GRADING' ? 'Xem sau' : 'Về lịch sử' }}
@@ -91,24 +91,24 @@
         <!-- Score Card -->
         <div class="animate-slide-up-reveal stagger-1 overflow-hidden rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-indigo-500/5">
           <div class="grid sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-50">
-            <div class="p-8 sm:p-10 text-center">
+            <div class="p-5 sm:p-6 text-center">
               <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Điểm số</p>
-              <p class="text-6xl font-black text-indigo-600 m-0 tracking-tighter">{{ attempt.score ?? '-' }}</p>
+              <p class="text-5xl font-black text-indigo-600 m-0 tracking-tighter">{{ attempt.score ?? '-' }}</p>
             </div>
-            <div class="p-8 sm:p-10 text-center">
+            <div class="p-5 sm:p-6 text-center">
               <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trả lời đúng</p>
-              <p class="text-4xl font-black text-emerald-500 m-0 tabular-nums">
+              <p class="text-3xl font-black text-emerald-500 m-0 tabular-nums">
                 {{ attempt.correctCount ?? attempt.totalCorrect ?? 0 }}
                 <span class="text-base font-bold text-slate-200">/ {{ totalQuestions }}</span>
               </p>
             </div>
-            <div class="p-8 sm:p-10 text-center">
+            <div class="p-5 sm:p-6 text-center">
               <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trả lời sai</p>
-              <p class="text-4xl font-black text-rose-500 m-0 tabular-nums">
+              <p class="text-3xl font-black text-rose-500 m-0 tabular-nums">
                 {{ attempt.wrongCount ?? attempt.totalIncorrect ?? 0 }}
               </p>
             </div>
-            <div class="p-8 sm:p-10 flex flex-col items-center justify-center">
+            <div class="p-5 sm:p-6 flex flex-col items-center justify-center">
               <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trạng thái</p>
               <span class="inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-5 py-2 text-xs font-black uppercase tracking-widest text-indigo-600">
                 <span class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
@@ -119,13 +119,13 @@
         </div>
 
         <!-- Questions list -->
-        <div v-if="questions.length" class="space-y-12">
+        <div v-if="questions.length" class="space-y-6">
           <div class="flex items-center justify-between">
             <h2 class="text-xl font-extrabold text-slate-900 m-0 sm:text-2xl">Chi tiết từng câu hỏi</h2>
             <span class="text-sm font-semibold text-slate-600">{{ questions.length }} câu</span>
           </div>
 
-          <div v-for="(section, sIndex) in sections" :key="sIndex" class="space-y-6">
+          <div v-for="(section, sIndex) in sections" :key="sIndex" class="space-y-4">
             <div v-if="section.title" class="flex items-center gap-4">
               <div class="h-px grow bg-slate-100"></div>
               <h3 class="m-0 text-sm font-black uppercase tracking-[0.3em] text-indigo-500 bg-white px-4">
@@ -134,39 +134,115 @@
               <div class="h-px grow bg-slate-100"></div>
             </div>
 
-            <div 
-              class="grid gap-8 items-stretch"
-              :class="[
-                uiLayoutHint === 'LITERATURE' || uiLayoutHint === 'ESSAY' 
-                  ? 'grid-cols-1 max-w-4xl mx-auto' 
-                  : 'grid-cols-1 md:grid-cols-2'
-              ]"
-            >
-               <QuestionCard
-                v-for="(q, index) in section.questions"
-                :key="q.questionId || index"
-                :id="q.questionId"
-                :index="Number(index) + 1"
-                :content="q.content"
-                :content-format="q.contentFormat"
-                :image-url="q.url ? resolveAssetUrl(q.url) : undefined"
-                :options="q._options"
-                :score="q.score"
-                :is-review="true"
-                :is-multiple="q.isMultiple"
-                :is-correct="q._isCorrect"
-                :essay-answer="q._essayAnswer"
-                :explanation="q.explanation"
-                :sample-answer="q.sampleAnswer"
-                :feedback="q._feedback"
-                :grading-method="q._gradingMethod"
-                :ui-layout-hint="uiLayoutHint"
-                :animation-delay="200 + Number(index) * 50"
-                :ai-explanation="aiExplanations[q.questionId]"
-                :ai-explaining="aiExplainingIds.has(q.questionId)"
-                @zoom="resolveAssetUrl($event)"
-                @ask-ai="handleAskAi"
-              />
+            <!-- Grouped rendering -->
+            <div v-for="(chunk, cIndex) in groupQuestions(section.questions)" :key="cIndex" class="space-y-4">
+              
+              <!-- Question Group Layout -->
+              <div 
+                v-if="chunk.isGroup" 
+                class="bg-white rounded-3xl border border-slate-100/80 shadow-xl shadow-slate-200/40 p-4 sm:p-6 w-full mx-auto flex flex-col lg:flex-row gap-8"
+              >
+                <!-- Left side: Group content -->
+                <div class="lg:w-1/2 border-b lg:border-b-0 lg:border-r border-slate-100 pr-0 lg:pr-8 pb-6 lg:pb-0">
+                  <h4 class="text-xl font-bold text-slate-800 mb-4">{{ chunk.title }}</h4>
+                  <div class="prose prose-sm sm:prose-base max-w-none text-slate-700" v-html="chunk.content"></div>
+                </div>
+                <!-- Right side: Questions -->
+                <div class="lg:w-1/2 divide-y divide-slate-100 h-full max-h-[80vh] overflow-y-auto pr-2 custom-scrollbar">
+                  <QuestionCard
+                    v-for="(q, index) in chunk.questions"
+                    :key="q.questionId || index"
+                    :id="q.questionId"
+                    :index="questions.findIndex(allQ => allQ.questionId === q.questionId) + 1"
+                    :content="q.content"
+                    :content-format="q.contentFormat"
+                    :image-url="q.url ? resolveAssetUrl(q.url) : undefined"
+                    :options="q._options"
+                    :score="q.score"
+                    :is-review="true"
+                    :is-multiple="q.isMultiple"
+                    :is-correct="q._isCorrect"
+                    :essay-answer="q._essayAnswer"
+                    :explanation="q.explanation"
+                    :sample-answer="q.sampleAnswer"
+                    :feedback="q._feedback"
+                    :grading-method="q._gradingMethod"
+                    :ui-layout-hint="uiLayoutHint"
+                    :animation-delay="200 + Number(index) * 50"
+                    :ai-explanation="aiExplanations[q.questionId]"
+                    :ai-explaining="aiExplainingIds.has(q.questionId)"
+                    :group-content="chunk.content"
+                    @zoom="resolveAssetUrl($event)"
+                    @ask-ai="handleAskAi"
+                  />
+                </div>
+              </div>
+
+              <!-- Standard Single Questions Layout -->
+              <div 
+                v-else-if="uiLayoutHint !== 'LITERATURE' && uiLayoutHint !== 'ESSAY'"
+                class="bg-white rounded-3xl border border-slate-100/80 shadow-xl shadow-slate-200/40 p-4 sm:p-6 w-full mx-auto"
+              >
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 xl:gap-12">
+                  <QuestionCard
+                    v-for="(q, index) in chunk.questions"
+                    :key="q.questionId || index"
+                    :id="q.questionId"
+                    :index="questions.findIndex(allQ => allQ.questionId === q.questionId) + 1"
+                    :content="q.content"
+                    :content-format="q.contentFormat"
+                    :image-url="q.url ? resolveAssetUrl(q.url) : undefined"
+                    :options="q._options"
+                    :score="q.score"
+                    :is-review="true"
+                    :is-multiple="q.isMultiple"
+                    :is-correct="q._isCorrect"
+                    :essay-answer="q._essayAnswer"
+                    :explanation="q.explanation"
+                    :sample-answer="q.sampleAnswer"
+                    :feedback="q._feedback"
+                    :grading-method="q._gradingMethod"
+                    :ui-layout-hint="uiLayoutHint"
+                    :animation-delay="200 + Number(index) * 50"
+                    :ai-explanation="aiExplanations[q.questionId]"
+                    :ai-explaining="aiExplainingIds.has(q.questionId)"
+                    @zoom="resolveAssetUrl($event)"
+                    @ask-ai="handleAskAi"
+                  />
+                </div>
+              </div>
+
+              <!-- Special Literature & Essay Views -->
+              <div 
+                v-else
+                class="grid gap-8 items-stretch grid-cols-1 w-full mx-auto"
+              >
+                <QuestionCard
+                  v-for="(q, index) in chunk.questions"
+                  :key="q.questionId || index"
+                  :id="q.questionId"
+                  :index="questions.findIndex(allQ => allQ.questionId === q.questionId) + 1"
+                  :content="q.content"
+                  :content-format="q.contentFormat"
+                  :image-url="q.url ? resolveAssetUrl(q.url) : undefined"
+                  :options="q._options"
+                  :score="q.score"
+                  :is-review="true"
+                  :is-multiple="q.isMultiple"
+                  :is-correct="q._isCorrect"
+                  :essay-answer="q._essayAnswer"
+                  :explanation="q.explanation"
+                  :sample-answer="q.sampleAnswer"
+                  :feedback="q._feedback"
+                  :grading-method="q._gradingMethod"
+                  :ui-layout-hint="uiLayoutHint"
+                  :animation-delay="200 + Number(index) * 50"
+                  :ai-explanation="aiExplanations[q.questionId]"
+                  :ai-explaining="aiExplainingIds.has(q.questionId)"
+                  @zoom="resolveAssetUrl($event)"
+                  @ask-ai="handleAskAi"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -240,6 +316,45 @@ const handleAskAi = async (questionId: number) => {
   }
 };
 
+const groupQuestions = (questionList: any[]) => {
+  const result: any[] = [];
+  let currentGroup: any = null;
+  let currentSingles: any[] = [];
+
+  for (const q of questionList) {
+    if (q.groupId || q.questionGroupId) {
+      if (currentSingles.length > 0) {
+        result.push({ isGroup: false, questions: currentSingles });
+        currentSingles = [];
+      }
+      const groupId = q.groupId || q.questionGroupId;
+      if (currentGroup && currentGroup.id === groupId) {
+        currentGroup.questions.push(q);
+      } else {
+        currentGroup = { 
+          isGroup: true, 
+          id: groupId, 
+          title: q.groupTitle || q.questionGroupTitle, 
+          content: q.groupContent || q.questionGroupContent, 
+          questions: [q] 
+        };
+        result.push(currentGroup);
+      }
+    } else {
+      if (currentGroup) {
+        currentGroup = null;
+      }
+      currentSingles.push(q);
+    }
+  }
+  
+  if (currentSingles.length > 0) {
+    result.push({ isGroup: false, questions: currentSingles });
+  }
+  
+  return result;
+};
+
 // Admin Edit Logic (Removed)
 
 const totalQuestions = computed(() => {
@@ -283,6 +398,11 @@ const loadAttempt = async (isPolling = false) => {
         uiLayoutHint.value = examData.uiLayoutHint || 'STANDARD';
 
         if (examData?.questions?.length) {
+          const examQuestionsMap = new Map();
+          for (const eq of (examData.questions || [])) {
+            examQuestionsMap.set(eq.questionId || eq.id, eq);
+          }
+
           const submittedAnswers: any[] = attemptData.details || attemptData.answers || attemptData.submittedAnswers || [];
           const detailedQuestions = await Promise.all(
             submittedAnswers.map(async (ans: any) => {
@@ -291,10 +411,19 @@ const loadAttempt = async (isPolling = false) => {
               try {
                 const qRes = await getQuestionById(qId);
                 const qData = qRes.data?.data || qRes.data;
-                return { ...qData, userAnswer: ans };
+                const examQ = examQuestionsMap.get(qId) || {};
+                return { 
+                  ...examQ, 
+                  ...qData, 
+                  userAnswer: ans,
+                  groupId: qData.groupId || examQ.questionGroupId || examQ.groupId,
+                  groupTitle: qData.groupTitle || examQ.questionGroupTitle || examQ.groupTitle,
+                  groupContent: qData.groupContent || examQ.questionGroupContent || examQ.groupContent
+                };
               } catch (err) {
                 console.error(`Failed to fetch question ${qId}:`, err);
-                return { id: qId, userAnswer: ans, content: 'Không thể tải nội dung câu hỏi.' };
+                const examQ = examQuestionsMap.get(qId) || {};
+                return { ...examQ, id: qId, userAnswer: ans, content: 'Không thể tải nội dung câu hỏi.' };
               }
             })
           ).then(results => results.filter(r => r !== null));

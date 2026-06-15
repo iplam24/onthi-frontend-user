@@ -35,17 +35,45 @@
       <p class="text-base font-bold text-slate-500 m-0">Môn này hiện chưa có đề thi.</p>
     </div>
 
-    <div v-else class="space-y-4">
-      <ExamListItem
-        v-for="exam in exams"
-        :key="exam.id"
-        :exam="exam"
-        :can-start-exam="canStartExam"
-        :get-start-blocked-reason="getStartBlockedReason"
-        :user-attempts-count="getUserAttempts(exam.id)"
-        :is-logged-in="isLoggedIn"
-        @start="emit('start-exam', $event)"
-      />
+    <div v-else class="space-y-6">
+      <div class="flex gap-8 border-b border-slate-100 pb-2">
+        <button
+          @click="activeTab = 'SYSTEM'"
+          class="pb-2 text-sm font-black uppercase tracking-widest transition-colors relative"
+          :class="activeTab === 'SYSTEM' ? 'text-indigo-600' : 'text-slate-400 hover:text-slate-600'"
+        >
+          Đề hệ thống ({{ systemExams.length }})
+          <span v-if="activeTab === 'SYSTEM'" class="absolute -bottom-[9px] left-0 right-0 h-0.5 bg-indigo-600 rounded-full"></span>
+        </button>
+        <button
+          @click="activeTab = 'AUTO'"
+          class="pb-2 text-sm font-black uppercase tracking-widest transition-colors relative"
+          :class="activeTab === 'AUTO' ? 'text-indigo-600' : 'text-slate-400 hover:text-slate-600'"
+        >
+          Đề tôi đã tạo ({{ myAutoExams.length }})
+          <span v-if="activeTab === 'AUTO'" class="absolute -bottom-[9px] left-0 right-0 h-0.5 bg-indigo-600 rounded-full"></span>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div v-if="activeTab === 'SYSTEM' && !systemExams.length" class="text-center py-8 text-slate-400 text-sm font-medium border border-dashed border-slate-200 rounded-2xl bg-slate-50">
+          Hệ thống chưa có đề thi nào.
+        </div>
+        <div v-else-if="activeTab === 'AUTO' && !myAutoExams.length" class="text-center py-8 text-slate-400 text-sm font-medium border border-dashed border-slate-200 rounded-2xl bg-slate-50">
+          Bạn chưa có đề tự tạo nào.
+        </div>
+        
+        <ExamListItem
+          v-for="exam in activeExamsList"
+          :key="exam.id"
+          :exam="exam"
+          :can-start-exam="canStartExam"
+          :get-start-blocked-reason="getStartBlockedReason"
+          :user-attempts-count="getUserAttempts(exam.id)"
+          :is-logged-in="isLoggedIn"
+          @start="emit('start-exam', $event)"
+        />
+      </div>
     </div>
 
     <div class="flex justify-end">
@@ -63,10 +91,11 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue';
 import ExamListItem from '@/components/exams/ExamListItem.vue';
 import type { ExamDisplayItem } from '@/types/examDisplay';
 
-defineProps<{
+const props = defineProps<{
   selectedSubject: string;
   selectedSubjectInitial: string;
   exams: ExamDisplayItem[];
@@ -82,4 +111,9 @@ const emit = defineEmits<{
   refresh: [];
   'start-exam': [exam: ExamDisplayItem];
 }>();
+
+const activeTab = ref<'SYSTEM' | 'AUTO'>('SYSTEM');
+const systemExams = computed(() => props.exams.filter(e => e.type !== 'AUTO'));
+const myAutoExams = computed(() => props.exams.filter(e => e.type === 'AUTO'));
+const activeExamsList = computed(() => activeTab.value === 'SYSTEM' ? systemExams.value : myAutoExams.value);
 </script>

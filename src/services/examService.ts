@@ -5,6 +5,7 @@ export type GetAllExamsParams = {
   size?: number;
   sort?: string;
   subjectName?: string;
+  subjectId?: number;
 };
 
 export type ExamSection = {
@@ -51,6 +52,8 @@ export type RandomExamRequest = {
   allowRetake?: boolean;
   maxAttempts?: number;
   avoidDuplicates?: boolean;
+  includeQuestionGroups?: boolean;
+  maxDuplicatePercentage?: number | null;
   title?: string;
 };
 
@@ -67,6 +70,7 @@ export type RandomExamResponse = {
   maxAttempts: number | null;
   hasDuplicates: boolean;
   createdAt: string;
+  overlapPercentages?: Record<number, number>;
 };
 
 export type TopicAnalysis = {
