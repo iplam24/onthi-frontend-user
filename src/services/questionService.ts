@@ -6,7 +6,7 @@ export interface QuestionOption {
   isCorrect: boolean;
 }
 
-export type QuestionType = 'MCQ' | 'ESSAY';
+export type QuestionType = 'MCQ' | 'ESSAY' | 'LISTENING' | 'SPEAKING';
 export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 export type ContentFormat = 'PLAIN_TEXT' | 'LATEX';
 

@@ -157,6 +157,9 @@
                     :content="q.content"
                     :content-format="q.contentFormat"
                     :image-url="q.url ? resolveAssetUrl(q.url) : undefined"
+                    :audio-url="q.audioUrl ? resolveAssetUrl(q.audioUrl) : undefined"
+                    :question-type="q.questionType"
+                    :audio-answer-url="q._audioAnswerUrl ? resolveAssetUrl(q._audioAnswerUrl) : undefined"
                     :options="q._options"
                     :score="q.score"
                     :is-review="true"
@@ -192,6 +195,9 @@
                     :content="q.content"
                     :content-format="q.contentFormat"
                     :image-url="q.url ? resolveAssetUrl(q.url) : undefined"
+                    :audio-url="q.audioUrl ? resolveAssetUrl(q.audioUrl) : undefined"
+                    :question-type="q.questionType"
+                    :audio-answer-url="q._audioAnswerUrl ? resolveAssetUrl(q._audioAnswerUrl) : undefined"
                     :options="q._options"
                     :score="q.score"
                     :is-review="true"
@@ -225,6 +231,9 @@
                   :content="q.content"
                   :content-format="q.contentFormat"
                   :image-url="q.url ? resolveAssetUrl(q.url) : undefined"
+                  :audio-url="q.audioUrl ? resolveAssetUrl(q.audioUrl) : undefined"
+                  :question-type="q.questionType"
+                  :audio-answer-url="q._audioAnswerUrl ? resolveAssetUrl(q._audioAnswerUrl) : undefined"
                   :options="q._options"
                   :score="q.score"
                   :is-review="true"
@@ -456,6 +465,8 @@ const loadAttempt = async (isPolling = false) => {
               score: userAnswer?.score ?? q.score,
               content: q.content || q.contentSnapshot || '',
               url: q.url || q.imageUrl,
+              audioUrl: q.audioUrl || null,
+              questionType: q.questionType || null,
               explanation: q.explanation || userAnswer?.explanation || null,
               sampleAnswer: q.sampleAnswer || userAnswer?.sampleAnswer || null,
               isMultiple,
@@ -470,6 +481,7 @@ const loadAttempt = async (isPolling = false) => {
               }),
               _isCorrect: isCorrect,
               _essayAnswer: userAnswer?.essayAnswer ?? null,
+              _audioAnswerUrl: userAnswer?.audioAnswerUrl ?? null,
               _feedback: userAnswer?.feedback ?? userAnswer?.aiFeedback ?? null,
               _gradingMethod: userAnswer?.gradingMethod ?? null,
             };

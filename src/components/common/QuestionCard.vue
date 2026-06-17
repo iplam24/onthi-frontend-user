@@ -78,9 +78,15 @@
         </button>
       </div>
 
+      <!-- Audio -->
+      <div v-if="audioUrl" class="mt-5 rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4">
+        <p class="mb-3 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500">Audio câu hỏi</p>
+        <audio :src="audioUrl" controls class="w-full" />
+      </div>
+
       <!-- Options (Multiple Choice) -->
-      <div 
-        v-if="options && options.length" 
+      <div
+        v-if="options && options.length"
         class="grow mt-3"
         :class="paperMode ? 'flex flex-wrap gap-2.5 sm:gap-4' : 'space-y-2'"
       >
@@ -125,7 +131,12 @@
       <!-- Essay Input/Display -->
       <div v-else class="mt-4 grow">
         <template v-if="!isReview">
-          <div 
+          <!-- Speaking: show recorder -->
+          <div v-if="questionType === 'SPEAKING'" class="min-h-[100px]">
+            <AudioRecorder :model-value="modelValue as string" @update:model-value="$emit('update:modelValue', $event)" />
+          </div>
+          <!-- Essay: show textarea -->
+          <div v-else 
             class="relative group/essay"
             :class="uiLayoutHint === 'LITERATURE' ? 'min-h-[400px]' : 'min-h-[160px]'"
           >
@@ -156,11 +167,18 @@
         </template>
         <template v-else-if="essayAnswer">
           <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 m-0 mb-4">Bài làm của học sinh:</p>
-          <div 
+          <div
             class="rounded-[2rem] p-8 sm:p-10 text-lg font-medium text-slate-900 border leading-loose shadow-sm"
             :class="uiLayoutHint === 'LITERATURE' ? 'border-amber-100 bg-[#fffefc] font-serif italic' : 'border-slate-100 bg-slate-50'"
           >
             <MathContent :content="essayAnswer || ''" :format="contentFormat" />
+          </div>
+        </template>
+        <!-- Speaking Audio Answer (review) -->
+        <template v-else-if="isReview && questionType === 'SPEAKING' && audioAnswerUrl">
+          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 m-0 mb-4">Câu trả lời của học sinh:</p>
+          <div class="rounded-2xl border border-emerald-100 bg-emerald-50/40 p-4">
+            <audio :src="audioAnswerUrl" controls class="w-full" />
           </div>
         </template>
       </div>
@@ -249,6 +267,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import MathContent from './MathContent.vue';
+import AudioRecorder from './AudioRecorder.vue';
 
 interface Option {
   id?: number;
@@ -265,8 +284,12 @@ const props = defineProps<{
   content?: string;
   contentFormat?: 'PLAIN_TEXT' | 'LATEX';
   imageUrl?: string;
+  audioUrl?: string;
   options?: Option[];
   score?: number;
+  // Audio props
+  audioAnswerUrl?: string;
+  questionType?: string;
   // Attempt props
   modelValue?: string | string[];
   isMultiple?: boolean;

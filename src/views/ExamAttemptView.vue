@@ -172,6 +172,8 @@
                       :content="questions[focusQuestionIndex]!.content"
                       :content-format="questions[focusQuestionIndex]!.contentFormat"
                       :image-url="questions[focusQuestionIndex]!.imageUrl"
+                      :audio-url="questions[focusQuestionIndex]!.audioUrl"
+                      :question-type="questions[focusQuestionIndex]!.questionType"
                       :options="questions[focusQuestionIndex]!.options"
                       v-model="answers[questions[focusQuestionIndex]!.id]"
                       :is-multiple="questions[focusQuestionIndex]!.isMultiple"
@@ -413,6 +415,8 @@
                   :content="question.content"
                   :content-format="question.contentFormat"
                   :image-url="question.imageUrl"
+                  :audio-url="question.audioUrl"
+                  :question-type="question.questionType"
                   :options="question.options"
                   v-model="answers[question.id]"
                   :is-multiple="question.isMultiple"
@@ -440,6 +444,8 @@
                   :content="question.content"
                   :content-format="question.contentFormat"
                   :image-url="question.imageUrl"
+                  :audio-url="question.audioUrl"
+                  :question-type="question.questionType"
                   :options="question.options"
                   v-model="answers[question.id]"
                   :is-multiple="question.isMultiple"
@@ -466,6 +472,8 @@
                 :content="question.content"
                 :content-format="question.contentFormat"
                 :image-url="question.imageUrl"
+                :audio-url="question.audioUrl"
+                :question-type="question.questionType"
                 :options="question.options"
                 v-model="answers[question.id]"
                 :is-multiple="question.isMultiple"
@@ -645,6 +653,8 @@ type AttemptQuestion = {
   content: string;
   contentFormat?: 'PLAIN_TEXT' | 'LATEX';
   imageUrl?: string;
+  audioUrl?: string;
+  questionType?: string;
   options: Array<{ label: string; value: string; optionId: number | null; isCorrect?: boolean }>;
   isMultiple?: boolean;
   groupId?: number | null;
@@ -681,6 +691,8 @@ type ExamQuestion = {
   content?: string;
   contentFormat?: 'PLAIN_TEXT' | 'LATEX';
   url?: string;
+  audioUrl?: string;
+  questionType?: string;
   options?: Array<{
     id?: number;
     content?: string;
@@ -715,6 +727,7 @@ type SubmitAnswerPayload = {
   selectedOptionId: number | null;
   selectedOptionIds: number[] | null;
   essayAnswer: string | null;
+  audioAnswerUrl?: string;
 };
 
 const route = useRoute();
@@ -890,6 +903,8 @@ const normalizeQuestions = (items: ExamQuestion[] = []): AttemptQuestion[] =>
       content: String(questionContent),
       contentFormat: item.contentFormat,
       imageUrl: resolveAssetUrl(item.url),
+      audioUrl: resolveAssetUrl(item.audioUrl),
+      questionType: item.questionType,
       isMultiple,
       groupId: Number(item.questionGroupId ?? item.groupId) || null,
       groupTitle: String(item.questionGroupTitle ?? item.groupTitle ?? ''),
