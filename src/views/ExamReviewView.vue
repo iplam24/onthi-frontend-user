@@ -26,31 +26,26 @@
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="animate-pulse space-y-8">
-      <!-- Score Card Skeleton -->
-      <div class="card-elevated h-32 w-full bg-slate-50 rounded-[2.5rem]"></div>
-      
-      <!-- Questions Skeleton -->
+    <div v-if="loading" class="space-y-8">
+      <BaseCard elevated class="h-32 w-full bg-slate-50" :padded="false" />
       <div class="space-y-6">
-        <div class="h-8 w-48 bg-slate-100 rounded-lg"></div>
+        <SkeletonCard :lines="1" height="h-8" width-class="w-48" />
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div v-for="i in 4" :key="i" class="card-elevated p-8 space-y-6 h-[400px]">
-            <div class="h-10 w-32 bg-slate-100 rounded-xl"></div>
-            <div class="h-8 w-full bg-slate-100 rounded-lg"></div>
-            <div class="space-y-4">
-              <div v-for="j in 4" :key="j" class="h-12 bg-slate-50 rounded-2xl"></div>
-            </div>
-          </div>
+          <BaseCard v-for="i in 4" :key="i" elevated class="p-8 h-[400px]" :padded="false">
+            <SkeletonCard :lines="3" height="h-4" width-class="w-1/3" />
+          </BaseCard>
         </div>
       </div>
     </div>
 
     <!-- Error -->
-    <div v-else-if="error" class="card-elevated border-rose-200 bg-rose-50 p-6 text-center">
-      <div class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 mb-4">
-        <i class="fa-solid fa-circle-exclamation text-rose-500 text-xl"></i>
-      </div>
-      <p class="text-base font-semibold text-rose-700 m-0">{{ error }}</p>
+    <div v-else-if="error" class="space-y-4">
+      <BaseCard class="border-rose-200 bg-rose-50 p-6 text-center" :padded="false">
+        <div class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 mb-4">
+          <i class="fa-solid fa-circle-exclamation text-rose-500 text-xl"></i>
+        </div>
+        <p class="text-base font-semibold text-rose-700 m-0">{{ error }}</p>
+      </BaseCard>
     </div>
 
     <!-- Content -->
@@ -89,7 +84,11 @@
       <!-- Result Content -->
       <template v-else>
         <!-- Score Card -->
-        <div class="animate-slide-up-reveal stagger-1 overflow-hidden rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-indigo-500/5">
+        <BaseCard
+          elevated
+          :padded="false"
+          class="animate-slide-up-reveal stagger-1 overflow-hidden rounded-[2.5rem] shadow-xl shadow-indigo-500/5"
+        >
           <div class="grid sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-50">
             <div class="p-5 sm:p-6 text-center">
               <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Điểm số</p>
@@ -110,13 +109,15 @@
             </div>
             <div class="p-5 sm:p-6 flex flex-col items-center justify-center">
               <p class="text-[10px] font-black uppercase tracking-widest text-slate-600 m-0 mb-3">Trạng thái</p>
-              <span class="inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-5 py-2 text-xs font-black uppercase tracking-widest text-indigo-600">
-                <span class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+              <BaseBadge
+                :variant="attempt.status === 'SUBMITTED' ? 'success' : (attempt.status === 'GRADING' ? 'info' : 'neutral')"
+                size="md"
+              >
                 {{ attempt.status === 'SUBMITTED' ? 'Đã nộp' : (attempt.status === 'GRADING' ? 'Đang chấm' : (attempt.status || 'Hoàn thành')) }}
-              </span>
+              </BaseBadge>
             </div>
           </div>
-        </div>
+        </BaseCard>
 
         <!-- Questions list -->
         <div v-if="questions.length" class="space-y-6">
@@ -278,6 +279,9 @@ import { getExamById } from '@/services/examService';
 import { getQuestionById } from '@/services/questionService';
 import QuestionEditModal from '@/components/admin/QuestionEditModal.vue';
 import QuestionCard from '@/components/common/QuestionCard.vue';
+import BaseCard from '@/components/ui/BaseCard.vue';
+import SkeletonCard from '@/components/ui/SkeletonCard.vue';
+import BaseBadge from '@/components/ui/BaseBadge.vue';
 import { getAiExplanation } from '@/services/aiService';
 
 const props = defineProps<{

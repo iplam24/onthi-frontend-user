@@ -15,3 +15,13 @@ export const uploadFile = (file: File) => {
     },
   });
 };
+
+export const uploadSpeakingAudio = (file: Blob | File) => {
+  const formData = new FormData();
+  formData.append('audioFile', file, 'speaking-answer.webm');
+  return api.post<{ data: UploadResponse }>('/english/speaking/upload-audio', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};

@@ -67,18 +67,10 @@
                 ? 'bg-white/80 backdrop-blur-xl border border-indigo-200 text-slate-800 shadow-xl hover:scale-105' 
                 : 'border-indigo-100 bg-indigo-50/50 hover:border-indigo-200 hover:bg-indigo-50'"
             >
-              <div class="relative h-8 w-8 rounded-full flex items-center justify-center overflow-hidden border border-white/20">
-                <img v-if="auth.user?.avatar" :src="resolveImageUrl(auth.user.avatar)" class="h-full w-full object-cover" />
-                <span v-else class="text-xs font-black text-white uppercase">{{ auth.user?.username?.[0] }}</span>
-              </div>
+              <BaseAvatar size="sm" :src="auth.user?.avatar" :name="auth.user?.username" />
               <div class="flex flex-col items-start -gap-1">
                 <span :class="['text-[14px] font-bold transition-colors', plan === 'promax' ? 'text-slate-900' : 'text-slate-800']">{{ auth.user?.username || 'Học viên' }}</span>
-                <span v-if="auth.user?.planName" :class="[
-                  'text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md shadow-sm',
-                  getPlanBadgeClass(auth.user.planName)
-                ]">
-                  {{ auth.user.planName }}
-                </span>
+                <BaseBadge v-if="auth.user?.planName" :variant="planVariant">{{ auth.user.planName }}</BaseBadge>
               </div>
               <div class="flex items-center gap-1.5">
                 <!-- ProMax Fire Streak - Always Visible -->
@@ -167,14 +159,9 @@
           </div>
         </template>
         <template v-else>
-          <button
-            @click="showAuthPopover = true"
-            class="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.03] active:scale-95"
-          >
-            <span class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full skew-x-12"></span>
-            <i class="fa-solid fa-right-to-bracket text-xs relative z-10" aria-hidden="true"></i>
-            <span class="relative z-10">Đăng nhập</span>
-          </button>
+          <BaseButton icon-left="fa-right-to-bracket" @click="showAuthPopover = true">
+            Đăng nhập
+          </BaseButton>
         </template>
       </div>
 
@@ -241,9 +228,7 @@
               <div>
                 <div class="flex items-center gap-2">
                   <p class="m-0 text-sm font-bold text-slate-900">{{ auth.user?.username || 'Học viên' }}</p>
-                  <span v-if="auth.user?.planName" :class="['px-1.5 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider shadow-sm', getPlanBadgeClass(auth.user.planName)]">
-                    {{ auth.user.planName }}
-                  </span>
+                  <BaseBadge v-if="auth.user?.planName" :variant="planVariant">{{ auth.user.planName }}</BaseBadge>
                   <div v-if="auth.user?.activeToday" :class="['flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-50 text-[10px] font-black', getFireColorClass(auth.user?.fireLevel)]">
                     <i class="fa-solid fa-fire animate-pulse"></i>
                     <span>{{ auth.user?.currentStreak || 0 }} ngày</span>
@@ -366,10 +351,7 @@
                 ? 'bg-white/80 backdrop-blur-xl border border-indigo-200 text-slate-800 shadow-xl hover:scale-105' 
                 : 'border-indigo-100 bg-indigo-50/50 hover:border-indigo-200 hover:bg-indigo-50'"
             >
-              <div class="relative h-8 w-8 rounded-full flex items-center justify-center overflow-hidden border border-white/20 shrink-0">
-                <img v-if="auth.user?.avatar" :src="resolveImageUrl(auth.user.avatar)" class="h-full w-full object-cover" />
-                <span v-else class="text-xs font-black text-white uppercase">{{ auth.user?.username?.[0] }}</span>
-              </div>
+              <BaseAvatar size="sm" :src="auth.user?.avatar" :name="auth.user?.username" class="shrink-0" />
 
               <!-- Profile Tooltip when scrolled -->
               <div 
@@ -481,14 +463,27 @@ import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { APP_NAME } from '@/config';
+import { useCurrency } from '@/composables/useCurrency';
+import { useImageResolver } from '@/composables/useImageResolver';
 import { getUserStreak, getUserProfile } from '@/services/userService';
 import apiClient from '@/services/api';
 import AuthPopover from '@/components/auth/AuthPopover.vue';
 import NotificationBell from '@/components/social/NotificationBell.vue';
+import BaseAvatar from '@/components/ui/BaseAvatar.vue';
+import BaseBadge from '@/components/ui/BaseBadge.vue';
+import BaseButton from '@/components/ui/BaseButton.vue';
 
 const appName = APP_NAME;
 const auth = useAuthStore();
 const plan = computed(() => (auth.user?.planName || 'free').toLowerCase());
+const formatCurrency = useCurrency();
+const { resolveImageUrl } = useImageResolver();
+const planVariant = computed(() => {
+    const name = (auth.user?.planName || '').toUpperCase();
+    if (name === 'PRO') return 'pro';
+    if (name === 'PROMAX') return 'promax';
+    return 'neutral';
+});
 const router = useRouter();
 const route = useRoute();
 
@@ -517,26 +512,6 @@ const dropdownLinks = [
   { to: '/evaluation', label: 'Đánh giá năng lực', icon: 'fa-chart-pie', bg: 'bg-purple-50', color: 'text-purple-600' },
 ];
 
-const formatCurrency = (val) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val || 0);
-};
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
-const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
-
-const resolveImageUrl = (url) => {
-  if (!url) return undefined;
-  if (/^https?:\/\//i.test(url)) return url;
-  return `${BACKEND_ORIGIN}${url.startsWith('/') ? '' : '/'}${url}`;
-};
-
-const getPlanBadgeClass = (name) => {
-  switch (name?.toUpperCase()) {
-    case 'PRO': return 'bg-sky-500 text-white shadow-sky-200';
-    case 'PROMAX': return 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-200';
-    default: return 'bg-slate-100 text-slate-500 border border-slate-200';
-  }
-};
 
 const getFireColorClass = (level) => {
   if (!level || level === 0) return 'text-slate-400';

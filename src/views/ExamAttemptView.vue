@@ -174,6 +174,7 @@
                       :image-url="questions[focusQuestionIndex]!.imageUrl"
                       :audio-url="questions[focusQuestionIndex]!.audioUrl"
                       :question-type="questions[focusQuestionIndex]!.questionType"
+                      :audio-answer-url="audioAnswers[questions[focusQuestionIndex]!.id]"
                       :options="questions[focusQuestionIndex]!.options"
                       v-model="answers[questions[focusQuestionIndex]!.id]"
                       :is-multiple="questions[focusQuestionIndex]!.isMultiple"
@@ -181,6 +182,7 @@
                       :paper-mode="true"
                       @select="handleSelect(questions[focusQuestionIndex]!, $event)"
                       @zoom="zoomImageUrl = $event"
+                      @update:audioAnswerUrl="audioAnswers[questions[focusQuestionIndex]!.id] = $event; saveDraft()"
                     />
                   </div>
                 </div>
@@ -193,6 +195,9 @@
                     :content="questions[focusQuestionIndex]!.content"
                     :content-format="questions[focusQuestionIndex]!.contentFormat"
                     :image-url="questions[focusQuestionIndex]!.imageUrl"
+                    :audio-url="questions[focusQuestionIndex]!.audioUrl"
+                    :question-type="questions[focusQuestionIndex]!.questionType"
+                    :audio-answer-url="audioAnswers[questions[focusQuestionIndex]!.id]"
                     :options="questions[focusQuestionIndex]!.options"
                     v-model="answers[questions[focusQuestionIndex]!.id]"
                     :is-multiple="questions[focusQuestionIndex]!.isMultiple"
@@ -200,6 +205,7 @@
                     :paper-mode="true"
                     @select="handleSelect(questions[focusQuestionIndex]!, $event)"
                     @zoom="zoomImageUrl = $event"
+                    @update:audioAnswerUrl="audioAnswers[questions[focusQuestionIndex]!.id] = $event; saveDraft()"
                   />
                 </div>
               </div>
@@ -417,6 +423,7 @@
                   :image-url="question.imageUrl"
                   :audio-url="question.audioUrl"
                   :question-type="question.questionType"
+                  :audio-answer-url="audioAnswers[question.id]"
                   :options="question.options"
                   v-model="answers[question.id]"
                   :is-multiple="question.isMultiple"
@@ -426,6 +433,7 @@
                   @select="handleSelect(question, $event)"
                   @zoom="zoomImageUrl = $event"
                   :is-focused="currentQuestionId === question.id"
+                  @update:audioAnswerUrl="audioAnswers[question.id] = $event; saveDraft()"
                 />
               </div>
             </div>
@@ -446,6 +454,7 @@
                   :image-url="question.imageUrl"
                   :audio-url="question.audioUrl"
                   :question-type="question.questionType"
+                  :audio-answer-url="audioAnswers[question.id]"
                   :options="question.options"
                   v-model="answers[question.id]"
                   :is-multiple="question.isMultiple"
@@ -455,6 +464,7 @@
                   @select="handleSelect(question, $event)"
                   @zoom="zoomImageUrl = $event"
                   :is-focused="currentQuestionId === question.id"
+                  @update:audioAnswerUrl="audioAnswers[question.id] = $event; saveDraft()"
                 />
               </div>
             </div>
@@ -474,6 +484,7 @@
                 :image-url="question.imageUrl"
                 :audio-url="question.audioUrl"
                 :question-type="question.questionType"
+                :audio-answer-url="audioAnswers[question.id]"
                 :options="question.options"
                 v-model="answers[question.id]"
                 :is-multiple="question.isMultiple"
@@ -482,6 +493,7 @@
                 @select="handleSelect(question, $event)"
                 @zoom="zoomImageUrl = $event"
                 :is-focused="currentQuestionId === question.id"
+                @update:audioAnswerUrl="audioAnswers[question.id] = $event; saveDraft()"
               />
             </div>
             
@@ -719,6 +731,7 @@ type ExamDetails = {
 type StoredDraft = {
   attempt: AttemptData;
   answers: Record<number, string | string[]>;
+  audioAnswers?: Record<number, string>;
   tabSwitchCount: number;
 };
 
@@ -751,6 +764,7 @@ const streakCheckedIn = ref(false);
 const uiLayoutHint = ref<'STANDARD' | 'LITERATURE' | 'ESSAY' | 'MIXED'>('STANDARD');
 const sections = ref<Array<{ title: string; questions: AttemptQuestion[] }>>([]);
 const answers = reactive<Record<number, string | string[]>>({});
+const audioAnswers = reactive<Record<number, string>>({});
 const zoomImageUrl = ref<string | null>(null);
 const showMobileMatrix = ref(false);
 let initPromise: Promise<void> | null = null;
@@ -917,6 +931,7 @@ const normalizeQuestions = (items: ExamQuestion[] = []): AttemptQuestion[] =>
           value: String(value),
           optionId: Number.isFinite(parsedOptionId) && parsedOptionId > 0 ? parsedOptionId : null,
           isCorrect: option.isCorrect ?? option.correct ?? false,
+          imageUrl: option.imageUrl || null,
         };
       }),
     };
@@ -967,6 +982,10 @@ const readDraft = (): StoredDraft | null => {
       return null;
     }
 
+    if (parsedValue.audioAnswers) {
+      Object.assign(audioAnswers, parsedValue.audioAnswers);
+    }
+
     return parsedValue;
   } catch {
     return null;
@@ -981,6 +1000,7 @@ const saveDraft = () => {
   const payload: StoredDraft = {
     attempt: attempt.value,
     answers: { ...answers },
+    audioAnswers: { ...audioAnswers },
     tabSwitchCount: tabSwitchCount.value,
   };
 
@@ -1008,6 +1028,9 @@ const handleSelect = (question: AttemptQuestion, optionValue: string) => {
 
 const clearDraft = () => {
   sessionStorage.removeItem(draftKey.value);
+  for (const key in audioAnswers) {
+    delete audioAnswers[key];
+  }
 };
 
 const clearRedirectTimer = () => {
@@ -1248,6 +1271,9 @@ const loadAttempt = async () => {
           } else {
             const val = ans.selectedOptionId ? String(ans.selectedOptionId) : (ans.essayAnswer || '');
             if (val) answers[ans.questionId] = val;
+            if (ans.audioAnswerUrl) {
+              audioAnswers[ans.questionId] = ans.audioAnswerUrl;
+            }
           }
         }
       });
@@ -1391,12 +1417,14 @@ const handleSubmit = async () => {
         }
       } else {
         const answerValue = (typeof rawVal === 'string' ? rawVal : String(rawVal ?? '')).trim();
-        if (answerValue) {
+        const audioUrl = audioAnswers[question.id];
+        if (answerValue || audioUrl) {
           accumulator.push({
             questionId: question.id,
             selectedOptionId: null,
             selectedOptionIds: null,
-            essayAnswer: answerValue,
+            essayAnswer: answerValue || null,
+            audioAnswerUrl: audioUrl || undefined,
           });
         }
       }

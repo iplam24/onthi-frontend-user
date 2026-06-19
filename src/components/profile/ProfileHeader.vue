@@ -112,6 +112,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useImageResolver } from '@/composables/useImageResolver';
 
 const props = defineProps<{
   profile: any;
@@ -130,12 +131,5 @@ defineEmits(['toggle-avatar-menu', 'open-preview', 'trigger-upload', 'follow', '
 const avatarMenuContainer = ref<HTMLElement | null>(null);
 defineExpose({ avatarMenuContainer });
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
-const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
-
-const resolveImageUrl = (url?: string | null) => {
-  if (!url) return undefined;
-  if (/^https?:\/\//i.test(url) || url.startsWith('blob:')) return url;
-  return `${BACKEND_ORIGIN}${url.startsWith('/') ? '' : '/'}${url}`;
-};
+const { resolveImageUrl } = useImageResolver();
 </script>

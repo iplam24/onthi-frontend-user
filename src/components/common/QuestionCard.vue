@@ -109,9 +109,14 @@
           >
             {{ String.fromCharCode(65 + oi) }}
           </span>
-          <span class="relative z-10 text-xs sm:text-sm font-semibold leading-relaxed grow transition-colors" :class="getOptionTextClass(option)">
-            <MathContent :content="option.label || option.content || ''" :format="contentFormat" />
-          </span>
+          <div class="relative z-10 flex flex-col gap-1.5 grow">
+            <span class="text-xs sm:text-sm font-semibold leading-relaxed transition-colors" :class="getOptionTextClass(option)">
+              <MathContent :content="option.label || option.content || ''" :format="contentFormat" />
+            </span>
+            <div v-if="option.imageUrl" class="rounded-lg overflow-hidden border border-slate-100/50 bg-slate-50 p-1 max-w-[200px]">
+              <img :src="resolveOptionImageUrl(option.imageUrl)" class="max-h-[100px] w-full object-contain rounded-md" />
+            </div>
+          </div>
           
           <template v-if="!isReview && isMultiple">
             <i v-if="isOptionSelected(option)" class="relative z-10 fa-solid fa-square-check text-indigo-600 text-lg shrink-0 animate-scale-in"></i>
@@ -133,7 +138,12 @@
         <template v-if="!isReview">
           <!-- Speaking: show recorder -->
           <div v-if="questionType === 'SPEAKING'" class="min-h-[100px]">
-            <AudioRecorder :model-value="modelValue as string" @update:model-value="$emit('update:modelValue', $event)" />
+            <AudioRecorder 
+              :model-value="modelValue as string" 
+              :audio-url="audioAnswerUrl"
+              @update:model-value="$emit('update:modelValue', $event)" 
+              @update:audio-url="$emit('update:audioAnswerUrl', $event)"
+            />
           </div>
           <!-- Essay: show textarea -->
           <div v-else 
@@ -276,6 +286,7 @@ interface Option {
   value: string;
   isCorrect?: boolean;
   _isSelected?: boolean;
+  imageUrl?: string;
 }
 
 const props = defineProps<{
@@ -315,6 +326,7 @@ const emit = defineEmits<{
   'zoom': [url: string];
   'focus': [];
   'askAi': [id: number];
+  'update:audioAnswerUrl': [url: string];
 }>();
 
 const optionsColsClass = computed(() => {
@@ -421,5 +433,13 @@ const getOptionTextClass = (option: Option) => {
   }
   if (isOptionSelected(option)) return 'text-indigo-900';
   return 'text-slate-600';
+};
+
+const resolveOptionImageUrl = (url?: string) => {
+  if (!url) return undefined;
+  if (/^https?:\/\//i.test(url)) return url;
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+  const origin = baseUrl.replace(/\/api\/?$/, '');
+  return `${origin}${url.startsWith('/') ? '' : '/'}${url}`;
 };
 </script>

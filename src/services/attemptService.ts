@@ -3,7 +3,9 @@ import api from './api';
 export type SubmitAnswerPayload = {
   questionId: number;
   selectedOptionId: number | null;
+  selectedOptionIds?: number[] | null;
   essayAnswer: string | null;
+  audioAnswerUrl?: string | null;
 };
 
 export type AttemptAnswerResponse = {

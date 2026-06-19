@@ -20,21 +20,24 @@
       <i class="fa-solid fa-circle-exclamation mr-2"></i>{{ error }}
     </p>
 
-    <div v-if="loading" class="animate-pulse grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <div v-for="i in 6" :key="i" class="card-elevated p-6 space-y-4">
-        <div class="h-20 w-full bg-slate-100 rounded-2xl"></div>
-        <div class="h-6 w-3/4 bg-slate-100 rounded-lg"></div>
-        <div class="h-4 w-1/2 bg-slate-50 rounded-lg"></div>
-      </div>
+    <div v-if="loading" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <SkeletonCard
+        v-for="i in 6"
+        :key="i"
+        :lines="3"
+        height="h-4"
+        width-class="w-2/3"
+        class="card-elevated p-6"
+      />
     </div>
 
-    <div v-else-if="!subjectSummaries.length" class="card-elevated px-6 py-20 text-center">
+    <BaseCard v-else-if="!subjectSummaries.length" elevated class="px-6 py-20 text-center">
       <div class="inline-flex h-20 w-20 items-center justify-center rounded-[2rem] bg-slate-50 mb-6 text-slate-200">
         <i class="fa-solid fa-book-open text-4xl"></i>
       </div>
       <h3 class="m-0 text-xl font-black text-slate-900">Hiện chưa có môn học nào</h3>
       <p class="text-sm font-medium text-slate-500 mt-2 m-0">Hệ thống đang được cập nhật.</p>
-    </div>
+    </BaseCard>
 
     <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       <article
@@ -82,6 +85,8 @@
 </template>
 
 <script setup lang="ts">
+import BaseCard from '@/components/ui/BaseCard.vue';
+import SkeletonCard from '@/components/ui/SkeletonCard.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { getAllExams } from '@/services/examService';
