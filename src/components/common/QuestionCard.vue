@@ -79,9 +79,9 @@
       </div>
 
       <!-- Audio -->
-      <div v-if="audioUrl" class="mt-5 rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4">
+      <div v-if="audioUrl" class="mt-5">
         <p class="mb-3 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500">Audio câu hỏi</p>
-        <audio :src="audioUrl" controls class="w-full" />
+        <AudioPlayer :src="audioUrl" />
       </div>
 
       <!-- Options (Multiple Choice) -->
@@ -187,9 +187,7 @@
         <!-- Speaking Audio Answer (review) -->
         <template v-else-if="isReview && questionType === 'SPEAKING' && audioAnswerUrl">
           <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 m-0 mb-4">Câu trả lời của học sinh:</p>
-          <div class="rounded-2xl border border-emerald-100 bg-emerald-50/40 p-4">
-            <audio :src="audioAnswerUrl" controls class="w-full" />
-          </div>
+          <AudioPlayer :src="audioAnswerUrl" />
         </template>
       </div>
 
@@ -278,6 +276,7 @@
 import { computed } from 'vue';
 import MathContent from './MathContent.vue';
 import AudioRecorder from './AudioRecorder.vue';
+import AudioPlayer from './AudioPlayer.vue';
 
 interface Option {
   id?: number;
