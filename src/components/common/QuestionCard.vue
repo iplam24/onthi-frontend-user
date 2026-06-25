@@ -1,21 +1,21 @@
 <template>
   <article
     :id="`q-${id}`"
-    class="animate-slide-up-reveal group flex flex-col h-full overflow-hidden transition-all duration-500"
+    class="animate-slide-up-reveal group relative flex flex-col h-full overflow-hidden transition-all duration-500"
     :class="[
       uiLayoutHint === 'LITERATURE' 
         ? 'border-x border-amber-100/50 bg-[#fffcf5] font-serif shadow-[0_0_50px_rgba(0,0,0,0.02)] min-h-screen' 
         : (paperMode ? (isFocused ? 'border-2 border-indigo-500 bg-indigo-50/20 shadow-lg shadow-indigo-500/10 rounded-2xl' : 'bg-transparent border-2 border-transparent') : (isFocused ? 'rounded-2xl border-2 border-indigo-500 shadow-xl shadow-indigo-500/20' : 'rounded-2xl border')),
       uiLayoutHint !== 'LITERATURE' && !paperMode && isReview 
-        ? (isCorrect ? 'border-emerald-100 bg-white hover:border-emerald-200 hover:shadow-emerald-500/5' : 'border-rose-100 bg-white hover:border-rose-200 hover:shadow-rose-500/5')
-        : (uiLayoutHint !== 'LITERATURE' && !paperMode ? (isFocused ? 'bg-white' : 'border-slate-100/80 bg-white hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/5') : '')
+        ? (isCorrect ? 'border-emerald-100 bg-white hover:border-emerald-200 hover:shadow-emerald-500/10' : 'border-rose-100 bg-white hover:border-rose-200 hover:shadow-rose-500/10')
+        : (uiLayoutHint !== 'LITERATURE' && !paperMode ? (isFocused ? 'bg-white' : 'border-slate-100/80 bg-white hover:-translate-y-1 hover:border-indigo-100 hover:shadow-2xl hover:shadow-indigo-500/10') : '')
     ]"
     :style="animationStyle"
   >
     <!-- Header -->
     <div 
       v-if="!paperMode"
-      class="flex items-center justify-between gap-3 border-b px-4 py-2.5 sm:px-6 sm:py-3.5"
+      class="relative flex items-center justify-between gap-3 overflow-hidden border-b px-4 py-3 sm:px-6 sm:py-4"
       :class="uiLayoutHint === 'LITERATURE' ? 'border-amber-100/30 bg-amber-50/20' : 'border-slate-50 bg-slate-50/50'"
     >
       <div class="flex items-center gap-4">
@@ -94,7 +94,7 @@
           v-for="(option, oi) in options"
           :key="option.id || oi"
           @click="!isReview && $emit('select', option.value)"
-          class="flex items-center gap-2 sm:gap-2.5 rounded-xl transition-all duration-200 relative overflow-hidden shrink-0"
+          class="flex items-center gap-2 sm:gap-3 rounded-2xl transition-all duration-200 relative overflow-hidden shrink-0"
           :class="[
             isReview ? getReviewOptionClass(option) : getAttemptOptionClass(option),
             !isReview ? 'cursor-pointer' : '',
@@ -137,7 +137,7 @@
       <div v-else class="mt-4 grow">
         <template v-if="!isReview">
           <!-- Speaking: show recorder -->
-          <div v-if="questionType === 'SPEAKING'" class="min-h-[100px]">
+          <div v-if="normalizedQuestionType === 'SPEAKING'" class="min-h-[100px]">
             <AudioRecorder 
               :model-value="modelValue as string" 
               :audio-url="audioAnswerUrl"
@@ -185,7 +185,7 @@
           </div>
         </template>
         <!-- Speaking Audio Answer (review) -->
-        <template v-else-if="isReview && questionType === 'SPEAKING' && audioAnswerUrl">
+        <template v-else-if="isReview && normalizedQuestionType === 'SPEAKING' && audioAnswerUrl">
           <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 m-0 mb-4">Câu trả lời của học sinh:</p>
           <AudioPlayer :src="audioAnswerUrl" />
         </template>
@@ -328,6 +328,28 @@ const emit = defineEmits<{
   'update:audioAnswerUrl': [url: string];
 }>();
 
+
+const normalizedQuestionType = computed(() => String(props.questionType || (props.options?.length ? 'MCQ' : 'ESSAY')).toUpperCase());
+
+const questionTypeMeta = computed(() => {
+  switch (normalizedQuestionType.value) {
+    case 'SPEAKING':
+      return { label: 'Speaking', icon: 'fa-solid fa-microphone-lines', class: 'bg-rose-50 text-rose-700 border border-rose-100' };
+    case 'LISTENING':
+      return { label: 'Listening', icon: 'fa-solid fa-headphones', class: 'bg-cyan-50 text-cyan-700 border border-cyan-100' };
+    case 'ESSAY':
+      return { label: 'Essay', icon: 'fa-solid fa-pen-nib', class: 'bg-amber-50 text-amber-700 border border-amber-100' };
+    default:
+      return { label: 'Multiple choice', icon: 'fa-solid fa-list-check', class: 'bg-indigo-50 text-indigo-700 border border-indigo-100' };
+  }
+});
+
+const resultLabel = computed(() => {
+  if (!props.isReview) return 'QUESTION';
+  if (normalizedQuestionType.value === 'ESSAY' || normalizedQuestionType.value === 'SPEAKING') return 'REVIEW';
+  return props.isCorrect ? 'CORRECT' : 'NEEDS REVIEW';
+});
+
 const optionsColsClass = computed(() => {
   if (!props.options || !props.options.length) return 'grid-cols-1';
   const maxLen = Math.max(...props.options.map(o => (o.label || o.content || '').length));
@@ -352,9 +374,9 @@ const isOptionSelected = (option: Option) => {
 
 const getAttemptOptionClass = (option: Option) => {
   if (isOptionSelected(option)) {
-    return 'border-indigo-400 bg-indigo-50/40 shadow-md shadow-indigo-500/5';
+    return 'border-indigo-400 bg-indigo-50/80 shadow-xl shadow-indigo-500/10 ring-2 ring-indigo-500/10';
   }
-  return 'border-slate-100 bg-slate-50/20 hover:border-indigo-200 hover:bg-white hover:shadow-sm';
+  return 'border-slate-100 bg-slate-50/40 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-white hover:shadow-lg hover:shadow-indigo-500/5';
 };
 
 const getReviewOptionClass = (option: Option) => {
